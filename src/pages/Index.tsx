@@ -8,6 +8,7 @@ const Home: React.FC = () => {
     const [rallies, setRallies] = useState<Rally[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(true); // Estado de carga
     const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false); // Estado de autenticación
+    
 
     useEffect(() => {
         const verifyToken = async () => {

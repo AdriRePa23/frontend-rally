@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
+import Login from "./pages/Login";
 
 
 const App: React.FC = () => {
@@ -7,6 +8,7 @@ const App: React.FC = () => {
         <Router>
             <Routes>
                 <Route path="/" element={<Index />} />
+                <Route path="/login" element={<Login />} />
             </Routes>
         </Router>
     );
