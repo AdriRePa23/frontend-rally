@@ -1,18 +1,43 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import API from "../services/api";
+import AsideNavBar from "../components/AsideNavBar/AsideNavBar";
+import RallyCard from "../components/RallyCard/RallyCard";
 import { Rally } from "../types";
 
 const Home: React.FC = () => {
     const [rallies, setRallies] = useState<Rally[]>([]);
+    const [isLoading, setIsLoading] = useState<boolean>(true); // Estado de carga
+    const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false); // Estado de autenticación
+
+    useEffect(() => {
+        const verifyToken = async () => {
+            const token = localStorage.getItem("token");
+            if (token) {
+                try {
+                    const response = await API.get("/auth/verify-token", {
+                        headers: { Authorization: `Bearer ${token}` },
+                    });
+                    setIsLoggedIn(response.data.valid); // Actualiza el estado según la validez del token
+                } catch (error) {
+                    console.error("Error al verificar el token:", error);
+                    setIsLoggedIn(false); // Si hay un error, el token no es válido
+                }
+            } else {
+                setIsLoggedIn(false); // Si no hay token, no está logueado
+            }
+        };
+        verifyToken();
+    }, []);
 
     useEffect(() => {
         const fetchRallies = async () => {
             try {
-                const { data } = await API.get("/rallies");
-                setRallies(data);
+                const { data } = await API.get("/rallies/card");
+                setRallies(Array.isArray(data) ? data : [data]);
             } catch (error) {
                 console.error("Error al obtener los rallies:", error);
+            } finally {
+                setIsLoading(false); // Finaliza la carga
             }
         };
         fetchRallies();
@@ -20,51 +45,22 @@ const Home: React.FC = () => {
 
     return (
         <div className="flex h-screen">
-            {/* Barra lateral */}
-            <aside className="w-64 bg-gray-800 text-white flex flex-col p-4">
-                <h1 className="text-2xl font-bold mb-6">Rally App</h1>
-                <nav className="flex flex-col gap-4">
-                    <Link to="/" className="hover:text-gray-300">
-                        Inicio
-                    </Link>
-                    <Link to="/profile" className="hover:text-gray-300">
-                        Perfil
-                    </Link>
-                    <Link to="/create-rally" className="hover:text-gray-300">
-                        Crear Rally
-                    </Link>
-                    <button
-                        onClick={() => {
-                            localStorage.removeItem("token");
-                            window.location.href = "/login";
-                        }}
-                        className="mt-auto text-red-500 hover:text-red-300"
-                    >
-                        Cerrar sesión
-                    </button>
-                </nav>
-            </aside>
-
-            {/* Contenido principal */}
+            <AsideNavBar isLoggedIn={isLoggedIn} /> {/* Pasar el estado al AsideNavBar */}
             <main className="flex-1 bg-gray-100 p-6 overflow-y-auto">
                 <h2 className="text-3xl font-bold mb-6">Rallies Disponibles</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {rallies.map((rally) => (
-                        <div
-                            key={rally.id}
-                            className="bg-white shadow-md rounded-lg p-4 hover:shadow-lg transition"
-                        >
-                            <h3 className="text-xl font-bold">{rally.nombre}</h3>
-                            <p className="text-gray-600">{rally.descripcion}</p>
-                            <Link
-                                to={`/rallies/${rally.id}`}
-                                className="text-blue-500 hover:underline mt-4 block"
-                            >
-                                Ver publicaciones
-                            </Link>
-                        </div>
-                    ))}
-                </div>
+                {isLoading ? (
+                    <p className="text-center text-gray-500">Cargando rallies...</p> // Indicador de carga
+                ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {rallies.length > 0 ? (
+                            rallies.map((rally) => (
+                                <RallyCard key={rally.id} rally={rally} />
+                            ))
+                        ) : (
+                            <p>No hay rallies disponibles</p>
+                        )}
+                    </div>
+                )}
             </main>
         </div>
     );
