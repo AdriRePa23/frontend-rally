@@ -1,11 +1,11 @@
 import { useEffect } from "react";
-import LoginForm from "../components/LoginForm/LoginForm";
+import RegisterForm from "../components/RegisterForm/RegisterForm";
 import AsideNavBar from "../components/AsideNavBar/AsideNavBar";
 import API from "../services/api";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom"; // Para redirigir al usuario
 
-function Login() {
-  const navigate = useNavigate();
+function Register() {
+  const navigate = useNavigate(); // Hook para redirigir
 
   useEffect(() => {
     const verifyToken = async () => {
@@ -15,10 +15,8 @@ function Login() {
           const response = await API.post("/auth/verify-token", {
             headers: { Authorization: `Bearer ${token}` },
           });
-          console.log("Respuesta del backend:", response.data); 
-          if (response.data.user) {
-            console.log("Token válido, redirigiendo...");
-            navigate("/");
+          if (response.data.valid) {
+            navigate("/"); // Redirige al usuario a la página principal si el token es válido
           }
         } catch (error) {
           console.error("Error al verificar el token:", error);
@@ -32,10 +30,10 @@ function Login() {
     <div className="flex h-screen bg-gray-100">
       <AsideNavBar/>
       <main className="flex-1 bg-gray-100 p-6 overflow-y-auto">
-        <LoginForm />
+        <RegisterForm />
       </main>
     </div>
   );
 }
 
-export default Login;
+export default Register;

@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-    baseURL: "https://backend-rally-production.up.railway.app/api", 
+    baseURL: "http://localhost:3000/api", 
 });
 
 // Agregar token de autenticación a las solicitudes

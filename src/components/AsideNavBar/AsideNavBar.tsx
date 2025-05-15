@@ -1,6 +1,32 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import API from "../../services/api";
 
-function AsideNavBar({ isLoggedIn }: { isLoggedIn: boolean }) {
+function AsideNavBar() {
+    const [isLoggedIn, setIsLoggedIn] = useState(false); // Estado para saber si el usuario está autenticado
+
+    useEffect(() => {
+        const verifyToken = async () => {
+            const token = localStorage.getItem("token");
+            if (token) {
+                try {
+                    const response = await API.post("/auth/verify-token", {
+                        headers: { Authorization: `Bearer ${token}` },
+                    });
+                    if (response.data.user) {
+                        setIsLoggedIn(true); // Si el token es válido, el usuario está autenticado
+                    }
+                } catch (error) {
+                    console.error("Error al verificar el token:", error);
+                    setIsLoggedIn(false); // Si hay un error, el usuario no está autenticado
+                }
+            } else {
+                setIsLoggedIn(false); // Si no hay token, el usuario no está autenticado
+            }
+        };
+        verifyToken();
+    }, []); // Se ejecuta una vez al montar el componente
+
     return (
         <aside className="w-64 bg-gray-800 text-white flex flex-col p-4">
             <h1 className="text-2xl font-bold mb-6">Rally App</h1>
