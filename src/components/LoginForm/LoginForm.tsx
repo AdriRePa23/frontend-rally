@@ -41,8 +41,8 @@ function LoginForm() {
             }, 2000);
         } catch (error: any) {
             console.error("Error al iniciar sesión:", error);
-            if (error.response && error.response.status === 401) {
-                setErrorMessage("Credenciales incorrectas. Por favor, inténtalo de nuevo.");
+            if (error.response && error.response.data && error.response.data.message) {
+                setErrorMessage(error.response.data.message);
             } else {
                 setErrorMessage("Ocurrió un error al iniciar sesión. Inténtalo más tarde.");
             }
