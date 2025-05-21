@@ -4,7 +4,7 @@ import AsideNavBar from "../components/AsideNavBar/AsideNavBar";
 import API from "../services/api";
 import { useNavigate } from "react-router-dom"; // Para redirigir al usuario
 
-function Register() {
+const Register: React.FC = () => {
   const navigate = useNavigate(); // Hook para redirigir
 
   useEffect(() => {

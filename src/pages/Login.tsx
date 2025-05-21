@@ -4,7 +4,7 @@ import AsideNavBar from "../components/AsideNavBar/AsideNavBar";
 import API from "../services/api";
 import { useNavigate } from "react-router-dom";
 
-function Login() {
+const Login: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
