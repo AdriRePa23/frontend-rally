@@ -74,7 +74,6 @@ function ProfileInfo() {
         </div>
       </div>
       <div className="max-w-5xl mx-auto w-full mt-8">
-        <h3 className="text-2xl font-bold mb-4 text-blue-900">Publicaciones</h3>
         {posts.length === 0 ? (
           <p className="text-gray-500">Este usuario no tiene publicaciones.</p>
         ) : (
