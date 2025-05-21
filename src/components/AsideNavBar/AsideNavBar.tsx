@@ -36,16 +36,16 @@ function AsideNavBar() {
                 </Link>
                 {isLoggedIn ? (
                     <>
-                        <Link to="/profile" className="hover:text-gray-300">
+                        <Link to="/user/profile" className="hover:text-gray-300">
                             Perfil
                         </Link>
-                        <Link to="/create-rally" className="hover:text-gray-300">
+                        <Link to="/rally/create" className="hover:text-gray-300">
                             Crear Rally
                         </Link>
                         <button
                             onClick={() => {
                                 localStorage.removeItem("token"); // Elimina el token
-                                window.location.href = "/login"; // Redirige al login
+                                window.location.href = "/auth/login"; // Redirige al login
                             }}
                             className="mt-auto text-red-500 hover:text-red-300"
                         >
@@ -54,7 +54,7 @@ function AsideNavBar() {
                     </>
                 ) : (
                     <Link
-                        to="/login"
+                        to="/auth/login"
                         className="mt-auto text-blue-500 hover:text-blue-300"
                     >
                         Iniciar sesión

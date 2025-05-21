@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import CreateRally from "./pages/CreateRally";
 
 
 const App: React.FC = () => {
@@ -9,8 +10,9 @@ const App: React.FC = () => {
         <Router>
             <Routes>
                 <Route path="/" element={<Index />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
+                <Route path="/auth/login" element={<Login />} />
+                <Route path="/auth/register" element={<Register />} />
+                <Route path="/rally/create" element={<CreateRally />} />
             </Routes>
         </Router>
     );
