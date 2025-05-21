@@ -4,6 +4,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import CreateRally from "./pages/CreateRally";
 import Profile from "./pages/Profile";
+import RallyDetail from "./pages/RallyDetail";
 
 
 const App: React.FC = () => {
@@ -15,6 +16,7 @@ const App: React.FC = () => {
                 <Route path="/auth/register" element={<Register />} />
                 <Route path="/rally/create" element={<CreateRally />} />
                 <Route path="/user/profile" element={<Profile />} />
+                <Route path="/rallies/:id" element={<RallyDetail />} />
             </Routes>
         </Router>
     );
