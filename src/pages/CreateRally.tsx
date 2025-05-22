@@ -3,6 +3,7 @@ import API from "../services/api";
 import AsideNavBar from "../components/AsideNavBar/AsideNavBar";
 import { useNavigate } from "react-router-dom";
 import CreateRallyForm from "../components/CreateRallyForm/CreateRallyForm";
+import BackButton from "../components/BackButton";
 
 const CreateRally: React.FC = () => {
   const navigate = useNavigate();
@@ -38,6 +39,9 @@ const CreateRally: React.FC = () => {
     <div className="flex h-screen">
       <AsideNavBar />
       <main className="flex-1 bg-gray-100 p-6 overflow-y-auto">
+        <div className="mb-4">
+          <BackButton />
+        </div>
         <CreateRallyForm />
         
       </main>

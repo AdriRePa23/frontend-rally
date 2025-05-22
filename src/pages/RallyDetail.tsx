@@ -4,6 +4,7 @@ import AsideNavBar from "../components/AsideNavBar/AsideNavBar";
 import RallyInfo from "../components/RallyInfo/RallyInfo";
 import RallyPostCard from "../components/RallyPostCard/RallyPostCard";
 import API from "../services/api";
+import BackButton from "../components/BackButton";
 
 const RallyDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -86,8 +87,11 @@ const RallyDetail: React.FC = () => {
     <div className="flex h-screen bg-gray-100">
       <AsideNavBar />
       <main className="flex-1 bg-gray-100 p-6 overflow-y-auto w-full max-w-full">
+        <div className="mb-4">
+          <BackButton />
+        </div>
         <RallyInfo />
-        <div className="max-w-4xl mx-auto w-full mt-8">
+        <div className="w-full mt-8">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 gap-4">
             <div>
               <h3 className="text-2xl font-bold mb-2 text-blue-900">Publicaciones del Rally</h3>
@@ -123,7 +127,7 @@ const RallyDetail: React.FC = () => {
           ) : posts.length === 0 ? (
             <p className="text-gray-500 text-center">No hay publicaciones en este rally.</p>
           ) : (
-            <div className="flex flex-wrap justify-center gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-8 w-full">
               {posts.map((post) => (
                 <RallyPostCard
                   key={post.id}

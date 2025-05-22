@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import AsideNavBar from "../components/AsideNavBar/AsideNavBar";
 import API from "../services/api";
 import ProfileInfo from "../components/ProfileInfo/ProfileInfo";
+import BackButton from "../components/BackButton";
 
 const Profile: React.FC = () => {
   const navigate = useNavigate();
@@ -36,6 +37,9 @@ const Profile: React.FC = () => {
     <div className="flex h-screen bg-gray-100">
       <AsideNavBar />
       <main className="flex-1 bg-gray-100 p-6 overflow-y-auto w-full max-w-full">
+        <div className="mb-4">
+          <BackButton />
+        </div>
         <ProfileInfo />
       </main>
     </div>

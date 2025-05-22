@@ -3,6 +3,7 @@ import RegisterForm from "../components/RegisterForm/RegisterForm";
 import AsideNavBar from "../components/AsideNavBar/AsideNavBar";
 import API from "../services/api";
 import { useNavigate } from "react-router-dom"; // Para redirigir al usuario
+import BackButton from "../components/BackButton";
 
 const Register: React.FC = () => {
   const navigate = useNavigate(); // Hook para redirigir
@@ -28,12 +29,15 @@ const Register: React.FC = () => {
 
   return (
     <div className="flex h-screen bg-gray-100">
-      <AsideNavBar/>
+      <AsideNavBar />
       <main className="flex-1 bg-gray-100 p-6 overflow-y-auto">
+        <div className="mb-4">
+          <BackButton />
+        </div>
         <RegisterForm />
       </main>
     </div>
   );
-}
+};
 
 export default Register;

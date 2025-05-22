@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import API from "../../services/api";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { Rally } from "../../types";
 
 const RallyInfo: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const [rally, setRally] = useState<Rally | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -37,7 +38,7 @@ const RallyInfo: React.FC = () => {
   if (!rally) return null;
 
   return (
-    <div className="max-w-5xl mx-auto bg-white shadow-lg rounded-2xl p-0 flex flex-col md:flex-row overflow-hidden mt-8">
+    <div className="w-full bg-white shadow-lg rounded-2xl p-0 flex flex-col md:flex-row overflow-hidden mt-8 relative">
       {/* Lado izquierdo: Imagen principal */}
       {rally.imagen && (
         <div className="md:w-1/2 w-full flex items-center justify-center bg-gray-100">

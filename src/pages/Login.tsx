@@ -3,6 +3,7 @@ import LoginForm from "../components/LoginForm/LoginForm";
 import AsideNavBar from "../components/AsideNavBar/AsideNavBar";
 import API from "../services/api";
 import { useNavigate } from "react-router-dom";
+import BackButton from "../components/BackButton";
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
@@ -32,6 +33,9 @@ const Login: React.FC = () => {
     <div className="flex h-screen bg-gray-100">
       <AsideNavBar/>
       <main className="flex-1 bg-gray-100 p-6 overflow-y-auto">
+        <div className="mb-4">
+          <BackButton />
+        </div>
         <LoginForm />
       </main>
     </div>

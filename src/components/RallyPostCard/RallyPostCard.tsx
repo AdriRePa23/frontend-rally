@@ -15,7 +15,7 @@ interface RallyPostCardProps {
 
 const RallyPostCard: React.FC<RallyPostCardProps> = ({ id, imagen, votos, creador, rallyId }) => {
   return (
-    <div className="relative w-72 h-96 rounded-2xl shadow-lg overflow-hidden group hover:scale-105 transition-transform duration-200">
+    <div className="relative w-96 h-96 rounded-2xl shadow-lg overflow-hidden group hover:scale-105 transition-transform duration-200">
       <Link to={`/rallies/${rallyId}/publicacion/${id}`} className="absolute inset-0 block">
         <img
           src={imagen}
