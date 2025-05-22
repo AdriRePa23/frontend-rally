@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
 import API from "../../services/api";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams} from "react-router-dom";
 import { Rally } from "../../types";
 
 const RallyInfo: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
   const [rally, setRally] = useState<Rally | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

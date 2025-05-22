@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect} from "react";
 import API from "../services/api";
 import AsideNavBar from "../components/AsideNavBar/AsideNavBar";
 import { useNavigate } from "react-router-dom";
