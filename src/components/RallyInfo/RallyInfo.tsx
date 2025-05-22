@@ -32,16 +32,6 @@ const RallyInfo: React.FC = () => {
     return `${day}-${month}-${year}`;
   };
 
-  // Comprobar si el usuario está logueado
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    setIsLoggedIn(!!token);
-  }, []);
-
-  // Comprobar si la fecha de fin ha pasado
-  const isActive = rally && new Date(rally.fecha_fin) >= new Date();
-
   if (loading) return <div className="text-center py-8">Cargando...</div>;
   if (error) return <div className="text-center text-red-500 py-8">{error}</div>;
   if (!rally) return null;
@@ -58,7 +48,7 @@ const RallyInfo: React.FC = () => {
           />
         </div>
       )}
-      {/* Lado derecho: Info y botón */}
+      {/* Lado derecho: Info */}
       <div className="md:w-1/2 w-full flex flex-col justify-between p-8">
         <div>
           <h1 className="text-4xl font-extrabold text-blue-900 mb-2 break-words">{rally.nombre}</h1>
@@ -78,9 +68,7 @@ const RallyInfo: React.FC = () => {
             </span>
           </div>
         </div>
-    
       </div>
-      
     </div>
   );
 };
