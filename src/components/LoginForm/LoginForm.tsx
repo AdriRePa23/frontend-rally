@@ -109,7 +109,7 @@ function LoginForm() {
                     <p className="text-sm text-gray-600">
                         ¿No tienes una cuenta?{" "}
                         <a
-                            href="/register"
+                            href="/auth/register"
                             className="text-blue-500 hover:text-blue-800 font-bold"
                         >
                             Regístrate aquí

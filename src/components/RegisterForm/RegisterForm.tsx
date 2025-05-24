@@ -48,7 +48,7 @@ function RegisterForm() {
             const response = await API.post("/auth/register", data);
             setSuccessMessage(response.data.message); 
             setTimeout(() => {
-                window.location.href = "/login"; 
+                window.location.href = "/auth/login"; // Redirige al usuario a la página de inicio de sesión
             }, 2000);
         } catch (error: any) {
             console.error("Error al registrarse:", error);
@@ -136,7 +136,7 @@ function RegisterForm() {
                     <p className="text-sm text-gray-600">
                         ¿Ya tienes una cuenta?{" "}
                         <a
-                            href="/login"
+                            href="/auth/login"
                             className="text-blue-500 hover:text-blue-800 font-bold"
                         >
                             Inicia sesión aquí

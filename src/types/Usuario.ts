@@ -3,4 +3,6 @@ export interface Usuario {
     nombre: string;
     email: string;
     rol_id: number;
+    foto_perfil: string;
+    verificado: boolean;
 }
