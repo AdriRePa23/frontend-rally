@@ -6,6 +6,7 @@ import CreateRally from "./pages/CreateRally";
 import Profile from "./pages/Profile";
 import RallyDetail from "./pages/RallyDetail";
 import CreatePost from "./pages/CreatePost";
+import PostDetail from "./pages/PostDetail";
 
 
 const App: React.FC = () => {
@@ -19,6 +20,7 @@ const App: React.FC = () => {
                 <Route path="/user/profile" element={<Profile />} />
                 <Route path="/rallies/:id" element={<RallyDetail />} />
                 <Route path="/rallies/:id/publicar" element={<CreatePost />} />
+                <Route path="/rallies/:id/publicacion/:id_publicacion" element={<PostDetail />} />
             </Routes>
         </Router>
     );
