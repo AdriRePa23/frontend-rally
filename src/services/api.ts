@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-    baseURL: "http://51.21.180.82:3000/api", 
+    baseURL: "http://51.21.136.94:3000/api", 
 });
 
 // Agregar token de autenticación a las solicitudes
