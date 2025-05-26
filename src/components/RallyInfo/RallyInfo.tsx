@@ -1,29 +1,52 @@
 import React, { useEffect, useState } from "react";
 import API from "../../services/api";
-import { useParams} from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { Rally } from "../../types";
+import { Usuario } from "../../types/Usuario";
 
 const RallyInfo: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [rally, setRally] = useState<Rally | null>(null);
+  const [usuario, setUsuario] = useState<Usuario | null>(null);
+  const [creador, setCreador] = useState<Usuario | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showEdit, setShowEdit] = useState(false);
 
   useEffect(() => {
     const fetchRally = async () => {
       try {
         const response = await API.get(`/rallies/${id}`);
         setRally(response.data);
+        if (response.data.creador_id) {
+          try {
+            const creadorRes = await API.get(`/usuarios/${response.data.creador_id}`);
+            setCreador(creadorRes.data);
+          } catch {}
+        }
       } catch (err) {
         setError("No se pudo cargar el rally.");
       } finally {
         setLoading(false);
       }
     };
+
+    const fetchUsuario = async () => {
+      const token = localStorage.getItem("token");
+      if (token) {
+        try {
+          const res = await API.post("/auth/verify-token", {}, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          if (res.data.user) setUsuario(res.data.user);
+        } catch {}
+      }
+    };
+
     fetchRally();
+    fetchUsuario();
   }, [id]);
 
-  // Formatear fechas a DD-MM-YYYY
   const formatDate = (dateStr: string) => {
     const d = new Date(dateStr);
     const day = String(d.getDate()).padStart(2, '0');
@@ -37,38 +60,54 @@ const RallyInfo: React.FC = () => {
   if (!rally) return null;
 
   return (
-    <div className="w-full bg-white shadow-lg rounded-2xl p-0 flex flex-col md:flex-row overflow-hidden mt-8 relative">
-      {/* Lado izquierdo: Imagen principal */}
-      {rally.imagen && (
-        <div className="md:w-1/2 w-full flex items-center justify-center bg-gray-100">
-          <img
-            src={rally.imagen}
-            alt={`Imagen de ${rally.nombre}`}
-            className="object-cover w-full h-96 md:h-full md:rounded-none rounded-t-2xl"
-          />
-        </div>
-      )}
-      {/* Lado derecho: Info */}
-      <div className="md:w-1/2 w-full flex flex-col justify-between p-8">
-        <div>
-          <h1 className="text-4xl font-extrabold text-blue-900 mb-2 break-words">{rally.nombre}</h1>
-          <p className="text-lg text-gray-700 mb-4">{rally.descripcion}</p>
-          <div className="flex flex-wrap gap-3 mb-4">
-            <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-semibold">
-              Categorías: {rally.categorias}
-            </span>
-            <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-semibold">
-              Fecha de creación: {formatDate(rally.fecha_inicio)}
-            </span>
-            <span className="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-semibold">
-              Fecha fin: {formatDate(rally.fecha_fin)}
-            </span>
-            <span className="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm font-semibold">
-              Máx. fotos/usuario: {rally.cantidad_fotos_max}
-            </span>
+    <div className="w-full bg-white shadow-lg rounded-2xl mt-8 p-0 flex flex-col gap-0">
+      <div className="flex flex-col md:flex-row w-full">
+        <div className="flex-1 p-8 flex flex-col justify-between">
+          <div>
+            <h1 className="text-4xl font-extrabold text-blue-900 mb-2 break-words">{rally.nombre}</h1>
+            <p className="text-lg text-gray-700 mb-4">{rally.descripcion}</p>
+            <div className="flex flex-wrap gap-3 mb-4">
+              <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-semibold">Categorías: {rally.categorias}</span>
+              <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-semibold">Fecha de creación: {formatDate(rally.fecha_inicio)}</span>
+              <span className="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-semibold">Fecha fin: {formatDate(rally.fecha_fin)}</span>
+              <span className="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm font-semibold">Máx. fotos/usuario: {rally.cantidad_fotos_max}</span>
+            </div>
+          </div>
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 w-full mt-4">
+            {creador && (
+              <a href={`/usuarios/${creador.id}`} className="flex items-center gap-2 hover:underline">
+                <img
+                  src={creador.foto_perfil || "/logo.png"}
+                  alt={`Foto de perfil de ${creador.nombre}`}
+                  className="w-12 h-12 rounded-full border-2 border-blue-300 object-cover"
+                />
+                <span className="font-semibold text-blue-900 text-lg">{creador.nombre}</span>
+              </a>
+            )}
+            {(usuario && (usuario.id === rally.creador_id || usuario.rol_id === 2)) && (
+              <button
+                className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-400 hover:from-blue-700 hover:to-blue-500 text-white text-lg font-bold py-3 px-8 rounded-full shadow-lg transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-2 ml-auto"
+                onClick={() => setShowEdit(true)}
+                style={{ minWidth: 180 }}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232a2.5 2.5 0 113.536 3.536L8.5 19.036l-4 1 1-4 10.268-10.268z" />
+                </svg>
+                Editar rally
+              </button>
+            )}
           </div>
         </div>
       </div>
+      {showEdit && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl shadow-xl p-6 max-w-lg w-full relative">
+            <button onClick={() => setShowEdit(false)} className="absolute top-2 right-2 text-gray-500 hover:text-gray-800 text-2xl">&times;</button>
+            <h2 className="text-xl font-bold mb-4">Editar rally</h2>
+            <div className="text-gray-500">(Formulario de edición próximamente...)</div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
