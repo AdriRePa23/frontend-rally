@@ -2,12 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import API from '../../services/api';
 import { Usuario } from '../../types/Usuario';
-import UserPostCard from '../UserPostCard/UserPostCard';
 
 function ProfileInfo() {
   const { id } = useParams<{ id?: string }>();
   const [usuario, setUsuario] = useState<Usuario | null>(null);
-  const [posts, setPosts] = useState<Array<{ id: number; imagen: string }>>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -35,9 +33,6 @@ function ProfileInfo() {
         }
         const response = await API.get(`/usuarios/${userId}`);
         setUsuario(response.data);
-        // Obtener publicaciones del usuario (ruta correcta)
-        const postsRes = await API.get(`/publicaciones/usuario/${userId}`);
-        setPosts(postsRes.data);
       } catch (err: any) {
         setError('No se pudo cargar la información del usuario.');
       } finally {
@@ -60,7 +55,7 @@ function ProfileInfo() {
 
   return (
     <>
-      <div className="flex items-center bg-white shadow-md rounded-lg p-8 w-full max-w-5xl mx-auto mt-8">
+      <div className="flex items-center bg-white shadow-md rounded-lg p-8 w-full mx-auto mt-8">
         <img
           src={usuario.foto_perfil}
           alt={`Foto de perfil de ${usuario.nombre}`}
@@ -72,17 +67,6 @@ function ProfileInfo() {
             <p className="text-lg text-gray-600 mt-2">Usuario desde {anioCreacion}</p>
           )}
         </div>
-      </div>
-      <div className="max-w-5xl mx-auto w-full mt-8">
-        {posts.length === 0 ? (
-          <p className="text-gray-500">Este usuario no tiene publicaciones.</p>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {posts.map((post) => (
-              <UserPostCard key={post.id} id={post.id} imagen={post.imagen} />
-            ))}
-          </div>
-        )}
       </div>
     </>
   );
