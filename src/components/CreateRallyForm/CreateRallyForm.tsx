@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import API from '../../services/api';
+import { useNavigate } from 'react-router-dom';
 
 function CreateRallyForm() {
   const [form, setForm] = useState({
@@ -13,6 +14,7 @@ function CreateRallyForm() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
+  const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -71,15 +73,18 @@ function CreateRallyForm() {
         nombre: form.nombre,
         descripcion: form.descripcion,
         fecha_inicio,
-        fecha_fin: form.fechaFin, // YYYY-MM-DD
-        categorias: form.categorias.split(',').map((cat) => cat.trim()),
+        fecha_fin: form.fechaFin,
+        categorias: form.categorias,
         cantidad_fotos_max: parseInt(form.maxFotosPorUsuario, 10),
       };
-      await API.post('http://localhost:3000/api/rallies', data, {
+      const response = await API.post('/rallies', data, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setSuccessMessage('Rally creado correctamente.');
-      setForm({ nombre: '', descripcion: '', fechaFin: '', categorias: '', maxFotosPorUsuario: '' });
+      // Redirigir automáticamente al detalle del rally recién creado
+      const rallyId = response.data.rallyId || response.data.id;
+      if (rallyId) {
+        navigate(`/rallies/${rallyId}`);
+      }
     } catch (error: any) {
       if (error.response && error.response.data && error.response.data.message) {
         setErrorMessage(error.response.data.message);
