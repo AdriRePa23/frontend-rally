@@ -1,60 +1,68 @@
 import React, { useEffect, useState } from "react";
-import PostMain from "./PostMain/PostMain";
-import PostComments from "./PostComments/PostComments";
 import API from "../services/api";
+import PostMain from "./PostMain/PostMain";
 
 interface PostViewProps {
   id: number;
-  fotografia: string;
-  creador: {
-    nombre: string;
-    foto_perfil: string;
-  };
 }
 
-const PostView: React.FC<PostViewProps> = ({ id, fotografia, creador }) => {
-  const [votos, setVotos] = useState<number>(0);
+const PostView: React.FC<PostViewProps> = ({ id }) => {
+  const [post, setPost] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [descripcion, setDescripcion] = useState<string>("");
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchVotos = async () => {
+    const fetchPost = async () => {
       try {
-        const votosRes = await API.get(`/votaciones?publicacion_id=${id}`);
-        if (Array.isArray(votosRes.data)) {
-          setVotos(votosRes.data.length);
-        } else {
-          setVotos(votosRes.data?.votos ?? 0);
-        }
-      } catch {
-        setVotos(0);
+        const response = await API.get(`/publicaciones/${id}`);
+        const postRaw = response.data;
+        let creador = { id: postRaw.usuario_id, nombre: "", foto_perfil: "" };
+        try {
+          const usuarioRes = await API.get(`/usuarios/${postRaw.usuario_id}`);
+          creador = {
+            id: usuarioRes.data.id,
+            nombre: usuarioRes.data.nombre,
+            foto_perfil: usuarioRes.data.foto_perfil,
+          };
+        } catch {}
+        let votos = 0;
+        try {
+          const votosRes = await API.get(`/votaciones?publicacion_id=${postRaw.id}`);
+          if (Array.isArray(votosRes.data)) {
+            votos = votosRes.data.length;
+          } else {
+            votos = votosRes.data?.votos ?? 0;
+          }
+        } catch {}
+        setPost({
+          id: postRaw.id,
+          fotografia: postRaw.fotografia,
+          usuario_id: postRaw.usuario_id,
+          descripcion: postRaw.descripcion,
+          votos,
+          creador,
+        });
+      } catch (err) {
+        setError("No se pudo cargar la publicación.");
       } finally {
         setLoading(false);
       }
     };
-    const fetchDescripcion = async () => {
-      try {
-        const res = await API.get(`/publicaciones/${id}`);
-        setDescripcion(res.data.descripcion || "");
-      } catch {
-        setDescripcion("");
-      }
-    };
-    fetchVotos();
-    fetchDescripcion();
+    fetchPost();
   }, [id]);
 
   if (loading) return <div className="text-center py-8">Cargando publicación...</div>;
+  if (error) return <div className="text-center text-red-500 py-8">{error}</div>;
+  if (!post) return null;
 
   return (
-    <div className="w-full rounded-xl shadow-lg flex flex-col md:flex-row my-8">
-      <div className="relative md:w-2/3 w-full">
-        <PostMain fotografia={fotografia} creador={creador} descripcion={descripcion} votos={votos} />
-      </div>
-      <div className="md:w-[40%] w-full flex flex-col">
-        <PostComments publicacionId={id} />
-      </div>
-    </div>
+    <PostMain
+      fotografia={post.fotografia}
+      creador={post.creador}
+      descripcion={post.descripcion}
+      votos={post.votos}
+      publicacionId={post.id}
+    />
   );
 };
 

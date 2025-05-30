@@ -73,11 +73,7 @@ const PostDetail: React.FC = () => {
         <div className="mb-4">
           <BackButton />
         </div>
-        <PostView
-          id={post.id}
-          fotografia={post.fotografia}
-          creador={post.creador}
-        />
+        <PostView id={post.id} />
       </main>
     </div>
   );

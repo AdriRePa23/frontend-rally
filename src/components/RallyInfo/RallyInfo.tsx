@@ -60,6 +60,20 @@ const RallyInfo: React.FC = () => {
   if (error) return <div className="text-center text-red-500 py-8">{error}</div>;
   if (!rally) return null;
 
+  const handleDelete = async () => {
+    if (!window.confirm("¿Seguro que quieres eliminar este rally? Esta acción no se puede deshacer.")) return;
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+      await API.delete(`/rallies/${rally.id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      window.location.href = "/";
+    } catch {
+      alert("No se pudo eliminar el rally.");
+    }
+  };
+
   return (
     <div className="w-full bg-white shadow-lg rounded-2xl mt-8 p-0 flex flex-col gap-0">
       <div className="flex flex-col md:flex-row w-full">
@@ -85,18 +99,32 @@ const RallyInfo: React.FC = () => {
                 <span className="font-semibold text-blue-900 text-lg">{creador.nombre}</span>
               </a>
             )}
-            {(usuario && (usuario.id === rally.creador_id || usuario.rol_id === 2)) && (
-              <button
-                className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-400 hover:from-blue-700 hover:to-blue-500 text-white text-lg font-bold py-3 px-8 rounded-full shadow-lg transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-2 ml-auto"
-                onClick={() => setShowEdit(true)}
-                style={{ minWidth: 180 }}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232a2.5 2.5 0 113.536 3.536L8.5 19.036l-4 1 1-4 10.268-10.268z" />
-                </svg>
-                Editar rally
-              </button>
-            )}
+            <div className="flex gap-2 ml-auto">
+              {(usuario && (usuario.id === rally.creador_id || usuario.rol_id === 2)) && (
+                <button
+                  className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-400 hover:from-blue-700 hover:to-blue-500 text-white text-lg font-bold py-3 px-8 rounded-full shadow-lg transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-2"
+                  onClick={() => setShowEdit(true)}
+                  style={{ minWidth: 180 }}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232a2.5 2.5 0 113.536 3.536L8.5 19.036l-4 1 1-4 10.268-10.268z" />
+                  </svg>
+                  Editar rally
+                </button>
+              )}
+              {(usuario && (usuario.id === rally.creador_id || usuario.rol_id === 2 || usuario.rol_id === 3)) && (
+                <button
+                  className="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white text-lg font-bold py-3 px-8 rounded-full shadow-lg transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-red-300 focus:ring-offset-2"
+                  onClick={handleDelete}
+                  style={{ minWidth: 180 }}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                  Borrar rally
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </div>
