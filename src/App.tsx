@@ -21,6 +21,7 @@ const App: React.FC = () => {
                 <Route path="/rallies/:id" element={<RallyDetail />} />
                 <Route path="/rallies/:id/publicar" element={<CreatePost />} />
                 <Route path="/rallies/:id/publicacion/:id_publicacion" element={<PostDetail />} />
+                <Route path="/usuarios/:id" element={<Profile />} />
             </Routes>
         </Router>
     );

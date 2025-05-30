@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from "react";
 import API from "../../services/api";
 
-const UserRallies: React.FC = () => {
+interface UserRalliesProps {
+  userId?: string;
+}
+
+const UserRallies: React.FC<UserRalliesProps> = ({ userId }) => {
   const [rallies, setRallies] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -11,26 +15,29 @@ const UserRallies: React.FC = () => {
       setLoading(true);
       setError(null);
       try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          setError("No autenticado.");
-          setLoading(false);
-          return;
-        }
-        const res = await API.post(
-          "/auth/verify-token",
-          {},
-          {
-            headers: { Authorization: `Bearer ${token}` },
+        let uid = userId;
+        if (!uid) {
+          const token = localStorage.getItem("token");
+          if (!token) {
+            setError("No autenticado.");
+            setLoading(false);
+            return;
           }
-        );
-        const userId = res.data.user?.id;
-        if (!userId) {
+          const res = await API.post(
+            "/auth/verify-token",
+            {},
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
+          uid = res.data.user?.id;
+        }
+        if (!uid) {
           setError("No se pudo obtener el usuario.");
           setLoading(false);
           return;
         }
-        const ralliesRes = await API.get(`/rallies/usuario/${userId}`);
+        const ralliesRes = await API.get(`/rallies/usuario/${uid}`);
         setRallies(ralliesRes.data);
       } catch {
         setError("No se pudieron cargar los rallies.");
@@ -39,7 +46,7 @@ const UserRallies: React.FC = () => {
       }
     };
     fetchRallies();
-  }, []);
+  }, [userId]);
 
   if (loading)
     return <div className="text-center py-8">Cargando rallies...</div>;

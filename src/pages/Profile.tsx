@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import AsideNavBar from "../components/AsideNavBar/AsideNavBar";
 import API from "../services/api";
 import ProfileInfo from "../components/ProfileInfo/ProfileInfo";
@@ -9,37 +9,46 @@ import UserRallies from "../components/UserRallies/UserRallies";
 
 const Profile: React.FC = () => {
   const navigate = useNavigate();
+  const { id } = useParams<{ id?: string }>();
   const [tab, setTab] = useState<"rallies" | "publicaciones">("publicaciones");
   const [userPosts, setUserPosts] = useState<any[]>([]);
+  const [isOwnProfile, setIsOwnProfile] = useState(false);
 
   useEffect(() => {
     const verifyToken = async () => {
       const token = localStorage.getItem("token");
-      if (!token) {
+      if (!token && !id) {
         navigate("/login");
         return;
       }
-      try {
-        const response = await API.post(
-          "/auth/verify-token",
-          {},
-          {
-            headers: { Authorization: `Bearer ${token}` },
+      if (!id) {
+        try {
+          const response = await API.post(
+            "/auth/verify-token",
+            {},
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
+          if (!response.data.user) {
+            navigate("/");
+          } else {
+            setIsOwnProfile(true);
           }
-        );
-        if (!response.data.user) {
+        } catch (error) {
           navigate("/");
         }
-      } catch (error) {
-        navigate("/");
+      } else {
+        setIsOwnProfile(false);
       }
     };
     verifyToken();
-  }, [navigate]);
+  }, [navigate, id]);
 
   useEffect(() => {
-    if (tab === "publicaciones") {
-      const fetchUserPosts = async () => {
+    const fetchUserPosts = async () => {
+      let userId = id;
+      if (!userId) {
         const token = localStorage.getItem("token");
         if (!token) return;
         try {
@@ -50,16 +59,24 @@ const Profile: React.FC = () => {
               headers: { Authorization: `Bearer ${token}` },
             }
           );
-          const userId = res.data.user?.id;
-          if (userId) {
-            const postsRes = await API.get(`/publicaciones/usuario/${userId}`);
-            setUserPosts(postsRes.data);
-          }
-        } catch {}
-      };
+          userId = res.data.user?.id;
+        } catch {
+          return;
+        }
+      }
+      if (userId) {
+        try {
+          const postsRes = await API.get(`/publicaciones/usuario/${userId}`);
+          setUserPosts(postsRes.data);
+        } catch {
+          setUserPosts([]);
+        }
+      }
+    };
+    if (tab === "publicaciones") {
       fetchUserPosts();
     }
-  }, [tab]);
+  }, [tab, id]);
 
   return (
     <div className="flex h-screen bg-gray-100">
@@ -71,7 +88,6 @@ const Profile: React.FC = () => {
         <ProfileInfo />
         <div className="mt-8">
           <div className="flex justify-center gap-4 mb-6">
-            
             <button
               className={`px-6 py-2 rounded-full font-bold text-lg transition-all ${
                 tab === "publicaciones"
@@ -95,9 +111,8 @@ const Profile: React.FC = () => {
           </div>
           <div className="flex justify-center">
             {tab === "rallies" ? (
-              <UserRallies />
+              <UserRallies userId={id} />
             ) : (
-              // Aquí irá el componente de publicaciones del usuario
               <div className="w-full">
                 <div
                   className="mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6 justify-items-center"
