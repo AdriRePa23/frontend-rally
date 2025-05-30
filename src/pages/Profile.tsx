@@ -98,20 +98,26 @@ const Profile: React.FC = () => {
               <UserRallies />
             ) : (
               // Aquí irá el componente de publicaciones del usuario
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-4 w-full justify-items-center">
-                {userPosts.length === 0 ? (
-                  <p className="text-gray-500 text-center">
-                    No tienes publicaciones.
-                  </p>
-                ) : (
-                  userPosts.map((post) => (
-                    <UserPostCard
-                      key={post.id}
-                      id={post.id}
-                      imagen={post.fotografia}
-                    />
-                  ))
-                )}
+              <div className="w-full">
+                <div
+                  className="mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6 justify-items-center"
+                  style={{ maxWidth: 1400 }}
+                >
+                  {userPosts.length === 0 ? (
+                    <p className="text-gray-500 text-center">
+                      No tienes publicaciones.
+                    </p>
+                  ) : (
+                    userPosts.map((post) => (
+                      <UserPostCard
+                        key={post.id}
+                        id={post.id}
+                        imagen={post.fotografia}
+                        rally_id={post.rally_id}
+                      />
+                    ))
+                  )}
+                </div>
               </div>
             )}
           </div>
