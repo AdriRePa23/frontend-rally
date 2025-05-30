@@ -35,10 +35,8 @@ function LoginForm() {
             const response = await API.post("/auth/login", data); // Llamada a la API
             const token = response.data.token; // Suponiendo que la API devuelve un token
             localStorage.setItem("token", token); // Guarda el token en localStorage
-            setSuccessMessage("Inicio de sesión exitoso. Redirigiendo...");
-            setTimeout(() => {
-                window.location.href = "/"; // Redirige al usuario a la página principal
-            }, 2000);
+            window.location.href = "/"; // Redirige al usuario a la página principal
+           
         } catch (error: any) {
             console.error("Error al iniciar sesión:", error);
             if (error.response && error.response.data && error.response.data.message) {

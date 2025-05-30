@@ -12,6 +12,7 @@ const PostComments: React.FC<PostCommentsProps> = ({ publicacionId }) => {
   const [enviandoComentario, setEnviandoComentario] = useState(false);
   const [errorComentario, setErrorComentario] = useState("");
   const [usuarioAutenticado, setUsuarioAutenticado] = useState(false);
+  const [usuario, setUsuario] = useState<any>(null);
 
   useEffect(() => {
     const verifyToken = async () => {
@@ -21,12 +22,15 @@ const PostComments: React.FC<PostCommentsProps> = ({ publicacionId }) => {
           const response = await API.post("/auth/verify-token", {
             headers: { Authorization: `Bearer ${token}` },
           });
+          setUsuario(response.data.user || null);
           setUsuarioAutenticado(!!response.data.user);
         } catch {
           setUsuarioAutenticado(false);
+          setUsuario(null);
         }
       } else {
         setUsuarioAutenticado(false);
+        setUsuario(null);
       }
     };
     verifyToken();
@@ -64,6 +68,19 @@ const PostComments: React.FC<PostCommentsProps> = ({ publicacionId }) => {
     }
   }
 
+  const handleBorrarComentario = async (comentarioId: number) => {
+    if (!window.confirm("¿Seguro que quieres borrar este comentario?")) return;
+    try {
+      const token = localStorage.getItem("token");
+      await API.delete(`/comentarios/${comentarioId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setComentarios((prev) => prev.filter((c) => c.id !== comentarioId));
+    } catch {
+      alert("No se pudo borrar el comentario.");
+    }
+  };
+
   return (
     <div className="w-full p-6 flex flex-col h-full bg-white" >
       <h3 className="font-semibold text-gray-800 text-lg mb-4">Comentarios</h3>
@@ -77,11 +94,20 @@ const PostComments: React.FC<PostCommentsProps> = ({ publicacionId }) => {
             {comentarios.map((c) => (
               <li key={c.id} className="flex items-start gap-3">
                 <img src={c.usuario_foto} alt={c.usuario_nombre} className="w-9 h-9 rounded-full border border-gray-300" />
-                <div>
+                <div className="flex-1">
                   <span className="font-semibold text-gray-800 text-sm">{c.usuario_nombre}</span>
                   <span className="ml-2 text-xs text-gray-400">{new Date(c.created_at).toLocaleString()}</span>
                   <div className="text-gray-700 text-base break-words">{c.comentario}</div>
                 </div>
+                {(usuario && (usuario.id === c.usuario_id || usuario.rol_id === 2 || usuario.rol_id === 3)) && (
+                  <button
+                    onClick={() => handleBorrarComentario(c.id)}
+                    className="ml-2 text-red-500 hover:text-red-700 text-sm font-bold flex items-center justify-center"
+                    title="Borrar comentario"
+                  >
+                    <img src="/borrar.png" alt="Borrar" className="w-5 h-5" />
+                  </button>
+                )}
               </li>
             ))}
           </ul>

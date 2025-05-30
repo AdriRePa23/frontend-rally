@@ -3,6 +3,7 @@ import API from "../../services/api";
 import { useParams } from "react-router-dom";
 import { Rally } from "../../types";
 import { Usuario } from "../../types/Usuario";
+import EditRallyForm from "../EditRallyForm/EditRallyForm";
 
 const RallyInfo: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -99,12 +100,12 @@ const RallyInfo: React.FC = () => {
           </div>
         </div>
       </div>
-      {showEdit && (
+      {showEdit && rally && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl shadow-xl p-6 max-w-lg w-full relative">
             <button onClick={() => setShowEdit(false)} className="absolute top-2 right-2 text-gray-500 hover:text-gray-800 text-2xl">&times;</button>
             <h2 className="text-xl font-bold mb-4">Editar rally</h2>
-            <div className="text-gray-500">(Formulario de edición próximamente...)</div>
+            <EditRallyForm rally={rally} onClose={() => setShowEdit(false)} />
           </div>
         </div>
       )}

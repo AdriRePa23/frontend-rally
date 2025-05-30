@@ -63,7 +63,7 @@ const UserRallies: React.FC<UserRalliesProps> = ({ userId }) => {
           <a
             key={rally.id}
             href={`/rallies/${rally.id}`}
-            className="bg-gradient-to-br from-blue-200 via-white to-blue-100 shadow-xl rounded-2xl p-6 w-full max-w-xs flex flex-col justify-between hover:scale-105 hover:shadow-2xl transition-transform duration-300 ease-in-out"
+            className="bg-gradient-to-br from-blue-200 via-white to-blue-100 shadow-xl rounded-2xl p-6 w-full max-w-md flex flex-col justify-between hover:scale-105 hover:shadow-2xl transition-transform duration-300 ease-in-out"
           >
             <h3 className="text-2xl font-extrabold text-blue-900 mb-2">
               {rally.nombre}

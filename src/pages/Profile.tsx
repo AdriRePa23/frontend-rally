@@ -6,6 +6,7 @@ import ProfileInfo from "../components/ProfileInfo/ProfileInfo";
 import BackButton from "../components/BackButton";
 import UserPostCard from "../components/UserPostCard/UserPostCard";
 import UserRallies from "../components/UserRallies/UserRallies";
+import EditProfileForm from "../components/EditProfileForm/EditProfileForm";
 
 const Profile: React.FC = () => {
   const navigate = useNavigate();
@@ -13,6 +14,7 @@ const Profile: React.FC = () => {
   const [tab, setTab] = useState<"rallies" | "publicaciones">("publicaciones");
   const [userPosts, setUserPosts] = useState<any[]>([]);
   const [isOwnProfile, setIsOwnProfile] = useState(false);
+  const [showEdit, setShowEdit] = useState(false);
 
   useEffect(() => {
     const verifyToken = async () => {
@@ -82,8 +84,16 @@ const Profile: React.FC = () => {
     <div className="flex h-screen bg-gray-100">
       <AsideNavBar />
       <main className="flex-1 bg-gray-100 p-6 overflow-y-auto w-full max-w-full">
-        <div className="mb-4">
+        <div className="mb-4 flex items-center justify-between">
           <BackButton />
+          {isOwnProfile && (
+            <button
+              className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-full shadow transition-all duration-200"
+              onClick={() => setShowEdit(true)}
+            >
+              Editar perfil
+            </button>
+          )}
         </div>
         <ProfileInfo />
         <div className="mt-8">
@@ -137,6 +147,20 @@ const Profile: React.FC = () => {
             )}
           </div>
         </div>
+        {showEdit && (
+          <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+            <div className="bg-white rounded-xl shadow-xl p-6 max-w-lg w-full relative">
+              <button
+                onClick={() => setShowEdit(false)}
+                className="absolute top-2 right-2 text-gray-500 hover:text-gray-800 text-2xl"
+              >
+                &times;
+              </button>
+              <h2 className="text-xl font-bold mb-4">Editar perfil</h2>
+              <EditProfileForm onClose={() => setShowEdit(false)} />
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );
