@@ -1,29 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React, {useState } from "react";
 import API from "../../services/api";
 import { useSearchParams } from "react-router-dom";
 
 const ResetPasswordForm: React.FC = () => {
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token");
-  const [email, setEmail] = useState<string | null>(null);
   const [newPassword, setNewPassword] = useState("");
   const [repeatPassword, setRepeatPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchEmail = async () => {
-      if (!token) return;
-      try {
-        const res = await API.get(`/auth/reset-password/info?token=${token}`);
-        setEmail(res.data.email);
-      } catch {
-        setErrorMessage("Token inválido o expirado.");
-      }
-    };
-    fetchEmail();
-  }, [token]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -61,11 +48,6 @@ const ResetPasswordForm: React.FC = () => {
       onSubmit={handleSubmit}
     >
       <h1 className="text-2xl font-bold mb-6 text-center">Restablecer contraseña</h1>
-      {email && (
-        <p className="text-gray-700 text-center mb-2">
-          Cambiando contraseña para: <span className="font-semibold">{email}</span>
-        </p>
-      )}
       {successMessage && (
         <p className="text-green-500 text-sm mb-4 text-center">{successMessage}</p>
       )}
