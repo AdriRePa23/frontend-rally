@@ -7,6 +7,9 @@ import Profile from "./pages/Profile";
 import RallyDetail from "./pages/RallyDetail";
 import CreatePost from "./pages/CreatePost";
 import PostDetail from "./pages/PostDetail";
+import RecoverPassword from "./pages/RecoverPassword";
+import ResetPassword from "./pages/ResetPassword";
+import VerifyEmail from "./pages/VerifyEmail";
 
 
 const App: React.FC = () => {
@@ -22,6 +25,9 @@ const App: React.FC = () => {
                 <Route path="/rallies/:id/publicar" element={<CreatePost />} />
                 <Route path="/rallies/:id/publicacion/:id_publicacion" element={<PostDetail />} />
                 <Route path="/usuarios/:id" element={<Profile />} />
+                <Route path="/auth/recover-password" element={<RecoverPassword />} />
+                <Route path="/auth/reset-password" element={<ResetPassword />} />
+                <Route path="/auth/verify-email" element={<VerifyEmail />} />
             </Routes>
         </Router>
     );

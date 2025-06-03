@@ -113,6 +113,14 @@ function LoginForm() {
                             Regístrate aquí
                         </a>
                     </p>
+                    <p className="text-sm mt-2">
+                        <a
+                            href="/auth/recover-password"
+                            className="text-blue-500 hover:text-blue-800 font-bold"
+                        >
+                            ¿Olvidaste tu contraseña?
+                        </a>
+                    </p>
                 </div>
             </form>
         </div>
