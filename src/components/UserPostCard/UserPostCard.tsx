@@ -1,14 +1,14 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-// 1. Tipado de props explícito y exportable para reutilización
+// Tipado explícito y exportable para reutilización
 export interface UserPostCardProps {
   id: number;
   imagen: string;
   rally_id: number;
 }
 
-// 2. Componente funcional puro y memoizado para evitar renders innecesarios
+// Componente funcional puro y memoizado para evitar renders innecesarios
 const UserPostCard: React.FC<UserPostCardProps> = React.memo(function UserPostCard({ id, imagen, rally_id }) {
   return (
     <Link
