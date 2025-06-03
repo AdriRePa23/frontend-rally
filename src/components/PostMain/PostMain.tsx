@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import API from "../../services/api";
 import PostComments from "../PostComments/PostComments";
 
-interface PostMainProps {
+// Tipado explícito y exportable para reutilización
+export interface PostMainProps {
   fotografia: string;
   creador: {
     nombre: string;
@@ -15,13 +16,14 @@ interface PostMainProps {
   usuarioId?: number;
 }
 
-const PostMain: React.FC<PostMainProps> = ({
+// Componente funcional puro y memoizado
+const PostMain: React.FC<PostMainProps> = React.memo(function PostMain({
   fotografia,
   creador,
   descripcion,
   votos,
   publicacionId,
-}) => {
+}) {
   const [usuario, setUsuario] = useState<any>(null);
 
   useEffect(() => {
@@ -126,6 +128,8 @@ const PostMain: React.FC<PostMainProps> = ({
       )}
     </div>
   );
-};
+});
+
+PostMain.displayName = "PostMain";
 
 export default PostMain;

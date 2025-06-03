@@ -1,9 +1,13 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import API from '../../services/api';
 import { Usuario } from '../../types/Usuario';
 
-function ProfileInfo() {
+// Tipado explícito y exportable para reutilización
+export interface ProfileInfoProps {}
+
+// Componente funcional puro y memoizado
+const ProfileInfo: React.FC<ProfileInfoProps> = React.memo(function ProfileInfo() {
   const { id } = useParams<{ id?: string }>();
   const [usuario, setUsuario] = useState<Usuario | null>(null);
   const [loading, setLoading] = useState(true);
@@ -24,7 +28,7 @@ function ProfileInfo() {
           const verify = await API.post('/auth/verify-token', {}, {
             headers: { Authorization: `Bearer ${token}` },
           });
-          userId = verify.data.user?.id;
+          userId = verify.data.user?.id?.toString();
           if (!userId) {
             setError('No se pudo obtener el usuario logueado.');
             setLoading(false);
@@ -70,6 +74,8 @@ function ProfileInfo() {
       </div>
     </>
   );
-}
+});
+
+ProfileInfo.displayName = "ProfileInfo";
 
 export default ProfileInfo;

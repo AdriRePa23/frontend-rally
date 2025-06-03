@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import API from "../../services/api";
 
-interface PostCommentsProps {
+// Tipado explícito y exportable para reutilización
+export interface PostCommentsProps {
   publicacionId: number;
 }
 
-const PostComments: React.FC<PostCommentsProps> = ({ publicacionId }) => {
+// Componente funcional puro y memoizado
+const PostComments: React.FC<PostCommentsProps> = React.memo(function PostComments({ publicacionId }) {
   const [comentarios, setComentarios] = useState<any[]>([]);
   const [cargandoComentarios, setCargandoComentarios] = useState(true);
   const [nuevoComentario, setNuevoComentario] = useState("");
@@ -140,6 +142,8 @@ const PostComments: React.FC<PostCommentsProps> = ({ publicacionId }) => {
       )}
     </div>
   );
-};
+});
+
+PostComments.displayName = "PostComments";
 
 export default PostComments;

@@ -2,12 +2,14 @@ import React, { useState } from "react";
 import API from "../../services/api";
 import { useNavigate } from "react-router-dom";
 
-interface PostFormProps {
+// Tipado explícito y exportable para reutilización
+export interface PostFormProps {
   rallyId: number;
   onSuccess?: () => void;
 }
 
-const PostForm: React.FC<PostFormProps> = ({ rallyId, onSuccess }) => {
+// Componente funcional puro y memoizado
+const PostForm: React.FC<PostFormProps> = React.memo(function PostForm({ rallyId, onSuccess }) {
   const [imagen, setImagen] = useState<File | null>(null);
   const [descripcion, setDescripcion] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -127,6 +129,8 @@ const PostForm: React.FC<PostFormProps> = ({ rallyId, onSuccess }) => {
       </button>
     </form>
   );
-};
+});
+
+PostForm.displayName = "PostForm";
 
 export default PostForm;

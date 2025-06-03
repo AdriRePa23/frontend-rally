@@ -1,11 +1,13 @@
 import React, { useState, useEffect, DragEvent } from "react";
 import API from "../../services/api";
 
-interface EditProfileFormProps {
+// Tipado explícito y exportable para reutilización
+export interface EditProfileFormProps {
   onClose: () => void;
 }
 
-const EditProfileForm: React.FC<EditProfileFormProps> = ({ onClose }) => {
+// Componente funcional puro y memoizado
+const EditProfileForm: React.FC<EditProfileFormProps> = React.memo(function EditProfileForm({ onClose }) {
   const [nombre, setNombre] = useState("");
   const [fotoPerfil, setFotoPerfil] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
@@ -148,6 +150,8 @@ const EditProfileForm: React.FC<EditProfileFormProps> = ({ onClose }) => {
       </button>
     </form>
   );
-};
+});
+
+EditProfileForm.displayName = "EditProfileForm";
 
 export default EditProfileForm;

@@ -2,11 +2,13 @@ import React, { useEffect, useState } from "react";
 import API from "../services/api";
 import PostMain from "./PostMain/PostMain";
 
-interface PostViewProps {
+// Tipado explícito y exportable para reutilización
+export interface PostViewProps {
   id: number;
 }
 
-const PostView: React.FC<PostViewProps> = ({ id }) => {
+// Componente funcional puro y memoizado
+const PostView: React.FC<PostViewProps> = React.memo(function PostView({ id }) {
   const [post, setPost] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -64,6 +66,8 @@ const PostView: React.FC<PostViewProps> = ({ id }) => {
       publicacionId={post.id}
     />
   );
-};
+});
+
+PostView.displayName = "PostView";
 
 export default PostView;

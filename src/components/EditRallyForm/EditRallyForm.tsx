@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import API from "../../services/api";
 
-interface EditRallyFormProps {
+// Tipado explícito y exportable para reutilización
+export interface EditRallyFormProps {
   rally: any;
   onClose: () => void;
 }
 
-const EditRallyForm: React.FC<EditRallyFormProps> = ({ rally, onClose }) => {
+// Componente funcional puro y memoizado
+const EditRallyForm: React.FC<EditRallyFormProps> = React.memo(function EditRallyForm({ rally, onClose }) {
   const [nombre, setNombre] = useState(rally.nombre || "");
   const [descripcion, setDescripcion] = useState(rally.descripcion || "");
   const [fechaFin, setFechaFin] = useState(rally.fecha_fin ? rally.fecha_fin.slice(0, 10) : "");
@@ -106,6 +108,8 @@ const EditRallyForm: React.FC<EditRallyFormProps> = ({ rally, onClose }) => {
       </button>
     </form>
   );
-};
+});
+
+EditRallyForm.displayName = "EditRallyForm";
 
 export default EditRallyForm;
