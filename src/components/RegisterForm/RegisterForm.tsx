@@ -1,7 +1,10 @@
 import React, { useState } from "react";
 import API from "../../services/api";
 
-function RegisterForm() {
+// Tipado explícito y exportable para reutilización
+export interface RegisterFormProps {}
+
+const RegisterForm: React.FC<RegisterFormProps> = React.memo(function RegisterForm() {
     const [isLoading, setIsLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [successMessage, setSuccessMessage] = useState<string | null>(null); // Estado para el mensaje de éxito
@@ -146,6 +149,8 @@ function RegisterForm() {
             </form>
         </div>
     );
-}
+});
+
+RegisterForm.displayName = "RegisterForm";
 
 export default RegisterForm;

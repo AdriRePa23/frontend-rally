@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import API from "../../services/api";
 
-interface UserRalliesProps {
+// Tipado explícito y exportable para reutilización
+export interface UserRalliesProps {
   userId?: string;
 }
 
-const UserRallies: React.FC<UserRalliesProps> = ({ userId }) => {
+// Componente funcional puro y memoizado
+const UserRallies: React.FC<UserRalliesProps> = React.memo(function UserRallies({ userId }) {
   const [rallies, setRallies] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -89,6 +91,8 @@ const UserRallies: React.FC<UserRalliesProps> = ({ userId }) => {
       })}
     </div>
   );
-};
+});
+
+UserRallies.displayName = "UserRallies";
 
 export default UserRallies;

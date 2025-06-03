@@ -1,8 +1,12 @@
-import React, {useState } from "react";
+import React, { useState } from "react";
 import API from "../../services/api";
 import { useSearchParams } from "react-router-dom";
 
-const ResetPasswordForm: React.FC = () => {
+// Tipado explícito y exportable para reutilización
+export interface ResetPasswordFormProps {}
+
+// Componente funcional puro y memoizado
+const ResetPasswordForm: React.FC<ResetPasswordFormProps> = React.memo(function ResetPasswordForm() {
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token");
   const [newPassword, setNewPassword] = useState("");
@@ -10,7 +14,6 @@ const ResetPasswordForm: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -95,6 +98,8 @@ const ResetPasswordForm: React.FC = () => {
       </button>
     </form>
   );
-};
+});
+
+ResetPasswordForm.displayName = "ResetPasswordForm";
 
 export default ResetPasswordForm;

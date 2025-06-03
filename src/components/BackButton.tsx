@@ -1,24 +1,36 @@
+import React from "react";
 import { useNavigate } from "react-router-dom";
 
-interface BackButtonProps {
-  className?: string;
+// Tipado explícito y exportable para reutilización
+export interface BackButtonProps {
+  to?: string;
   label?: string;
 }
 
-const BackButton: React.FC<BackButtonProps> = ({ className = "", label = "Volver atrás" }) => {
+// Componente funcional puro y memoizado
+const BackButton: React.FC<BackButtonProps> = React.memo(function BackButton({ to, label }) {
   const navigate = useNavigate();
   return (
     <button
-      onClick={() => navigate(-1)}
-      className={`flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded hover:bg-gray-100 shadow-sm text-gray-700 font-medium transition ${className}`}
-      aria-label={label}
+      type="button"
+      onClick={() => (to ? navigate(to) : navigate(-1))}
+      className="inline-flex items-center gap-2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded shadow transition-all duration-150"
+      aria-label={label || "Volver atrás"}
     >
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="h-5 w-5"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
       </svg>
-      {label}
+      {label || "Volver atrás"}
     </button>
   );
-};
+});
+
+BackButton.displayName = "BackButton";
 
 export default BackButton;
