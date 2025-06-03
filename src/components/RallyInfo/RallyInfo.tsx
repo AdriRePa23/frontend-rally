@@ -5,7 +5,10 @@ import { Rally } from "../../types";
 import { Usuario } from "../../types/Usuario";
 import EditRallyForm from "../EditRallyForm/EditRallyForm";
 
-const RallyInfo: React.FC = () => {
+// Tipado explícito y exportable para reutilización
+export interface RallyInfoProps {}
+
+const RallyInfo: React.FC<RallyInfoProps> = React.memo(function RallyInfo() {
   const { id } = useParams<{ id: string }>();
   const [rally, setRally] = useState<Rally | null>(null);
   const [usuario, setUsuario] = useState<Usuario | null>(null);
@@ -139,6 +142,8 @@ const RallyInfo: React.FC = () => {
       )}
     </div>
   );
-};
+});
+
+RallyInfo.displayName = "RallyInfo";
 
 export default RallyInfo;
