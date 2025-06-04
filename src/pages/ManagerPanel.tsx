@@ -22,6 +22,7 @@ interface Publicacion {
   estado: string;
   usuario_id: number;
   rally_id: number;
+  usuario_nombre?: string; 
 }
 
 const ManagerPanel: React.FC = () => {
@@ -74,7 +75,21 @@ const ManagerPanel: React.FC = () => {
         const postsRes = await API.get("/publicaciones/estado/pendiente", {
           headers: { Authorization: `Bearer ${token}` },
         });
-        setPendingPosts(postsRes.data || []);
+        const postsRaw = postsRes.data || [];
+        // Obtener nombre de usuario para cada publicación
+        const postsWithUser = await Promise.all(
+          postsRaw.map(async (post: Publicacion) => {
+            let usuario_nombre = "";
+            try {
+              const usuarioRes = await API.get(`/usuarios/${post.usuario_id}`);
+              usuario_nombre = usuarioRes.data.nombre;
+            } catch {
+              usuario_nombre = "Desconocido";
+            }
+            return { ...post, usuario_nombre };
+          })
+        );
+        setPendingPosts(postsWithUser);
       } catch {
         setError("No se pudieron cargar los elementos pendientes.");
       } finally {
@@ -166,6 +181,12 @@ const ManagerPanel: React.FC = () => {
                         <div>
                           <span className="font-semibold text-blue-900">{post.descripcion}</span>
                           <span className="ml-2 text-gray-600 text-sm">ID: {post.id}</span>
+                          {/* Mostrar nombre de usuario */}
+                          {post.usuario_nombre ? (
+                            <div className="text-sm text-gray-700 mt-1">
+                              Usuario: <span className="font-semibold">{post.usuario_nombre}</span>
+                            </div>
+                          ) : null}
                         </div>
                       </div>
                       <button

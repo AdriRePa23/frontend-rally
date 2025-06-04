@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import AsideNavBar from "../components/AsideNavBar/AsideNavBar";
 import BackButton from "../components/BackButton";
 import API from "../services/api";
@@ -24,7 +24,6 @@ const PostDetail: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [usuario, setUsuario] = useState<any>(null);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchPost = async () => {

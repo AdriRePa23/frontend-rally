@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import AsideNavBar from "../components/AsideNavBar/AsideNavBar";
 import RallyInfo from "../components/RallyInfo/RallyInfo";
-import RallyPostCard from "../components/RallyPostCard/RallyPostCard";
+import UserPostCard from "../components/UserPostCard/UserPostCard";
 import API from "../services/api";
 import BackButton from "../components/BackButton";
 
@@ -64,11 +64,14 @@ const RallyDetail: React.FC = () => {
               votos = votosRes.data?.votos ?? 0;
             }
           } catch {}
+          // Recuperar el estado de la publicación desde el endpoint
           return {
             id: post.id,
             imagen: post.fotografia,
             votos,
             creador,
+            estado: post.estado, // <-- aquí se recupera el estado
+            rally_id: post.rally_id,
           };
         }));
         setPosts(postsWithDetails);
@@ -151,17 +154,12 @@ const RallyDetail: React.FC = () => {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-8 w-full">
               {posts.map((post) => (
-                <RallyPostCard
+                <UserPostCard
                   key={post.id}
                   id={post.id}
                   imagen={post.imagen}
-                  votos={post.votos || 0}
-                  creador={{
-                    id: post.creador?.id,
-                    nombre: post.creador?.nombre,
-                    foto_perfil: post.creador?.foto_perfil,
-                  }}
-                  rallyId={rally?.id}
+                  rally_id={post.rally_id}
+                  estado={post.estado}
                 />
               ))}
             </div>
