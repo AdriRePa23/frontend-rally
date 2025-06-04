@@ -3,6 +3,7 @@ import AsideNavBar from "../components/AsideNavBar/AsideNavBar";
 import API from "../services/api";
 import { useNavigate } from "react-router-dom";
 import UserAdminTable from "../components/UserAdminTable/UserAdminTable";
+import RallyAdminTable from "../components/RallyAdminTable/RallyAdminTable";
 
 const AdminPanel: React.FC = () => {
   const [loading, setLoading] = useState(true);
@@ -54,7 +55,7 @@ const AdminPanel: React.FC = () => {
           <div className="bg-white rounded-xl shadow p-6">
             <h2 className="text-xl font-bold mb-2">Gestión de rallies</h2>
             <p className="text-gray-600 mb-2">Ver, editar y eliminar rallies.</p>
-            {/* Aquí puedes añadir enlaces o componentes para gestionar rallies */}
+            <RallyAdminTable />
           </div>
         </div>
       </main>

@@ -1,94 +1,90 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import API from "../../services/api";
 
-// Tipado explícito y exportable para reutilización
 export interface PostCommentsProps {
   publicacionId: number;
 }
 
-// Componente funcional puro y memoizado
 const PostComments: React.FC<PostCommentsProps> = React.memo(function PostComments({ publicacionId }) {
   const [comentarios, setComentarios] = useState<any[]>([]);
-  const [cargandoComentarios, setCargandoComentarios] = useState(true);
   const [nuevoComentario, setNuevoComentario] = useState("");
-  const [enviandoComentario, setEnviandoComentario] = useState(false);
-  const [errorComentario, setErrorComentario] = useState("");
-  const [usuarioAutenticado, setUsuarioAutenticado] = useState(false);
+  const [cargando, setCargando] = useState(true);
+  const [enviando, setEnviando] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [usuario, setUsuario] = useState<any>(null);
+  const comentariosRef = useRef<HTMLUListElement>(null);
 
+  // Cargar usuario autenticado
   useEffect(() => {
-    const verifyToken = async () => {
-      const token = localStorage.getItem("token");
-      if (token) {
-        try {
-          const response = await API.post("/auth/verify-token", {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-          setUsuario(response.data.user || null);
-          setUsuarioAutenticado(!!response.data.user);
-        } catch {
-          setUsuarioAutenticado(false);
-          setUsuario(null);
-        }
-      } else {
-        setUsuarioAutenticado(false);
-        setUsuario(null);
-      }
-    };
-    verifyToken();
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setUsuario(null);
+      return;
+    }
+    API.post("/auth/verify-token", {}, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then(res => setUsuario(res.data.user || null))
+      .catch(() => setUsuario(null));
   }, []);
 
+  // Cargar comentarios
   useEffect(() => {
-    const fetchComentarios = async () => {
-      setCargandoComentarios(true);
-      try {
-        const res = await API.get(`/comentarios?publicacion_id=${publicacionId}`);
-        setComentarios(Array.isArray(res.data) ? res.data : []);
-      } catch {
-        setComentarios([]);
-      } finally {
-        setCargandoComentarios(false);
-      }
-    };
-    fetchComentarios();
+    setCargando(true);
+    API.get(`/comentarios?publicacion_id=${publicacionId}`)
+      .then(res => setComentarios(Array.isArray(res.data) ? res.data : []))
+      .catch(() => setComentarios([]))
+      .finally(() => setCargando(false));
   }, [publicacionId]);
 
-  async function handleEnviarComentario(e: React.FormEvent) {
+  // Enviar comentario
+  const handleEnviar = async (e: React.FormEvent) => {
     e.preventDefault();
-    setErrorComentario("");
+    setError(null);
+    if (!usuario) {
+      setError("Debes iniciar sesión para comentar.");
+      return;
+    }
     if (!nuevoComentario.trim()) {
-      setErrorComentario("El comentario no puede estar vacío.");
+      setError("El comentario no puede estar vacío.");
       return;
     }
     if (nuevoComentario.length > 500) {
-      setErrorComentario("El comentario no puede superar los 500 caracteres.");
+      setError("El comentario no puede superar los 500 caracteres.");
       return;
     }
-    // Sanitización básica frontend
-    const comentarioSanitizado = nuevoComentario.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-    setEnviandoComentario(true);
+    setEnviando(true);
     try {
-      await API.post(`/comentarios`, { publicacion_id: publicacionId, comentario: comentarioSanitizado });
+      const token = localStorage.getItem("token");
+      await API.post(
+        "/comentarios",
+        {
+          publicacion_id: publicacionId,
+          comentario: nuevoComentario.replace(/</g, "&lt;").replace(/>/g, "&gt;"),
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
       setNuevoComentario("");
-      // Recargar comentarios tras enviar
+      // Recargar comentarios
       const res = await API.get(`/comentarios?publicacion_id=${publicacionId}`);
       setComentarios(Array.isArray(res.data) ? res.data : []);
+      setTimeout(() => {
+        if (comentariosRef.current) {
+          comentariosRef.current.scrollTop = comentariosRef.current.scrollHeight;
+        }
+      }, 100);
     } catch (err: any) {
-      // Manejo de mensajes de error específicos de la API
-      const apiMsg = err.response?.data?.message;
-      if (apiMsg === "El comentario es obligatorio") {
-        setErrorComentario("El comentario es obligatorio.");
-      } else if (apiMsg === "Error al crear el comentario") {
-        setErrorComentario("No se pudo enviar el comentario. Intenta de nuevo.");
-      } else {
-        setErrorComentario(apiMsg || "No se pudo enviar el comentario. Intenta de nuevo.");
-      }
+      setError(
+        err?.response?.data?.message ||
+          "No se pudo enviar el comentario. Intenta de nuevo."
+      );
     } finally {
-      setEnviandoComentario(false);
+      setEnviando(false);
     }
-  }
+  };
 
-  const handleBorrarComentario = async (comentarioId: number) => {
+  // Borrar comentario
+  const handleBorrar = async (comentarioId: number) => {
     if (!window.confirm("¿Seguro que quieres borrar este comentario?")) return;
     try {
       const token = localStorage.getItem("token");
@@ -102,62 +98,92 @@ const PostComments: React.FC<PostCommentsProps> = React.memo(function PostCommen
   };
 
   return (
-    <div className="w-full p-6 flex flex-col h-full bg-white" >
-      <h3 className="font-semibold text-gray-800 text-lg mb-4">Comentarios</h3>
-      <div className="flex-1 overflow-y-auto mb-4 pr-2">
-        {cargandoComentarios ? (
-          <div className="text-gray-400 italic">Cargando comentarios...</div>
-        ) : comentarios.length === 0 ? (
-          <div className="text-gray-500 italic">No hay comentarios aún.</div>
-        ) : (
-          <ul className="space-y-4">
-            {comentarios.map((c) => (
-              <li key={c.id} className="flex items-start gap-3">
-                <img src={c.usuario_foto} alt={c.usuario_nombre} className="w-9 h-9 rounded-full border border-gray-300" />
-                <div className="flex-1">
-                  <span className="font-semibold text-gray-800 text-sm">{c.usuario_nombre}</span>
-                  <span className="ml-2 text-xs text-gray-400">{new Date(c.created_at).toLocaleString()}</span>
-                  <div className="text-gray-700 text-base break-words">{c.comentario}</div>
-                </div>
-                {(usuario && (usuario.id === c.usuario_id || usuario.rol_id === 2 || usuario.rol_id === 3)) && (
-                  <button
-                    onClick={() => handleBorrarComentario(c.id)}
-                    className="ml-2 text-red-500 hover:text-red-700 text-sm font-bold flex items-center justify-center"
-                    title="Borrar comentario"
-                  >
-                    <img src="/borrar.png" alt="Borrar" className="w-5 h-5" />
-                  </button>
-                )}
-              </li>
-            ))}
-          </ul>
+    <div className="w-full flex flex-col h-full bg-white rounded-xl border border-gray-200 p-0 ">
+      <div className="px-6 pt-5 pb-2">
+        <h3 className="font-semibold text-gray-800 text-lg">Comentarios</h3>
+      </div>
+      <div className="flex-1 flex px-6 pb-4 min-h-0">
+        <div
+          style={{ overflowY: "auto", flex: 1, minHeight: 0, maxHeight: 550 }}
+        >
+          {cargando ? (
+            <div className="text-gray-400 italic">Cargando comentarios...</div>
+          ) : comentarios.length === 0 ? (
+            <div className="text-gray-500 italic mb-8">No hay comentarios aún.</div>
+          ) : (
+            <ul className="space-y-4 pb-2" ref={comentariosRef}>
+              {comentarios.map((c) => (
+                <li key={c.id} className="flex items-start gap-3 bg-gray-50 p-3 rounded-lg shadow-sm">
+                  <img
+                    src={c.usuario_foto}
+                    alt={c.usuario_nombre}
+                    className="w-9 h-9 rounded-full border border-gray-300"
+                  />
+                  <div className="flex-1">
+                    <span className="font-semibold text-gray-800 text-sm">
+                      {c.usuario_nombre}
+                    </span>
+                    <span className="ml-2 text-xs text-gray-400">
+                        {new Date(c.created_at).toLocaleString(undefined, {
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        hour12: false,
+                        })}
+                    </span>
+                    <div className="text-gray-700 text-base break-words">
+                      {c.comentario}
+                    </div>
+                  </div>
+                  {usuario &&
+                    (usuario.id === c.usuario_id ||
+                      usuario.rol_id === 2 ||
+                      usuario.rol_id === 3) && (
+                      <button
+                        onClick={() => handleBorrar(c.id)}
+                        className="ml-2 text-red-500 hover:text-red-700 text-sm font-bold flex items-center justify-center"
+                        title="Borrar comentario"
+                      >
+                        <img src="/borrar.png" alt="Borrar" className="w-5 h-5" />
+                      </button>
+                    )}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </div>
+      <div className="px-6 pt-5 pb-6 border-t border-gray-200 bg-white">
+        <form className="flex gap-2" onSubmit={handleEnviar}>
+          <input
+            type="text"
+            className="flex-1 border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            placeholder="Escribe un comentario..."
+            value={nuevoComentario}
+            onChange={e => setNuevoComentario(e.target.value)}
+            maxLength={500}
+            required
+            disabled={!usuario}
+          />
+          <button
+            type="submit"
+            className="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-4 py-2 rounded shadow"
+            disabled={enviando || !nuevoComentario.trim() || !usuario}
+          >
+            {enviando ? "Enviando..." : "Enviar"}
+          </button>
+        </form>
+        {!usuario && (
+          <div className="text-red-500 text-sm mt-2">
+            Debes iniciar sesión para comentar.
+          </div>
+        )}
+        {error && (
+          <div className="text-red-500 text-sm mt-2">{error}</div>
         )}
       </div>
-      <form className="flex gap-2" onSubmit={handleEnviarComentario}>
-        <input
-          type="text"
-          className="flex-1 border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-          placeholder="Escribe un comentario..."
-          value={nuevoComentario}
-          onChange={e => setNuevoComentario(e.target.value)}
-          maxLength={300}
-          required
-          disabled={!usuarioAutenticado}
-        />
-        <button
-          type="submit"
-          className="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-4 py-2 rounded shadow"
-          disabled={enviandoComentario || !nuevoComentario.trim() || !usuarioAutenticado}
-        >
-          {enviandoComentario ? 'Enviando...' : 'Enviar'}
-        </button>
-      </form>
-      {!usuarioAutenticado && (
-        <div className="text-red-500 text-sm mt-2">Debes iniciar sesión para comentar.</div>
-      )}
-      {errorComentario && (
-        <div className="text-red-500 text-sm mt-2">{errorComentario}</div>
-      )}
     </div>
   );
 });
