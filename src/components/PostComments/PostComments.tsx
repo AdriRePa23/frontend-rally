@@ -56,15 +56,33 @@ const PostComments: React.FC<PostCommentsProps> = React.memo(function PostCommen
   async function handleEnviarComentario(e: React.FormEvent) {
     e.preventDefault();
     setErrorComentario("");
+    if (!nuevoComentario.trim()) {
+      setErrorComentario("El comentario no puede estar vacío.");
+      return;
+    }
+    if (nuevoComentario.length > 500) {
+      setErrorComentario("El comentario no puede superar los 500 caracteres.");
+      return;
+    }
+    // Sanitización básica frontend
+    const comentarioSanitizado = nuevoComentario.replace(/</g, "&lt;").replace(/>/g, "&gt;");
     setEnviandoComentario(true);
     try {
-      await API.post(`/comentarios`, { publicacion_id: publicacionId, comentario: nuevoComentario });
+      await API.post(`/comentarios`, { publicacion_id: publicacionId, comentario: comentarioSanitizado });
       setNuevoComentario("");
       // Recargar comentarios tras enviar
       const res = await API.get(`/comentarios?publicacion_id=${publicacionId}`);
       setComentarios(Array.isArray(res.data) ? res.data : []);
-    } catch (err) {
-      setErrorComentario("No se pudo enviar el comentario. Intenta de nuevo.");
+    } catch (err: any) {
+      // Manejo de mensajes de error específicos de la API
+      const apiMsg = err.response?.data?.message;
+      if (apiMsg === "El comentario es obligatorio") {
+        setErrorComentario("El comentario es obligatorio.");
+      } else if (apiMsg === "Error al crear el comentario") {
+        setErrorComentario("No se pudo enviar el comentario. Intenta de nuevo.");
+      } else {
+        setErrorComentario(apiMsg || "No se pudo enviar el comentario. Intenta de nuevo.");
+      }
     } finally {
       setEnviandoComentario(false);
     }

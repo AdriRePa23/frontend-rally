@@ -47,8 +47,24 @@ const PostForm: React.FC<PostFormProps> = React.memo(function PostForm({ rallyId
       setError("Debes seleccionar una imagen.");
       return;
     }
+    if (
+      imagen.type !== "image/jpeg" &&
+      imagen.type !== "image/png" &&
+      imagen.type !== "image/webp"
+    ) {
+      setError("La imagen debe ser JPG, PNG o WEBP.");
+      return;
+    }
+    if (imagen.size > 5 * 1024 * 1024) {
+      setError("La imagen no puede superar los 5MB.");
+      return;
+    }
     if (!descripcion.trim()) {
       setError("La descripción es obligatoria.");
+      return;
+    }
+    if (descripcion.length > 500) {
+      setError("La descripción no puede superar los 500 caracteres.");
       return;
     }
     setIsLoading(true);
@@ -74,7 +90,23 @@ const PostForm: React.FC<PostFormProps> = React.memo(function PostForm({ rallyId
       if (onSuccess) onSuccess();
       navigate(`/rallies/${rallyId}`);
     } catch (err: any) {
-      setError(err.response?.data?.message || "Error al crear la publicación.");
+      // Manejo de mensajes de error específicos de la API
+      const apiMsg = err.response?.data?.message;
+      if (apiMsg === "No puedes subir más de X fotos a este rally.") {
+        setError("No puedes subir más fotos a este rally.");
+      } else if (apiMsg === "La imagen y el ID del rally son obligatorios") {
+        setError("La imagen y el ID del rally son obligatorios.");
+      } else if (apiMsg === "Solo se permiten imágenes JPG, PNG o WEBP") {
+        setError("La imagen debe ser JPG, PNG o WEBP.");
+      } else if (apiMsg === "La imagen no puede superar los 5MB") {
+        setError("La imagen no puede superar los 5MB.");
+      } else if (apiMsg === "Rally no encontrado") {
+        setError("El rally no existe.");
+      } else if (apiMsg === "Error al crear la publicación") {
+        setError("Error al crear la publicación.");
+      } else {
+        setError(apiMsg || "Error al crear la publicación.");
+      }
     } finally {
       setIsLoading(false);
     }

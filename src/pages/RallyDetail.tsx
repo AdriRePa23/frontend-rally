@@ -12,6 +12,7 @@ const RallyDetail: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState<any>(null);
   const [posts, setPosts] = useState<any[]>([]);
   const [postsLoading, setPostsLoading] = useState(true);
   const [postsError, setPostsError] = useState<string | null>(null);
@@ -19,8 +20,7 @@ const RallyDetail: React.FC = () => {
   useEffect(() => {
     const fetchRally = async () => {
       try {
-        const response = await API.get((`/rallies/${id}`)
-        );
+        const response = await API.get(`/rallies/${id}`);
         setRally(response.data);
       } catch (err) {
         setError("No se pudo cargar el rally.");
@@ -29,7 +29,15 @@ const RallyDetail: React.FC = () => {
       }
     };
     fetchRally();
-    setIsLoggedIn(!!localStorage.getItem("token"));
+    const token = localStorage.getItem("token");
+    setIsLoggedIn(!!token);
+    if (token) {
+      API.post("/auth/verify-token", {}, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+        .then(res => setUser(res.data.user))
+        .catch(() => setUser(null));
+    }
   }, [id]);
 
   useEffect(() => {
@@ -37,9 +45,7 @@ const RallyDetail: React.FC = () => {
       try {
         const response = await API.get(`/publicaciones?rally_id=${id}`);
         const postsRaw = response.data;
-        // Para cada post, obtener usuario y votos
         const postsWithDetails = await Promise.all(postsRaw.map(async (post: any) => {
-          // Obtener usuario
           let creador = { id: post.usuario_id, nombre: "", foto_perfil: "" };
           try {
             const usuarioRes = await API.get(`/usuarios/${post.usuario_id}`);
@@ -49,11 +55,9 @@ const RallyDetail: React.FC = () => {
               foto_perfil: usuarioRes.data.foto_perfil,
             };
           } catch {}
-          // Obtener votos
           let votos = 0;
           try {
             const votosRes = await API.get(`/votaciones?publicacion_id=${post.id}`);
-            // Si la API devuelve un array vacío, votos = 0
             if (Array.isArray(votosRes.data)) {
               votos = votosRes.data.length;
             } else {
@@ -77,11 +81,29 @@ const RallyDetail: React.FC = () => {
     fetchPosts();
   }, [id]);
 
-  // Comprobar si la fecha de fin ha pasado
-  const isActive = rally && new Date(rally.fecha_fin) >= new Date();
+  // Permisos de acceso: solo si el rally está activo o el usuario es dueño, gestor o admin
+  const puedeAcceder =
+    rally &&
+    (rally.estado === "activo" ||
+      (user && (user.id === rally.creador_id || user.rol_id === 2 || user.rol_id === 3)));
+
+  // Solo se puede añadir publicación si el rally está activo y el usuario está logueado
+  const puedePublicar =
+    rally &&
+    rally.estado === "activo" &&
+    isLoggedIn;
 
   if (loading) return <div className="text-center py-8">Cargando...</div>;
   if (error) return <div className="text-center text-red-500 py-8">{error}</div>;
+  if (!puedeAcceder)
+    return (
+      <div className="flex h-screen bg-gray-100">
+        <AsideNavBar />
+        <main className="flex-1 flex items-center justify-center text-red-500">
+          No tienes permiso para ver este rally.
+        </main>
+      </div>
+    );
 
   return (
     <div className="flex h-screen bg-gray-100">
@@ -97,7 +119,7 @@ const RallyDetail: React.FC = () => {
               <h3 className="text-2xl font-bold mb-2 text-blue-900">Publicaciones del Rally</h3>
               <div className="w-24 h-1 bg-blue-300 rounded-full mb-2"></div>
             </div>
-            {isLoggedIn && isActive && (
+            {puedePublicar && (
               <a
                 href={`/rallies/${id}/publicar`}
                 className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-400 hover:from-blue-700 hover:to-blue-500 text-white text-lg font-bold py-3 px-8 rounded-full shadow-lg transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-2"

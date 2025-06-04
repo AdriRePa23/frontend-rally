@@ -47,7 +47,15 @@ const EditRallyForm: React.FC<EditRallyFormProps> = React.memo(function EditRall
       onClose();
       window.location.reload();
     } catch (err: any) {
-      setError("No se pudo actualizar el rally.");
+      // Manejo de mensajes de error específicos de la API
+      const apiMsg = err.response?.data?.message;
+      if (apiMsg === "No tienes permiso para modificar este rally") {
+        setError("No tienes permiso para modificar este rally.");
+      } else if (apiMsg === "Error al actualizar el rally") {
+        setError("No se pudo actualizar el rally.");
+      } else {
+        setError(apiMsg || "No se pudo actualizar el rally.");
+      }
     } finally {
       setLoading(false);
     }

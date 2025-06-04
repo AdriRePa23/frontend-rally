@@ -38,8 +38,18 @@ const ResetPasswordForm: React.FC<ResetPasswordFormProps> = React.memo(function 
         nuevaContrasena: newPassword,
       });
       setSuccessMessage("Contraseña restablecida correctamente. Ya puedes iniciar sesión.");
-    } catch {
-      setErrorMessage("No se pudo restablecer la contraseña. El enlace puede haber expirado.");
+    } catch (err: any) {
+      // Manejo de mensajes de error específicos de la API
+      const apiMsg = err.response?.data?.message;
+      if (apiMsg === "Token inválido o expirado" || apiMsg === "Token expirado" || apiMsg === "Token expirado o invalido") {
+        setErrorMessage("El enlace de recuperación ha expirado o es inválido.");
+      } else if (apiMsg === "Token y nueva contraseña son obligatorios") {
+        setErrorMessage("Token y nueva contraseña son obligatorios.");
+      } else if (apiMsg === "Error al restablecer la contraseña") {
+        setErrorMessage("No se pudo restablecer la contraseña. Intenta de nuevo.");
+      } else {
+        setErrorMessage(apiMsg || "No se pudo restablecer la contraseña. El enlace puede haber expirado.");
+      }
     } finally {
       setIsLoading(false);
     }

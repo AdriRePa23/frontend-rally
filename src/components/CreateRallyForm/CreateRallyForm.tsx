@@ -48,7 +48,12 @@ function CreateRallyForm() {
     if (form.categorias && form.categorias.length > 255) {
       errors.categorias = 'Las categorías deben tener un máximo de 255 caracteres.';
     }
-    if (!form.maxFotosPorUsuario || isNaN(Number(form.maxFotosPorUsuario)) || !Number.isInteger(Number(form.maxFotosPorUsuario)) || Number(form.maxFotosPorUsuario) < 1) {
+    if (
+      !form.maxFotosPorUsuario ||
+      isNaN(Number(form.maxFotosPorUsuario)) ||
+      !Number.isInteger(Number(form.maxFotosPorUsuario)) ||
+      Number(form.maxFotosPorUsuario) < 1
+    ) {
       errors.maxFotosPorUsuario = 'La cantidad máxima de fotos debe ser un número entero positivo.';
     }
     if (Object.keys(errors).length > 0) {

@@ -39,8 +39,14 @@ const RegisterForm: React.FC<RegisterFormProps> = React.memo(function RegisterFo
             return;
         }
 
-        if (password.length < 6 || password.length > 255) {
-            setErrorMessage("La contraseña debe tener entre 6 y 255 caracteres.");
+        if (
+            password.length < 6 ||
+            password.length > 255 ||
+            !/[A-Z]/.test(password) ||
+            !/[a-z]/.test(password) ||
+            !/[0-9]/.test(password)
+        ) {
+            setErrorMessage("La contraseña debe tener entre 6 y 255 caracteres, incluir mayúsculas, minúsculas y números.");
             setIsLoading(false);
             return;
         }
@@ -51,14 +57,19 @@ const RegisterForm: React.FC<RegisterFormProps> = React.memo(function RegisterFo
             const response = await API.post("/auth/register", data);
             setSuccessMessage(response.data.message); 
             setTimeout(() => {
-                window.location.href = "/auth/login"; // Redirige al usuario a la página de inicio de sesión
+                window.location.href = "/auth/login";
             }, 2000);
         } catch (error: any) {
-            console.error("Error al registrarse:", error);
-            if (error.response && error.response.data && error.response.data.message) {
-                setErrorMessage(error.response.data.message);
-            } else {
+            // Manejo de mensajes de error específicos de la API
+            const apiMsg = error.response?.data?.message;
+            if (apiMsg === "El usuario ya está registrado" || apiMsg === "El email ya está registrado") {
+                setErrorMessage("El email ya está registrado.");
+            } else if (apiMsg === "Todos los campos son obligatorios") {
+                setErrorMessage("Por favor, completa todos los campos.");
+            } else if (apiMsg === "Error al registrar el usuario") {
                 setErrorMessage("Ocurrió un error al registrarse. Inténtalo más tarde.");
+            } else {
+                setErrorMessage(apiMsg || "Ocurrió un error al registrarse. Inténtalo más tarde.");
             }
         } finally {
             setIsLoading(false);

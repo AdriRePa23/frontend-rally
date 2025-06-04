@@ -39,8 +39,21 @@ const EditProfileForm: React.FC<EditProfileFormProps> = React.memo(function Edit
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      setFotoPerfil(e.target.files[0]);
-      setPreview(URL.createObjectURL(e.target.files[0]));
+      const file = e.target.files[0];
+      if (
+        file.type !== "image/jpeg" &&
+        file.type !== "image/png" &&
+        file.type !== "image/webp"
+      ) {
+        setError("Solo se permiten imágenes JPG, PNG o WEBP.");
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        setError("La imagen no puede superar los 5MB.");
+        return;
+      }
+      setFotoPerfil(file);
+      setPreview(URL.createObjectURL(file));
     }
   };
 

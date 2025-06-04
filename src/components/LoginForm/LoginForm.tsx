@@ -26,8 +26,14 @@ const LoginForm: React.FC<LoginFormProps> = React.memo(function LoginForm() {
       return;
     }
 
-    if (!/\S+@\S+\.\S+/.test(email)) {
-      setErrorMessage("Por favor, ingresa un email válido.");
+    if (!/\S+@\S+\.\S+/.test(email) || email.length > 255) {
+      setErrorMessage("Por favor, ingresa un email válido y que no exceda los 255 caracteres.");
+      setIsLoading(false);
+      return;
+    }
+
+    if (password.length < 6 || password.length > 255) {
+      setErrorMessage("La contraseña debe tener entre 6 y 255 caracteres.");
       setIsLoading(false);
       return;
     }
@@ -35,16 +41,23 @@ const LoginForm: React.FC<LoginFormProps> = React.memo(function LoginForm() {
     const data = { email, password };
 
     try {
-      const response = await API.post("/auth/login", data); // Llamada a la API
-      const token = response.data.token; // Suponiendo que la API devuelve un token
-      localStorage.setItem("token", token); // Guarda el token en localStorage
-      window.location.href = "/"; // Redirige al usuario a la página principal
+      const response = await API.post("/auth/login", data);
+      const token = response.data.token;
+      localStorage.setItem("token", token);
+      window.location.href = "/";
     } catch (error: any) {
-      console.error("Error al iniciar sesión:", error);
-      if (error.response && error.response.data && error.response.data.message) {
-        setErrorMessage(error.response.data.message);
-      } else {
+      // Manejo de mensajes de error específicos de la API
+      const apiMsg = error.response?.data?.message;
+      if (apiMsg === "Usuario no encontrado" || apiMsg === "Credenciales incorrectas") {
+        setErrorMessage("Credenciales incorrectas.");
+      } else if (apiMsg === "Por favor, verifica tu cuenta antes de iniciar sesión") {
+        setErrorMessage("Por favor, verifica tu cuenta antes de iniciar sesión.");
+      } else if (apiMsg === "Token no válido" || apiMsg === "Token inválido") {
+        setErrorMessage("Token no válido.");
+      } else if (apiMsg === "Error al iniciar sesión") {
         setErrorMessage("Ocurrió un error al iniciar sesión. Inténtalo más tarde.");
+      } else {
+        setErrorMessage(apiMsg || "Ocurrió un error al iniciar sesión. Inténtalo más tarde.");
       }
     } finally {
       setIsLoading(false);
