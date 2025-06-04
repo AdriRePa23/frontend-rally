@@ -4,19 +4,36 @@ import API from "../../services/api";
 interface Rally {
   id: number;
   nombre: string;
-  descripcion: string;
-  fecha_inicio: string;
-  fecha_fin: string;
-  categorias: string;
-  estado: string;
+  descripcion?: string;
+  fecha_inicio?: string;
+  fecha_fin?: string;
+  categorias?: string;
+  estado?: string;
   creador_id: number;
-  cantidad_fotos_max: number;
+  cantidad_fotos_max?: number;
 }
+
+interface Usuario {
+  id: number;
+  nombre: string;
+}
+
+const formatDate = (dateStr?: string) => {
+  if (!dateStr) return "";
+  const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return dateStr;
+  const day = String(d.getDate()).padStart(2, '0');
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const year = d.getFullYear();
+  return `${day}-${month}-${year}`;
+};
 
 const RallyAdminTable: React.FC = () => {
   const [rallies, setRallies] = useState<Rally[]>([]);
+  const [usuarios, setUsuarios] = useState<Record<number, Usuario>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedRally, setSelectedRally] = useState<Rally | null>(null);
 
   useEffect(() => {
     const fetchRallies = async () => {
@@ -27,7 +44,23 @@ const RallyAdminTable: React.FC = () => {
         const res = await API.get("/rallies", {
           headers: { Authorization: `Bearer ${token}` },
         });
-        setRallies(Array.isArray(res.data) ? res.data : []);
+        const ralliesData = Array.isArray(res.data) ? res.data : [];
+        setRallies(ralliesData);
+
+        // Obtener usuarios únicos
+        const ids = [...new Set(ralliesData.map((r: Rally) => r.creador_id))];
+        const usuariosObj: Record<number, Usuario> = {};
+        await Promise.all(
+          ids.map(async (id) => {
+            try {
+              const ures = await API.get(`/usuarios/${id}`);
+              usuariosObj[id] = { id, nombre: ures.data.nombre };
+            } catch {
+              usuariosObj[id] = { id, nombre: "Desconocido" };
+            }
+          })
+        );
+        setUsuarios(usuariosObj);
       } catch {
         setError("No se pudieron cargar los rallies.");
       } finally {
@@ -45,6 +78,7 @@ const RallyAdminTable: React.FC = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
       setRallies((prev) => prev.filter((r) => r.id !== id));
+      setSelectedRally(null);
     } catch {
       alert("No se pudo eliminar el rally.");
     }
@@ -61,15 +95,11 @@ const RallyAdminTable: React.FC = () => {
       ) : (
         <div className="overflow-x-auto">
           <table className="min-w-full bg-white border border-gray-200 rounded-lg">
-            <thead>
+            <thead className="text-left">
               <tr>
                 <th className="px-4 py-2 border-b">ID</th>
                 <th className="px-4 py-2 border-b">Nombre</th>
-                <th className="px-4 py-2 border-b">Descripción</th>
-                <th className="px-4 py-2 border-b">Categorías</th>
-                <th className="px-4 py-2 border-b">Estado</th>
-                <th className="px-4 py-2 border-b">Fecha inicio</th>
-                <th className="px-4 py-2 border-b">Fecha fin</th>
+                <th className="px-4 py-2 border-b">Usuario</th>
                 <th className="px-4 py-2 border-b">Acciones</th>
               </tr>
             </thead>
@@ -78,33 +108,90 @@ const RallyAdminTable: React.FC = () => {
                 <tr key={rally.id} className="hover:bg-blue-50">
                   <td className="px-4 py-2 border-b">{rally.id}</td>
                   <td className="px-4 py-2 border-b font-semibold">{rally.nombre}</td>
-                  <td className="px-4 py-2 border-b">{rally.descripcion}</td>
-                  <td className="px-4 py-2 border-b">{rally.categorias}</td>
                   <td className="px-4 py-2 border-b">
-                    <span className={`px-2 py-1 rounded-full text-xs font-bold ${
-                      rally.estado === "activo"
-                        ? "bg-green-100 text-green-800"
-                        : rally.estado === "pendiente"
-                        ? "bg-yellow-100 text-yellow-800"
-                        : "bg-gray-200 text-gray-700"
-                    }`}>
-                      {rally.estado}
-                    </span>
+                    <a
+                      href={`/usuarios/${rally.creador_id}`}
+                      className="text-blue-700 hover:underline"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {usuarios[rally.creador_id]?.nombre || "Desconocido"}
+                    </a>
                   </td>
-                  <td className="px-4 py-2 border-b">{rally.fecha_inicio}</td>
-                  <td className="px-4 py-2 border-b">{rally.fecha_fin}</td>
                   <td className="px-4 py-2 border-b">
                     <button
-                      onClick={() => handleDelete(rally.id)}
-                      className="bg-red-500 hover:bg-red-700 text-white px-3 py-1 rounded font-bold"
+                      onClick={() => setSelectedRally(rally)}
+                      className="bg-blue-500 hover:bg-blue-700 text-white px-3 py-1 rounded font-bold"
                     >
-                      Eliminar
+                      Ver
                     </button>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
+        </div>
+      )}
+
+      {selectedRally && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+          <div className="bg-white rounded-xl shadow-xl p-8 max-w-lg w-full relative">
+            <button
+              onClick={() => setSelectedRally(null)}
+              className="absolute top-2 right-2 text-gray-500 hover:text-gray-800 text-2xl"
+              title="Cerrar"
+            >
+              &times;
+            </button>
+            <h2 className="text-2xl font-bold mb-4">Información del Rally</h2>
+            <div className="mb-4">
+              <div className="mb-2"><span className="font-semibold">ID:</span> {selectedRally.id}</div>
+              <div className="mb-2"><span className="font-semibold">Nombre:</span> {selectedRally.nombre}</div>
+              {selectedRally.descripcion && (
+                <div className="mb-2"><span className="font-semibold">Descripción:</span> {selectedRally.descripcion}</div>
+              )}
+              {selectedRally.categorias && (
+                <div className="mb-2"><span className="font-semibold">Categorías:</span> {selectedRally.categorias}</div>
+              )}
+              {selectedRally.estado && (
+                <div className="mb-2"><span className="font-semibold">Estado:</span> {selectedRally.estado}</div>
+              )}
+              {selectedRally.fecha_inicio && (
+                <div className="mb-2"><span className="font-semibold">Fecha inicio:</span> {formatDate(selectedRally.fecha_inicio)}</div>
+              )}
+              {selectedRally.fecha_fin && (
+                <div className="mb-2"><span className="font-semibold">Fecha fin:</span> {formatDate(selectedRally.fecha_fin)}</div>
+              )}
+              {typeof selectedRally.cantidad_fotos_max !== "undefined" && (
+                <div className="mb-2"><span className="font-semibold">Máx. fotos/usuario:</span> {selectedRally.cantidad_fotos_max}</div>
+              )}
+              <div className="mb-2">
+                <span className="font-semibold">Usuario:</span>{" "}
+                <a
+                  href={`/usuarios/${selectedRally.creador_id}`}
+                  className="text-blue-700 hover:underline"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {usuarios[selectedRally.creador_id]?.nombre || "Desconocido"}
+                </a>
+              </div>
+            </div>
+            <div className="flex gap-4 mt-6">
+              <button
+                onClick={() => handleDelete(selectedRally.id)}
+                className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded font-bold"
+              >
+                Eliminar
+              </button>
+              <button
+                onClick={() => setSelectedRally(null)}
+                className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-6 py-2 rounded font-bold"
+              >
+                Cerrar
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
