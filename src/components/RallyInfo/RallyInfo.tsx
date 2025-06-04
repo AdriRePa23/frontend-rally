@@ -82,7 +82,14 @@ const RallyInfo: React.FC<RallyInfoProps> = React.memo(function RallyInfo() {
       <div className="flex flex-col md:flex-row w-full">
         <div className="flex-1 p-8 flex flex-col justify-between">
           <div>
-            <h1 className="text-4xl font-extrabold text-blue-900 mb-2 break-words">{rally.nombre}</h1>
+            <div className="flex items-center gap-4 mb-2">
+              <h1 className="text-4xl font-extrabold text-blue-900 break-words">{rally.nombre}</h1>
+              {rally.estado === "pendiente" && (
+                <span className="bg-yellow-400 text-yellow-900 font-bold px-4 py-1 rounded-full text-sm shadow">
+                  Rally pendiente de validación
+                </span>
+              )}
+            </div>
             <p className="text-lg text-gray-700 mb-4">{rally.descripcion}</p>
             <div className="flex flex-wrap gap-3 mb-4">
               <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-semibold">Categorías: {rally.categorias}</span>

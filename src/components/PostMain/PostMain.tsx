@@ -14,6 +14,7 @@ export interface PostMainProps {
   votos: number;
   publicacionId?: number;
   usuarioId?: number;
+  estado?: string;
 }
 
 // Componente funcional puro y memoizado
@@ -23,6 +24,7 @@ const PostMain: React.FC<PostMainProps> = React.memo(function PostMain({
   descripcion,
   votos,
   publicacionId,
+  estado,
 }) {
   const [usuario, setUsuario] = useState<any>(null);
 
@@ -88,6 +90,11 @@ const PostMain: React.FC<PostMainProps> = React.memo(function PostMain({
             alt="Publicación"
             className="w-full max-h-[600px] object-contain rounded-t-xl bg-neutral-900"
           />
+          {estado === "pendiente" && (
+            <span className="absolute top-4 right-4 bg-yellow-400 text-yellow-900 font-bold px-4 py-1 rounded-full text-xs shadow z-20">
+              Pendiente de validación
+            </span>
+          )}
         </div>
         <div className="w-full px-8 py-6 bg-neutral-50 border-t border-neutral-200 flex flex-col gap-4 rounded-b-xl">
           <div className="flex items-center justify-between w-full">

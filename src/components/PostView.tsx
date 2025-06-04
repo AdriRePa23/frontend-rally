@@ -43,6 +43,7 @@ const PostView: React.FC<PostViewProps> = React.memo(function PostView({ id }) {
           descripcion: postRaw.descripcion,
           votos,
           creador,
+          estado: postRaw.estado,
         });
       } catch (err) {
         setError("No se pudo cargar la publicación.");
@@ -64,6 +65,7 @@ const PostView: React.FC<PostViewProps> = React.memo(function PostView({ id }) {
       descripcion={post.descripcion}
       votos={post.votos}
       publicacionId={post.id}
+      estado={post.estado}
     />
   );
 });

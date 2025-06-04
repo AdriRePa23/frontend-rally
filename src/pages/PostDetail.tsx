@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import AsideNavBar from "../components/AsideNavBar/AsideNavBar";
 import BackButton from "../components/BackButton";
 import API from "../services/api";
@@ -15,6 +15,7 @@ interface PostDetailData {
     nombre: string;
     foto_perfil: string;
   };
+  estado?: string;
 }
 
 const PostDetail: React.FC = () => {
@@ -22,6 +23,8 @@ const PostDetail: React.FC = () => {
   const [post, setPost] = useState<PostDetailData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [usuario, setUsuario] = useState<any>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -52,6 +55,7 @@ const PostDetail: React.FC = () => {
           usuario_id: postRaw.usuario_id,
           votos,
           creador,
+          estado: postRaw.estado,
         });
       } catch (err) {
         setError("No se pudo cargar la publicación.");
@@ -60,11 +64,35 @@ const PostDetail: React.FC = () => {
       }
     };
     fetchPost();
+    // Obtener usuario autenticado
+    const token = localStorage.getItem("token");
+    if (token) {
+      API.post("/auth/verify-token", {}, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+        .then(res => setUsuario(res.data.user))
+        .catch(() => setUsuario(null));
+    }
   }, [id_publicacion]);
+
+  // Permisos: solo si la publicación no está pendiente o si es dueño, gestor o admin
+  const puedeAcceder =
+    post &&
+    (post.estado !== "pendiente" ||
+      (usuario && (usuario.id === post.usuario_id || usuario.rol_id === 2 || usuario.rol_id === 3)));
 
   if (loading) return <div className="text-center py-8">Cargando...</div>;
   if (error) return <div className="text-center text-red-500 py-8">{error}</div>;
   if (!post) return null;
+  if (!puedeAcceder)
+    return (
+      <div className="flex h-screen bg-gray-100">
+        <AsideNavBar />
+        <main className="flex-1 flex items-center justify-center text-red-500">
+          No tienes permiso para ver esta publicación.
+        </main>
+      </div>
+    );
 
   return (
     <div className="flex h-screen bg-gray-100">
@@ -73,6 +101,13 @@ const PostDetail: React.FC = () => {
         <div className="mb-4">
           <BackButton />
         </div>
+        {post.estado === "pendiente" && (
+          <div className="mb-4">
+            <span className="bg-yellow-400 text-yellow-900 font-bold px-4 py-2 rounded-full text-sm shadow">
+              Esta publicación está pendiente de validación
+            </span>
+          </div>
+        )}
         <PostView id={post.id} />
       </main>
     </div>

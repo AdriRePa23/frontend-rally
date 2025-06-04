@@ -13,6 +13,9 @@ export interface RallyPostCardProps {
     foto_perfil: string;
   };
   rallyId: number;
+  estado?: string;
+  usuarioId?: number;
+  userRol?: number;
 }
 
 // Componente funcional puro y memoizado
@@ -22,10 +25,18 @@ const RallyPostCard: React.FC<RallyPostCardProps> = React.memo(function RallyPos
   votos,
   creador,
   rallyId,
+  estado,
+  usuarioId,
+  userRol,
 }) {
   const [likes, setLikes] = useState(votos || 0);
   const [voted, setVoted] = useState(false);
   const [likeLoading, setLikeLoading] = useState(false);
+
+  // Solo puede acceder si la publicación no está pendiente o si es el dueño, gestor o admin
+  const puedeAcceder =
+    estado !== "pendiente" ||
+    (usuarioId && (usuarioId === creador.id || userRol === 2 || userRol === 3));
 
   const handleLike = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -51,19 +62,22 @@ const RallyPostCard: React.FC<RallyPostCardProps> = React.memo(function RallyPos
 
   return (
     <div className="relative w-96 h-96 rounded-2xl shadow-lg overflow-hidden group hover:scale-105 transition-transform duration-200">
-      <Link
-        to={`/rallies/${rallyId}/publicacion/${id}`}
-        className="absolute inset-0 block"
-        aria-label={`Ver publicación ${id}`}
-      >
-        <img
-          src={imagen}
-          alt={`Publicación ${id}`}
-          className="w-full h-full object-cover group-hover:brightness-90 transition-all duration-200"
-          loading="lazy"
-          draggable={false}
+      {puedeAcceder ? (
+        <Link
+          to={`/rallies/${rallyId}/publicacion/${id}`}
+          className="absolute inset-0 block"
+          aria-label={`Ver publicación ${id}`}
         />
-      </Link>
+      ) : (
+        <div className="absolute inset-0 bg-white/70 cursor-not-allowed z-10" />
+      )}
+      <img
+        src={imagen}
+        alt={`Publicación ${id}`}
+        className="w-full h-full object-cover group-hover:brightness-90 transition-all duration-200"
+        loading="lazy"
+        draggable={false}
+      />
       <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/80 via-black/40 to-transparent px-4 py-3 flex justify-between items-end">
         <Link
           to={`/usuarios/${creador.id}`}
@@ -104,6 +118,11 @@ const RallyPostCard: React.FC<RallyPostCardProps> = React.memo(function RallyPos
           </button>
         </div>
       </div>
+      {estado === "pendiente" && (
+        <span className="absolute top-3 right-3 bg-yellow-400 text-yellow-900 font-bold px-3 py-1 rounded-full text-xs shadow z-20">
+          Pendiente
+        </span>
+      )}
     </div>
   );
 });
