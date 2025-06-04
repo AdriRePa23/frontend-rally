@@ -37,24 +37,24 @@ const AdminPanel: React.FC = () => {
     checkRole();
   }, [navigate]);
 
-  if (loading) return <div className="flex h-screen"><AsideNavBar /><main className="flex-1 flex items-center justify-center">Cargando...</main></div>;
-  if (!isAllowed) return <div className="flex h-screen"><AsideNavBar /><main className="flex-1 flex items-center justify-center text-red-500">Acceso denegado</main></div>;
+  if (loading) return <div className="flex h-screen bg-gray-950"><AsideNavBar /><main className="flex-1 flex items-center justify-center text-white">Cargando...</main></div>;
+  if (!isAllowed) return <div className="flex h-screen bg-gray-950"><AsideNavBar /><main className="flex-1 flex items-center justify-center text-red-500">Acceso denegado</main></div>;
 
   return (
-    <div className="flex h-screen">
+    <div className="flex h-screen bg-gray-950">
       <AsideNavBar />
-      <main className="flex-1 p-8 bg-gray-100 overflow-y-auto">
-        <h1 className="text-3xl font-bold mb-6">Panel de Administración</h1>
-        <p className="mb-4">Bienvenido, {user?.nombre}.</p>
+      <main className="flex-1 p-8 bg-gray-950 overflow-y-auto md:ml-64 pt-20 md:pt-0">
+        <h1 className="text-3xl font-bold mb-6 text-pink-400">Panel de Administración</h1>
+        <p className="mb-4 text-white">Bienvenido, {user?.nombre}.</p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="bg-white rounded-xl shadow p-6">
-            <h2 className="text-xl font-bold mb-2">Gestión de usuarios</h2>
-            <p className="text-gray-600 mb-2">Ver, editar y eliminar usuarios, gestores y administradores.</p>
+          <div className="bg-gray-900 rounded-xl shadow p-6">
+            <h2 className="text-xl font-bold mb-2 text-pink-400">Gestión de usuarios</h2>
+            <p className="text-gray-400 mb-2">Ver, editar y eliminar usuarios, gestores y administradores.</p>
             <UserAdminTable />
           </div>
-          <div className="bg-white rounded-xl shadow p-6">
-            <h2 className="text-xl font-bold mb-2">Gestión de rallies</h2>
-            <p className="text-gray-600 mb-2">Ver, editar y eliminar rallies.</p>
+          <div className="bg-gray-900 rounded-xl shadow p-6">
+            <h2 className="text-xl font-bold mb-2 text-pink-400">Gestión de galerías</h2>
+            <p className="text-gray-400 mb-2">Ver, editar y eliminar galerías.</p>
             <RallyAdminTable />
           </div>
         </div>

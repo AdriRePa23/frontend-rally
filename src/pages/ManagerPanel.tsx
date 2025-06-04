@@ -125,9 +125,9 @@ const ManagerPanel: React.FC = () => {
 
   if (!isAllowed) {
     return (
-      <div className="flex h-screen">
+      <div className="flex h-screen bg-gray-950">
         <AsideNavBar />
-        <main className="flex-1 flex items-center justify-center text-red-500">
+        <main className="flex-1 flex items-center justify-center text-red-500 md:ml-64 pt-20 md:pt-0">
           Acceso denegado
         </main>
       </div>
@@ -135,27 +135,27 @@ const ManagerPanel: React.FC = () => {
   }
 
   return (
-    <div className="flex h-screen">
+    <div className="flex h-screen bg-gray-950">
       <AsideNavBar />
-      <main className="flex-1 p-8 bg-gray-100 overflow-y-auto">
-        <h1 className="text-3xl font-bold mb-6">Panel de Gestor</h1>
+      <main className="flex-1 p-8 bg-gray-950 overflow-y-auto md:ml-64 pt-20 md:pt-0">
+        <h1 className="text-3xl font-bold mb-6 text-pink-400">Panel de Gestor</h1>
         {loading ? (
-          <div className="text-center py-8">Cargando elementos pendientes...</div>
+          <div className="text-center py-8 text-white">Cargando elementos pendientes...</div>
         ) : error ? (
           <div className="text-center text-red-500 py-8">{error}</div>
         ) : (
           <>
             <section className="mb-10">
-              <h2 className="text-2xl font-bold mb-4">Rallies pendientes</h2>
+              <h2 className="text-2xl font-bold mb-4 text-pink-400">Galerías pendientes</h2>
               {pendingRallies.length === 0 ? (
-                <p className="text-gray-500">No hay rallies pendientes.</p>
+                <p className="text-gray-400">No hay galerías pendientes.</p>
               ) : (
                 <ul className="flex flex-col gap-4">
                   {pendingRallies.map((rally) => (
-                    <li key={rally.id} className="bg-white rounded-lg shadow p-4 flex items-center justify-between">
+                    <li key={rally.id} className="bg-gray-900 rounded-lg shadow p-4 flex items-center justify-between">
                       <div>
-                        <span className="font-semibold text-blue-900">{rally.nombre}</span>
-                        <span className="ml-2 text-gray-600 text-sm">{rally.descripcion}</span>
+                        <span className="font-semibold text-pink-400">{rally.nombre}</span>
+                        <span className="ml-2 text-gray-300 text-sm">{rally.descripcion}</span>
                       </div>
                       <button
                         onClick={() => handleValidateRally(rally.id)}
@@ -169,21 +169,21 @@ const ManagerPanel: React.FC = () => {
               )}
             </section>
             <section>
-              <h2 className="text-2xl font-bold mb-4">Publicaciones pendientes</h2>
+              <h2 className="text-2xl font-bold mb-4 text-pink-400">Publicaciones pendientes</h2>
               {pendingPosts.length === 0 ? (
-                <p className="text-gray-500">No hay publicaciones pendientes.</p>
+                <p className="text-gray-400">No hay publicaciones pendientes.</p>
               ) : (
                 <ul className="flex flex-col gap-4">
                   {pendingPosts.map((post) => (
-                    <li key={post.id} className="bg-white rounded-lg shadow p-4 flex items-center justify-between">
+                    <li key={post.id} className="bg-gray-900 rounded-lg shadow p-4 flex items-center justify-between">
                       <div className="flex items-center gap-4">
                         <img src={post.fotografia} alt="Publicación" className="w-16 h-16 object-cover rounded-lg border" />
                         <div>
-                          <span className="font-semibold text-blue-900">{post.descripcion}</span>
-                          <span className="ml-2 text-gray-600 text-sm">ID: {post.id}</span>
+                          <span className="font-semibold text-pink-400">{post.descripcion}</span>
+                          <span className="ml-2 text-gray-300 text-sm">ID: {post.id}</span>
                           {/* Mostrar nombre de usuario */}
                           {post.usuario_nombre ? (
-                            <div className="text-sm text-gray-700 mt-1">
+                            <div className="text-sm text-gray-400 mt-1">
                               Usuario: <span className="font-semibold">{post.usuario_nombre}</span>
                             </div>
                           ) : null}

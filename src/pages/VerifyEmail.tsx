@@ -62,18 +62,18 @@ const VerifyEmail: React.FC = () => {
   };
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex h-screen bg-gray-950">
       <AsideNavBar />
-      <main className="flex-1 flex flex-col items-center justify-center min-h-screen bg-gray-100 relative">
-        <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 w-full max-w-sm text-center">
-          <h1 className="text-2xl font-bold mb-6">Verificación de cuenta</h1>
+      <main className="flex-1 flex flex-col items-center justify-center min-h-screen bg-gray-950 relative md:ml-64 pt-20 md:pt-0">
+        <div className="bg-gray-900 shadow-md rounded px-8 pt-6 pb-8 mb-4 w-full max-w-sm text-center">
+          <h1 className="text-2xl font-bold mb-6 text-pink-400">Verificación de cuenta</h1>
           <p
             className={
               status === "success"
-                ? "text-green-600 font-semibold"
+                ? "text-green-400 font-semibold"
                 : status === "error"
-                ? "text-red-600 font-semibold"
-                : "text-gray-700"
+                ? "text-red-400 font-semibold"
+                : "text-gray-200"
             }
           >
             {message}
@@ -83,12 +83,12 @@ const VerifyEmail: React.FC = () => {
               <button
                 onClick={handleResend}
                 disabled={resendStatus === "loading"}
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition disabled:opacity-50"
+                className="bg-pink-600 hover:bg-pink-700 text-white font-bold py-2 px-4 rounded transition disabled:opacity-50"
               >
                 {resendStatus === "loading" ? "Enviando..." : "Reenviar correo de verificación"}
               </button>
               {resendMessage && (
-                <div className={`mt-2 text-sm ${resendStatus === "sent" ? "text-green-600" : "text-red-600"}`}>
+                <div className={`mt-2 text-sm ${resendStatus === "sent" ? "text-green-400" : "text-red-400"}`}>
                   {resendMessage}
                 </div>
               )}

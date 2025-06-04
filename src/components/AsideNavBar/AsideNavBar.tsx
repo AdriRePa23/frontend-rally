@@ -58,9 +58,9 @@ const AsideNavBar: React.FC<AsideNavBarProps> = React.memo(function AsideNavBar(
           <Link to="/rally/create" className="hover:text-pink-400 py-2 px-2 rounded transition-colors font-semibold">
             Crear galería
           </Link>
-          {(user?.rol_id === 2) && (
+          {(user?.rol_id === 2 || user?.rol_id === 3) && (
             <Link to="/manager" className="hover:text-pink-400 py-2 px-2 rounded transition-colors font-semibold">
-              Panel Gestor
+              Panel de gestor
             </Link>
           )}
           {(user?.rol_id === 2 || user?.rol_id === 3) && (

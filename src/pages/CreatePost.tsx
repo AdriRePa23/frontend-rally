@@ -35,19 +35,21 @@ const CreatePost: React.FC = () => {
   }, [navigate]);
 
   return (
-    <div className="flex h-screen">
+    <div className="flex h-screen bg-gray-950">
       <AsideNavBar />
-      <main className="flex-1 bg-gray-100 p-6 overflow-y-auto">
-        <div className="mb-4">
+      <main className="flex-1 bg-gray-950 p-6 overflow-y-auto md:ml-64 pt-20 md:pt-0 flex flex-col items-center">
+        <div className="mb-4 w-full max-w-lg">
           <BackButton />
         </div>
-        {id ? (
-          <PostForm rallyId={parseInt(id, 10)} />
-        ) : (
-          <div className="text-center text-red-500">
-            No se encontró el rally.
-          </div>
-        )}
+        <div className="w-full max-w-lg">
+          {id ? (
+            <PostForm rallyId={parseInt(id, 10)} />
+          ) : (
+            <div className="text-center text-red-500">
+              No se encontró la galería.
+            </div>
+          )}
+        </div>
       </main>
     </div>
   );
