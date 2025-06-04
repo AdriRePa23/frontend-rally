@@ -77,12 +77,12 @@ const RegisterForm: React.FC<RegisterFormProps> = React.memo(function RegisterFo
     };
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-950">
             <form
-                className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 w-full max-w-sm"
+                className="bg-gray-900 shadow-md rounded px-8 pt-6 pb-8 mb-4 w-full max-w-sm"
                 onSubmit={handleSubmit}
             >
-                <h1 className="text-4xl font-bold mb-6 text-center">Registrarse</h1>
+                <h1 className="text-4xl font-bold mb-6 text-center text-pink-400">Registrarse</h1>
                 {errorMessage && (
                     <p className="text-red-500 text-sm mb-4 text-center">{errorMessage}</p>
                 )}
@@ -139,19 +139,19 @@ const RegisterForm: React.FC<RegisterFormProps> = React.memo(function RegisterFo
                 </div>
                 <button
                     type="submit"
-                    className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full ${
+                    className={`bg-pink-600 hover:bg-pink-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full ${
                         isLoading ? "opacity-50 cursor-not-allowed" : ""
                     }`}
-                    disabled={isLoading} // Desactiva el botón mientras se está cargando
+                    disabled={isLoading}
                 >
                     {isLoading ? "Cargando..." : "Registrarse"}
                 </button>
                 <div className="mt-4 text-center">
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-gray-400">
                         ¿Ya tienes una cuenta?{" "}
                         <a
                             href="/auth/login"
-                            className="text-blue-500 hover:text-blue-800 font-bold"
+                            className="text-pink-400 hover:text-pink-200 font-bold"
                         >
                             Inicia sesión aquí
                         </a>

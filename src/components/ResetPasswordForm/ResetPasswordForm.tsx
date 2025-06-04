@@ -57,10 +57,10 @@ const ResetPasswordForm: React.FC<ResetPasswordFormProps> = React.memo(function 
 
   return (
     <form
-      className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 w-full max-w-sm"
+      className="bg-gray-900 shadow-md rounded px-8 pt-6 pb-8 mb-4 w-full max-w-sm"
       onSubmit={handleSubmit}
     >
-      <h1 className="text-2xl font-bold mb-6 text-center">Restablecer contraseña</h1>
+      <h1 className="text-2xl font-bold mb-6 text-center text-pink-400">Restablecer contraseña</h1>
       {successMessage && (
         <p className="text-green-500 text-sm mb-4 text-center">{successMessage}</p>
       )}
@@ -68,14 +68,14 @@ const ResetPasswordForm: React.FC<ResetPasswordFormProps> = React.memo(function 
         <p className="text-red-500 text-sm mb-4 text-center">{errorMessage}</p>
       )}
       <div className="mb-4">
-        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="newPassword">
+        <label className="block text-white text-sm font-bold mb-2" htmlFor="newPassword">
           Nueva contraseña:
         </label>
         <input
           type="password"
           id="newPassword"
           placeholder="Nueva contraseña"
-          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          className="shadow appearance-none border rounded w-full py-2 px-3 bg-gray-900 text-white leading-tight focus:outline-none focus:shadow-outline"
           value={newPassword}
           onChange={e => setNewPassword(e.target.value)}
           required
@@ -83,14 +83,14 @@ const ResetPasswordForm: React.FC<ResetPasswordFormProps> = React.memo(function 
         />
       </div>
       <div className="mb-6">
-        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="repeatPassword">
+        <label className="block text-white text-sm font-bold mb-2" htmlFor="repeatPassword">
           Repite la contraseña:
         </label>
         <input
           type="password"
           id="repeatPassword"
           placeholder="Repite la contraseña"
-          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          className="shadow appearance-none border rounded w-full py-2 px-3 bg-gray-900 text-white leading-tight focus:outline-none focus:shadow-outline"
           value={repeatPassword}
           onChange={e => setRepeatPassword(e.target.value)}
           required
@@ -99,7 +99,7 @@ const ResetPasswordForm: React.FC<ResetPasswordFormProps> = React.memo(function 
       </div>
       <button
         type="submit"
-        className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full ${
+        className={`bg-pink-600 hover:bg-pink-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full ${
           isLoading ? "opacity-50 cursor-not-allowed" : ""
         }`}
         disabled={isLoading}

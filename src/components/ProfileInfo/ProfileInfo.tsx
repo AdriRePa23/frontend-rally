@@ -59,16 +59,16 @@ const ProfileInfo: React.FC<ProfileInfoProps> = React.memo(function ProfileInfo(
 
   return (
     <>
-      <div className="flex items-center bg-white shadow-md rounded-lg p-8 w-full mx-auto mt-8">
+      <div className="flex items-center bg-gray-900 shadow-md rounded-lg p-8 w-full mx-auto mt-8">
         <img
           src={usuario.foto_perfil}
           alt={`Foto de perfil de ${usuario.nombre}`}
-          className="w-48 h-48 rounded-full object-cover border-4 border-blue-300 mr-8"
+          className="w-48 h-48 rounded-full object-cover border-4 border-pink-400 mr-8"
         />
         <div className="flex flex-col justify-center w-full">
-          <h2 className="text-4xl font-bold text-blue-900 mb-2 break-words">{usuario.nombre}</h2>
+          <h2 className="text-4xl font-bold text-pink-400 mb-2 break-words">{usuario.nombre}</h2>
           {anioCreacion && (
-            <p className="text-lg text-gray-600 mt-2">Usuario desde {anioCreacion}</p>
+            <p className="text-lg text-gray-300 mt-2">Usuario desde {anioCreacion}</p>
           )}
         </div>
       </div>

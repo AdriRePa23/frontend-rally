@@ -100,18 +100,18 @@ const RallyDetail: React.FC = () => {
   if (error) return <div className="text-center text-red-500 py-8">{error}</div>;
   if (!puedeAcceder)
     return (
-      <div className="flex h-screen bg-gray-100">
+      <div className="flex h-screen bg-gray-950">
         <AsideNavBar />
-        <main className="flex-1 flex items-center justify-center text-red-500">
-          No tienes permiso para ver este rally.
+        <main className="flex-1 flex items-center justify-center text-red-500 md:ml-64 pt-20 md:pt-0">
+          No tienes permiso para ver esta galería.
         </main>
       </div>
     );
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex h-screen bg-gray-950">
       <AsideNavBar />
-      <main className="flex-1 bg-gray-100 p-6 overflow-y-auto w-full max-w-full">
+      <main className="flex-1 bg-gray-950 p-6 overflow-y-auto w-full max-w-full md:ml-64 pt-20 md:pt-0">
         <div className="mb-4">
           <BackButton />
         </div>
@@ -119,13 +119,13 @@ const RallyDetail: React.FC = () => {
         <div className="w-full mt-8">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 gap-4">
             <div>
-              <h3 className="text-2xl font-bold mb-2 text-blue-900">Publicaciones del Rally</h3>
-              <div className="w-24 h-1 bg-blue-300 rounded-full mb-2"></div>
+              <h3 className="text-2xl font-bold mb-2 text-pink-400">Publicaciones de la galería</h3>
+              <div className="w-24 h-1 bg-pink-300 rounded-full mb-2"></div>
             </div>
             {puedePublicar && (
               <a
                 href={`/rallies/${id}/publicar`}
-                className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-400 hover:from-blue-700 hover:to-blue-500 text-white text-lg font-bold py-3 px-8 rounded-full shadow-lg transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-2"
+                className="inline-flex items-center gap-2 bg-gradient-to-r from-pink-600 to-pink-400 hover:from-pink-700 hover:to-pink-500 text-white text-lg font-bold py-3 px-8 rounded-full shadow-lg transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-pink-300 focus:ring-offset-2"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -146,11 +146,11 @@ const RallyDetail: React.FC = () => {
             )}
           </div>
           {postsLoading ? (
-            <div className="text-center py-8">Cargando publicaciones...</div>
+            <div className="text-center py-8 text-white">Cargando publicaciones...</div>
           ) : postsError ? (
             <div className="text-center text-red-500 py-8">{postsError}</div>
           ) : posts.length === 0 ? (
-            <p className="text-gray-500 text-center">No hay publicaciones en este rally.</p>
+            <p className="text-gray-400 text-center">No hay publicaciones en esta galería.</p>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-8 w-full">
               {posts.map((post) => (

@@ -113,13 +113,13 @@ const PostForm: React.FC<PostFormProps> = React.memo(function PostForm({ rallyId
   };
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 max-w-lg mx-auto mt-8">
-      <h2 className="text-2xl font-bold mb-6 text-center">Nueva publicación</h2>
+    <form onSubmit={handleSubmit} className="bg-gray-900 shadow-md rounded px-8 pt-6 pb-8 mb-4 max-w-lg mx-auto mt-8">
+      <h2 className="text-2xl font-bold mb-6 text-center text-pink-400">Nueva publicación</h2>
       {error && <p className="text-red-500 text-center mb-4">{error}</p>}
       <div className="mb-4">
-        <label className="block text-gray-700 text-sm font-bold mb-2">Fotografía:</label>
+        <label className="block text-white text-sm font-bold mb-2">Fotografía:</label>
         <div
-          className={`w-full border-2 ${"border-gray-300 bg-gray-100"} border-dashed rounded-lg flex flex-col items-center justify-center p-6 cursor-pointer transition-all duration-200`}
+          className={`w-full border-2 ${"border-gray-700 bg-gray-800"} border-dashed rounded-lg flex flex-col items-center justify-center p-6 cursor-pointer transition-all duration-200`}
           onDrop={handleDrop}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
@@ -143,18 +143,18 @@ const PostForm: React.FC<PostFormProps> = React.memo(function PostForm({ rallyId
         </div>
       </div>
       <div className="mb-4">
-        <label className="block text-gray-700 text-sm font-bold mb-2">Descripción:</label>
+        <label className="block text-white text-sm font-bold mb-2">Descripción:</label>
         <textarea
           value={descripcion}
           onChange={e => setDescripcion(e.target.value)}
-          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          className="shadow appearance-none border rounded w-full py-2 px-3 bg-gray-900 text-white leading-tight focus:outline-none focus:shadow-outline"
           rows={3}
           required
         />
       </div>
       <button
         type="submit"
-        className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full ${isLoading ? "opacity-50 cursor-not-allowed" : ""}`}
+        className={`bg-pink-600 hover:bg-pink-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full ${isLoading ? "opacity-50 cursor-not-allowed" : ""}`}
         disabled={isLoading}
       >
         {isLoading ? "Enviando..." : "Publicar"}

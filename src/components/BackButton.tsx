@@ -14,7 +14,7 @@ const BackButton: React.FC<BackButtonProps> = React.memo(function BackButton({ t
     <button
       type="button"
       onClick={() => (to ? navigate(to) : navigate(-1))}
-      className="inline-flex items-center gap-2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded shadow transition-all duration-150"
+      className="inline-flex items-center gap-2 bg-gray-800 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded shadow transition-all duration-150"
       aria-label={label || "Volver atrás"}
     >
       <svg

@@ -64,52 +64,52 @@ const EditRallyForm: React.FC<EditRallyFormProps> = React.memo(function EditRall
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
       {error && <div className="text-red-500 text-sm">{error}</div>}
-      <label className="font-semibold">Nombre:</label>
+      <label className="font-semibold text-white">Nombre:</label>
       <input
         type="text"
         value={nombre}
         onChange={e => setNombre(e.target.value)}
-        className="border rounded px-3 py-2"
+        className="border rounded px-3 py-2 bg-gray-900 text-white"
         maxLength={255}
         required
       />
-      <label className="font-semibold">Descripción:</label>
+      <label className="font-semibold text-white">Descripción:</label>
       <textarea
         value={descripcion}
         onChange={e => setDescripcion(e.target.value)}
-        className="border rounded px-3 py-2"
+        className="border rounded px-3 py-2 bg-gray-900 text-white"
         maxLength={500}
         required
       />
-      <label className="font-semibold">Fecha fin:</label>
+      <label className="font-semibold text-white">Fecha fin:</label>
       <input
         type="date"
         value={fechaFin}
         onChange={e => setFechaFin(e.target.value)}
-        className="border rounded px-3 py-2"
+        className="border rounded px-3 py-2 bg-gray-900 text-white"
         required
       />
-      <label className="font-semibold">Categorías:</label>
+      <label className="font-semibold text-white">Categorías:</label>
       <input
         type="text"
         value={categorias}
         onChange={e => setCategorias(e.target.value)}
-        className="border rounded px-3 py-2"
+        className="border rounded px-3 py-2 bg-gray-900 text-white"
         maxLength={255}
         required
       />
-      <label className="font-semibold">Máx. fotos por usuario:</label>
+      <label className="font-semibold text-white">Máx. fotos por usuario:</label>
       <input
         type="number"
         value={cantidadFotosMax}
         onChange={e => setCantidadFotosMax(e.target.value)}
         min={1}
-        className="border rounded px-3 py-2"
+        className="border rounded px-3 py-2 bg-gray-900 text-white"
         required
       />
       <button
         type="submit"
-        className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-2"
+        className="bg-pink-600 hover:bg-pink-700 text-white font-bold py-2 px-4 rounded mt-2"
         disabled={loading}
       >
         {loading ? "Guardando..." : "Guardar cambios"}

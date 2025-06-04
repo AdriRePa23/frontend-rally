@@ -117,18 +117,18 @@ const EditProfileForm: React.FC<EditProfileFormProps> = React.memo(function Edit
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
       {error && <div className="text-red-500 text-sm">{error}</div>}
-      <label className="font-semibold">Nombre:</label>
+      <label className="font-semibold text-white">Nombre:</label>
       <input
         type="text"
         value={nombre}
         onChange={e => setNombre(e.target.value)}
-        className="border rounded px-3 py-2"
+        className="border rounded px-3 py-2 bg-gray-900 text-white"
         maxLength={255}
         required
       />
-      <label className="font-semibold">Foto de perfil:</label>
+      <label className="font-semibold text-white">Foto de perfil:</label>
       <div
-        className={`border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-colors ${dragActive ? "border-blue-500 bg-blue-50" : "border-gray-300 bg-gray-50"}`}
+        className={`border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-colors ${dragActive ? "border-pink-500 bg-pink-50" : "border-gray-700 bg-gray-800"}`}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
@@ -156,7 +156,7 @@ const EditProfileForm: React.FC<EditProfileFormProps> = React.memo(function Edit
       </div>
       <button
         type="submit"
-        className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-2"
+        className="bg-pink-600 hover:bg-pink-700 text-white font-bold py-2 px-4 rounded mt-2"
         disabled={loading}
       >
         {loading ? "Guardando..." : "Guardar cambios"}
