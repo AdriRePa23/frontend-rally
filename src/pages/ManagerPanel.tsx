@@ -27,7 +27,6 @@ interface Publicacion {
 const ManagerPanel: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [isAllowed, setIsAllowed] = useState(false);
-  const [user, setUser] = useState<any>(null);
   const [pendingRallies, setPendingRallies] = useState<Rally[]>([]);
   const [pendingPosts, setPendingPosts] = useState<Publicacion[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -44,7 +43,6 @@ const ManagerPanel: React.FC = () => {
         const res = await API.post("/auth/verify-token", {}, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        setUser(res.data.user);
         if (res.data.user && (res.data.user.rol_id === 2 || res.data.user.rol_id === 3)) {
           setIsAllowed(true);
         } else {
@@ -64,13 +62,12 @@ const ManagerPanel: React.FC = () => {
       setError(null);
       try {
         const token = localStorage.getItem("token");
-        // Rallies pendientes: solo los que su fecha_fin < hoy
+        // Rallies pendientes: solo los que tienen estado "pendiente"
         const ralliesRes = await API.get("/rallies", {
           headers: { Authorization: `Bearer ${token}` },
         });
-        const hoy = new Date();
         const pendientes = (ralliesRes.data || []).filter(
-          (r: Rally) => new Date(r.fecha_fin) < hoy
+          (r: Rally) => r.estado === "pendiente"
         );
         setPendingRallies(pendientes);
         // Publicaciones pendientes (nuevo endpoint)
