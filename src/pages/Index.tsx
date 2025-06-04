@@ -12,13 +12,13 @@ const Home: React.FC = () => {
     const fetchRallies = async () => {
       try {
         const { data } = await API.get("/rallies/card");
-        // Mostrar solo rallies activos
-        const activos = (Array.isArray(data) ? data : [data]).filter(
-          (rally) => rally.estado === "activo"
+        // Mostrar solo galerías activas
+        const activas = (Array.isArray(data) ? data : [data]).filter(
+          (galeria) => galeria.estado === "activo"
         );
-        setRallies(activos);
+        setRallies(activas);
       } catch (error) {
-        console.error("Error al obtener los rallies:", error);
+        console.error("Error al obtener las galerías:", error);
       } finally {
         setIsLoading(false); // Finaliza la carga
       }
@@ -29,19 +29,26 @@ const Home: React.FC = () => {
   return (
     <div className="flex h-screen">
       <AsideNavBar />
-      <main className="flex-1 bg-gray-100 p-6 overflow-y-auto">
-        <h2 className="text-3xl font-bold mb-6">Rallies Disponibles</h2>
-        {isLoading ? (
-          <p className="text-center text-gray-500">Cargando rallies...</p> // Indicador de carga
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {rallies.length > 0 ? (
-              rallies.map((rally) => <RallyCard key={rally.id} rally={rally} />)
-            ) : (
-              <p>No hay rallies disponibles</p>
-            )}
-          </div>
-        )}
+      <main
+        className="flex-1 bg-gray-100 p-6 overflow-y-auto md:ml-64"
+        style={{
+          minHeight: "100vh",
+        }}
+      >
+        <div className="w-full">
+          <h2 className="text-3xl font-bold mb-6">Galerías disponibles</h2>
+          {isLoading ? (
+            <p className="text-center text-gray-500">Cargando galerías...</p>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {rallies.length > 0 ? (
+                rallies.map((galeria) => <RallyCard key={galeria.id} rally={galeria} />)
+              ) : (
+                <p>No hay galerías disponibles</p>
+              )}
+            </div>
+          )}
+        </div>
       </main>
     </div>
   );
