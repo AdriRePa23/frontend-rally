@@ -11,7 +11,7 @@ const AsideNavBar: React.FC<AsideNavBarProps> = React.memo(function AsideNavBar(
   const location = useLocation();
 
   useEffect(() => {
-    setMenuOpen(false); // Cierra el menú al cambiar de ruta
+    setMenuOpen(false);
   }, [location.pathname]);
 
   useEffect(() => {
@@ -38,7 +38,6 @@ const AsideNavBar: React.FC<AsideNavBarProps> = React.memo(function AsideNavBar(
     verifyToken();
   }, []);
 
-  // Detectar si es móvil/tablet
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
@@ -46,15 +45,58 @@ const AsideNavBar: React.FC<AsideNavBarProps> = React.memo(function AsideNavBar(
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  const navLinks = (
+    <>
+      <Link to="/" className="hover:text-pink-400 py-2 px-2 rounded transition-colors font-semibold">
+        Inicio
+      </Link>
+      {isLoggedIn ? (
+        <>
+          <Link to="/user/profile" className="hover:text-pink-400 py-2 px-2 rounded transition-colors font-semibold">
+            Perfil
+          </Link>
+          <Link to="/rally/create" className="hover:text-pink-400 py-2 px-2 rounded transition-colors font-semibold">
+            Crear galería
+          </Link>
+          {(user?.rol_id === 2) && (
+            <Link to="/manager" className="hover:text-pink-400 py-2 px-2 rounded transition-colors font-semibold">
+              Panel Gestor
+            </Link>
+          )}
+          {(user?.rol_id === 2 || user?.rol_id === 3) && (
+            <Link to="/admin" className="hover:text-pink-400 py-2 px-2 rounded transition-colors font-semibold">
+              Administración
+            </Link>
+          )}
+          <button
+            onClick={() => {
+              localStorage.removeItem("token");
+              window.location.href = "/auth/login";
+            }}
+            className="mt-4 text-red-400 hover:text-red-200 font-semibold py-2 px-2 rounded transition-colors"
+          >
+            Cerrar sesión
+          </button>
+        </>
+      ) : (
+        <Link
+          to="/auth/login"
+          className="mt-4 text-pink-400 hover:text-pink-200 font-semibold py-2 px-2 rounded transition-colors"
+        >
+          Iniciar sesión
+        </Link>
+      )}
+    </>
+  );
+
   return (
     <>
-      {/* Header en móvil, aside en desktop */}
       {isMobile ? (
-        <header className="bg-gray-900 text-white w-full flex flex-col shadow z-30 fixed top-0 left-0">
+        <header className="bg-gray-950 text-white w-full flex flex-col shadow z-30 fixed top-0 left-0">
           <div className="flex items-center justify-between px-6 py-4 border-b border-gray-800">
             <Link to="/" className="flex items-center gap-2">
               <img src="/logo.png" alt="Logo" className="h-8 w-8" />
-              <span className="text-2xl font-extrabold tracking-tight">Galería App</span>
+              <span className="text-2xl font-extrabold tracking-tight text-pink-400">PicMeTogether</span>
             </Link>
             <button
               className="focus:outline-none"
@@ -67,97 +109,21 @@ const AsideNavBar: React.FC<AsideNavBarProps> = React.memo(function AsideNavBar(
             </button>
           </div>
           {menuOpen && (
-            <nav className="flex flex-col gap-2 px-6 py-4 bg-gray-900">
-              <Link to="/" className="hover:text-blue-300 py-2 px-2 rounded transition-colors font-semibold">
-                Inicio
-              </Link>
-              {isLoggedIn ? (
-                <>
-                  <Link to="/user/profile" className="hover:text-blue-300 py-2 px-2 rounded transition-colors font-semibold">
-                    Perfil
-                  </Link>
-                  <Link to="/galeria/create" className="hover:text-blue-300 py-2 px-2 rounded transition-colors font-semibold">
-                    Crear galería
-                  </Link>
-                  {(user?.rol_id === 2) && (
-                    <Link to="/manager" className="hover:text-blue-300 py-2 px-2 rounded transition-colors font-semibold">
-                      Panel Gestor
-                    </Link>
-                  )}
-                  {(user?.rol_id === 2 || user?.rol_id === 3) && (
-                    <Link to="/admin" className="hover:text-blue-300 py-2 px-2 rounded transition-colors font-semibold">
-                      Administración
-                    </Link>
-                  )}
-                  <button
-                    onClick={() => {
-                      localStorage.removeItem("token");
-                      window.location.href = "/auth/login";
-                    }}
-                    className="mt-4 text-red-400 hover:text-red-200 font-semibold py-2 px-2 rounded transition-colors"
-                  >
-                    Cerrar sesión
-                  </button>
-                </>
-              ) : (
-                <Link
-                  to="/auth/login"
-                  className="mt-4 text-blue-400 hover:text-blue-200 font-semibold py-2 px-2 rounded transition-colors"
-                >
-                  Iniciar sesión
-                </Link>
-              )}
+            <nav className="flex flex-col gap-2 px-6 py-4 bg-gray-950">
+              {navLinks}
             </nav>
           )}
         </header>
       ) : (
-        <aside className="bg-gray-900 text-white flex flex-col md:w-64 w-full md:h-screen h-auto md:fixed z-30">
+        <aside className="bg-gray-950 text-white flex flex-col md:w-64 w-full md:h-screen h-auto md:fixed z-30">
           <div className="flex items-center justify-between px-6 py-5 md:py-8 md:px-4 border-b border-gray-800">
             <Link to="/" className="flex items-center gap-2">
               <img src="/logo.png" alt="Logo" className="h-8 w-8" />
-              <span className="text-2xl font-extrabold tracking-tight">Galería App</span>
+              <span className="text-2xl font-extrabold tracking-tight text-pink-400">PicMeTogether</span>
             </Link>
           </div>
           <nav className="flex-col gap-2 px-6 md:px-4 py-4 md:flex md:static">
-            <Link to="/" className="hover:text-blue-300 py-2 px-2 rounded transition-colors font-semibold">
-              Inicio
-            </Link>
-            {isLoggedIn ? (
-              <>
-                <Link to="/user/profile" className="hover:text-blue-300 py-2 px-2 rounded transition-colors font-semibold">
-                  Perfil
-                </Link>
-                <Link to="/galeria/create" className="hover:text-blue-300 py-2 px-2 rounded transition-colors font-semibold">
-                  Crear galería
-                </Link>
-                {(user?.rol_id === 2) && (
-                  <Link to="/manager" className="hover:text-blue-300 py-2 px-2 rounded transition-colors font-semibold">
-                    Panel Gestor
-                  </Link>
-                )}
-                {(user?.rol_id === 2 || user?.rol_id === 3) && (
-                  <Link to="/admin" className="hover:text-blue-300 py-2 px-2 rounded transition-colors font-semibold">
-                    Administración
-                  </Link>
-                )}
-                <button
-                  onClick={() => {
-                    localStorage.removeItem("token");
-                    window.location.href = "/auth/login";
-                  }}
-                  className="mt-4 md:mt-auto text-red-400 hover:text-red-200 font-semibold py-2 px-2 rounded transition-colors"
-                >
-                  Cerrar sesión
-                </button>
-              </>
-            ) : (
-              <Link
-                to="/auth/login"
-                className="mt-4 md:mt-auto text-blue-400 hover:text-blue-200 font-semibold py-2 px-2 rounded transition-colors"
-              >
-                Iniciar sesión
-              </Link>
-            )}
+            {navLinks}
           </nav>
         </aside>
       )}
