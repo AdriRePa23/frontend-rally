@@ -10,6 +10,8 @@ import PostDetail from "./pages/PostDetail";
 import RecoverPassword from "./pages/RecoverPassword";
 import ResetPassword from "./pages/ResetPassword";
 import VerifyEmail from "./pages/VerifyEmail";
+import AdminPanel from "./pages/AdminPanel";
+import ManagerPanel from "./pages/ManagerPanel";
 
 
 const App: React.FC = () => {
@@ -28,6 +30,8 @@ const App: React.FC = () => {
                 <Route path="/auth/recover-password" element={<RecoverPassword />} />
                 <Route path="/auth/reset-password" element={<ResetPassword />} />
                 <Route path="/auth/verify-email" element={<VerifyEmail />} />
+                <Route path="/admin" element={<AdminPanel />} />
+                <Route path="/manager" element={<ManagerPanel />} />
             </Routes>
         </Router>
     );

@@ -8,6 +8,7 @@ export interface AsideNavBarProps {}
 // Componente funcional puro y memoizado
 const AsideNavBar: React.FC<AsideNavBarProps> = React.memo(function AsideNavBar() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
     const verifyToken = async () => {
@@ -19,12 +20,15 @@ const AsideNavBar: React.FC<AsideNavBarProps> = React.memo(function AsideNavBar(
           });
           if (response.data.user) {
             setIsLoggedIn(true);
+            setUser(response.data.user);
           }
         } catch {
           setIsLoggedIn(false);
+          setUser(null);
         }
       } else {
         setIsLoggedIn(false);
+        setUser(null);
       }
     };
     verifyToken();
@@ -45,6 +49,16 @@ const AsideNavBar: React.FC<AsideNavBarProps> = React.memo(function AsideNavBar(
             <Link to="/rally/create" className="hover:text-gray-300">
               Crear Rally
             </Link>
+            {(user?.rol_id === 2) && (
+              <Link to="/manager" className="hover:text-gray-300">
+                Panel Gestor
+              </Link>
+            )}
+            {(user?.rol_id === 2 || user?.rol_id === 3) && (
+              <Link to="/admin" className="hover:text-gray-300">
+                Administración
+              </Link>
+            )}
             <button
               onClick={() => {
                 localStorage.removeItem("token");
