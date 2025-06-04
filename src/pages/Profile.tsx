@@ -11,7 +11,7 @@ import EditProfileForm from "../components/EditProfileForm/EditProfileForm";
 const Profile: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id?: string }>();
-  const [tab, setTab] = useState<"rallies" | "publicaciones">("publicaciones");
+  const [tab, setTab] = useState<"galerias" | "publicaciones">("publicaciones");
   const [userPosts, setUserPosts] = useState<any[]>([]);
   const [isOwnProfile, setIsOwnProfile] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
@@ -81,14 +81,14 @@ const Profile: React.FC = () => {
   }, [tab, id]);
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex h-screen bg-gray-950">
       <AsideNavBar />
-      <main className="flex-1 bg-gray-100 p-6 overflow-y-auto w-full max-w-full">
+      <main className="flex-1 bg-gray-950 p-6 overflow-y-auto md:ml-64 pt-20 md:pt-0 w-full max-w-full">
         <div className="mb-4 flex items-center justify-between">
           <BackButton />
           {isOwnProfile && (
             <button
-              className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-full shadow transition-all duration-200"
+              className="bg-pink-600 hover:bg-pink-700 text-white font-bold py-2 px-6 rounded-full shadow transition-all duration-200"
               onClick={() => setShowEdit(true)}
             >
               Editar perfil
@@ -101,8 +101,8 @@ const Profile: React.FC = () => {
             <button
               className={`px-6 py-2 rounded-full font-bold text-lg transition-all ${
                 tab === "publicaciones"
-                  ? "bg-blue-600 text-white shadow"
-                  : "bg-white text-blue-700 border border-blue-300"
+                  ? "bg-pink-600 text-white shadow"
+                  : "bg-gray-900 text-pink-400 border border-pink-400"
               }`}
               onClick={() => setTab("publicaciones")}
             >
@@ -110,17 +110,17 @@ const Profile: React.FC = () => {
             </button>
             <button
               className={`px-6 py-2 rounded-full font-bold text-lg transition-all ${
-                tab === "rallies"
-                  ? "bg-blue-600 text-white shadow"
-                  : "bg-white text-blue-700 border border-blue-300"
+                tab === "galerias"
+                  ? "bg-pink-600 text-white shadow"
+                  : "bg-gray-900 text-pink-400 border border-pink-400"
               }`}
-              onClick={() => setTab("rallies")}
+              onClick={() => setTab("galerias")}
             >
-              Rallies creados
+              Galerías creadas
             </button>
           </div>
           <div className="flex justify-center">
-            {tab === "rallies" ? (
+            {tab === "galerias" ? (
               <UserRallies userId={id} />
             ) : (
               <div className="w-full">
@@ -129,7 +129,7 @@ const Profile: React.FC = () => {
                   style={{ maxWidth: 1400 }}
                 >
                   {userPosts.length === 0 ? (
-                    <p className="text-gray-500 text-center">
+                    <p className="text-gray-400 text-center">
                       No tienes publicaciones.
                     </p>
                   ) : (
@@ -149,14 +149,14 @@ const Profile: React.FC = () => {
         </div>
         {showEdit && (
           <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-            <div className="bg-white rounded-xl shadow-xl p-6 max-w-lg w-full relative">
+            <div className="bg-gray-900 rounded-xl shadow-xl p-6 max-w-lg w-full relative">
               <button
                 onClick={() => setShowEdit(false)}
-                className="absolute top-2 right-2 text-gray-500 hover:text-gray-800 text-2xl"
+                className="absolute top-2 right-2 text-gray-400 hover:text-white text-2xl"
               >
                 &times;
               </button>
-              <h2 className="text-xl font-bold mb-4">Editar perfil</h2>
+              <h2 className="text-xl font-bold mb-4 text-pink-400">Editar perfil</h2>
               <EditProfileForm onClose={() => setShowEdit(false)} />
             </div>
           </div>

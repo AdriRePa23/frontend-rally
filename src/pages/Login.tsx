@@ -30,13 +30,15 @@ const Login: React.FC = () => {
   }, [navigate]);
 
   return (
-    <div className="flex h-screen bg-gray-100">
-      <AsideNavBar/>
-      <main className="flex-1 bg-gray-100 p-6 overflow-y-auto">
-        <div className="mb-4">
+    <div className="flex h-screen bg-gray-950">
+      <AsideNavBar />
+      <main className="flex-1 bg-gray-950 p-6 overflow-y-auto md:ml-64 pt-20 md:pt-0 flex flex-col items-center">
+        <div className="mb-4 w-full max-w-lg">
           <BackButton />
         </div>
-        <LoginForm />
+        <div className="w-full max-w-lg">
+          <LoginForm />
+        </div>
       </main>
     </div>
   );

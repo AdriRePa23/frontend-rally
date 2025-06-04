@@ -2,11 +2,11 @@ import { useEffect } from "react";
 import RegisterForm from "../components/RegisterForm/RegisterForm";
 import AsideNavBar from "../components/AsideNavBar/AsideNavBar";
 import API from "../services/api";
-import { useNavigate } from "react-router-dom"; // Para redirigir al usuario
+import { useNavigate } from "react-router-dom";
 import BackButton from "../components/BackButton";
 
 const Register: React.FC = () => {
-  const navigate = useNavigate(); // Hook para redirigir
+  const navigate = useNavigate();
 
   useEffect(() => {
     const verifyToken = async () => {
@@ -17,7 +17,7 @@ const Register: React.FC = () => {
             headers: { Authorization: `Bearer ${token}` },
           });
           if (response.data.valid) {
-            navigate("/"); // Redirige al usuario a la página principal si el token es válido
+            navigate("/");
           }
         } catch (error) {
           console.error("Error al verificar el token:", error);
@@ -28,13 +28,15 @@ const Register: React.FC = () => {
   }, [navigate]);
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex h-screen bg-gray-950">
       <AsideNavBar />
-      <main className="flex-1 bg-gray-100 p-6 overflow-y-auto">
-        <div className="mb-4">
+      <main className="flex-1 bg-gray-950 p-6 overflow-y-auto md:ml-64 pt-20 md:pt-0 flex flex-col items-center">
+        <div className="mb-4 w-full max-w-lg">
           <BackButton />
         </div>
-        <RegisterForm />
+        <div className="w-full max-w-lg">
+          <RegisterForm />
+        </div>
       </main>
     </div>
   );
