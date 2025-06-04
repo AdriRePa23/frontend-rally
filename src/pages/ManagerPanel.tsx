@@ -7,7 +7,12 @@ interface Rally {
   id: number;
   nombre: string;
   descripcion: string;
+  fecha_inicio: string;
+  fecha_fin: string;
+  creador_id: number;
   estado: string;
+  created_at: string;
+  updated_at: string;
 }
 
 interface Publicacion {
@@ -40,7 +45,7 @@ const ManagerPanel: React.FC = () => {
           headers: { Authorization: `Bearer ${token}` },
         });
         setUser(res.data.user);
-        if (res.data.user && (res.data.user.rol_id === 2)) {
+        if (res.data.user && (res.data.user.rol_id === 2 || res.data.user.rol_id === 3)) {
           setIsAllowed(true);
         } else {
           setIsAllowed(false);
@@ -59,13 +64,17 @@ const ManagerPanel: React.FC = () => {
       setError(null);
       try {
         const token = localStorage.getItem("token");
-        // Rallies pendientes
-        const ralliesRes = await API.get("/rallies?estado=pendiente", {
+        // Rallies pendientes: solo los que su fecha_fin < hoy
+        const ralliesRes = await API.get("/rallies", {
           headers: { Authorization: `Bearer ${token}` },
         });
-        setPendingRallies(ralliesRes.data || []);
-        // Publicaciones pendientes
-        const postsRes = await API.get("/publicaciones?estado=pendiente", {
+        const hoy = new Date();
+        const pendientes = (ralliesRes.data || []).filter(
+          (r: Rally) => new Date(r.fecha_fin) < hoy
+        );
+        setPendingRallies(pendientes);
+        // Publicaciones pendientes (nuevo endpoint)
+        const postsRes = await API.get("/publicaciones/estado/pendiente", {
           headers: { Authorization: `Bearer ${token}` },
         });
         setPendingPosts(postsRes.data || []);
@@ -93,7 +102,7 @@ const ManagerPanel: React.FC = () => {
   const handleValidatePost = async (id: number) => {
     try {
       const token = localStorage.getItem("token");
-      await API.put(`/publicaciones/${id}`, { estado: "valido" }, {
+      await API.put(`/publicaciones/publicaciones/${id}/estado`, { estado: "aprobada" }, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setPendingPosts((prev) => prev.filter((p) => p.id !== id));

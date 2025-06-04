@@ -12,7 +12,11 @@ const Home: React.FC = () => {
     const fetchRallies = async () => {
       try {
         const { data } = await API.get("/rallies/card");
-        setRallies(Array.isArray(data) ? data : [data]);
+        // Mostrar solo rallies activos
+        const activos = (Array.isArray(data) ? data : [data]).filter(
+          (rally) => rally.estado === "activo"
+        );
+        setRallies(activos);
       } catch (error) {
         console.error("Error al obtener los rallies:", error);
       } finally {
