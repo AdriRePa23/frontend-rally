@@ -3,7 +3,6 @@ import API from "../services/api";
 import AsideNavBar from "../components/AsideNavBar/AsideNavBar";
 import { useNavigate, useParams } from "react-router-dom";
 import PostForm from "../components/PostForm/PostForm";
-import BackButton from "../components/BackButton";
 
 const CreatePost: React.FC = () => {
   const navigate = useNavigate();
@@ -38,9 +37,6 @@ const CreatePost: React.FC = () => {
     <div className="flex h-screen bg-gray-950">
       <AsideNavBar />
       <main className="flex-1 bg-gray-950 p-6 overflow-y-auto md:ml-64 pt-20 md:pt-0 flex flex-col items-center">
-        <div className="mb-4 w-full max-w-lg">
-          <BackButton />
-        </div>
         <div className="w-full max-w-lg">
           {id ? (
             <PostForm rallyId={parseInt(id, 10)} />

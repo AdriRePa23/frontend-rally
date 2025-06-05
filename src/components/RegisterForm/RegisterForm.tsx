@@ -91,7 +91,7 @@ const RegisterForm: React.FC<RegisterFormProps> = React.memo(function RegisterFo
                 )}
                 <div className="mb-4">
                     <label
-                        className="block text-gray-700 text-sm font-bold mb-2"
+                        className="block text-white text-sm font-bold mb-2"
                         htmlFor="nombre"
                     >
                         Nombre:
@@ -100,14 +100,14 @@ const RegisterForm: React.FC<RegisterFormProps> = React.memo(function RegisterFo
                         type="text"
                         id="nombre"
                         placeholder="Nombre"
-                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        className="shadow appearance-none border rounded w-full py-2 px-3 bg-gray-900 text-white leading-tight focus:outline-none focus:shadow-outline"
                         name="nombre"
                         required
                     />
                 </div>
                 <div className="mb-4">
                     <label
-                        className="block text-gray-700 text-sm font-bold mb-2"
+                        className="block text-white text-sm font-bold mb-2"
                         htmlFor="email"
                     >
                         Email:
@@ -116,14 +116,14 @@ const RegisterForm: React.FC<RegisterFormProps> = React.memo(function RegisterFo
                         type="email"
                         id="email"
                         placeholder="Email"
-                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        className="shadow appearance-none border rounded w-full py-2 px-3 bg-gray-900 text-white leading-tight focus:outline-none focus:shadow-outline"
                         name="email"
                         required
                     />
                 </div>
                 <div className="mb-6">
                     <label
-                        className="block text-gray-700 text-sm font-bold mb-2"
+                        className="block text-white text-sm font-bold mb-2"
                         htmlFor="password"
                     >
                         Contraseña:
@@ -133,7 +133,7 @@ const RegisterForm: React.FC<RegisterFormProps> = React.memo(function RegisterFo
                         id="password"
                         placeholder="Contraseña"
                         name="password"
-                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        className="shadow appearance-none border rounded w-full py-2 px-3 bg-gray-900 text-white leading-tight focus:outline-none focus:shadow-outline"
                         required
                     />
                 </div>

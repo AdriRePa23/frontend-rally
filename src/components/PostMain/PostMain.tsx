@@ -67,7 +67,7 @@ const PostMain: React.FC<PostMainProps> = React.memo(function PostMain({
     <div className="flex flex-col md:flex-row w-full gap-8">
       {/* Izquierda: Imagen y detalles */}
       <div className="flex-1 flex flex-col">
-        <div className="relative w-full flex justify-center bg-neutral-900 rounded-t-xl">
+        <div className="relative w-full flex justify-center bg-gray-900 rounded-t-xl">
           {usuario &&
             creador &&
             typeof creador.id !== "undefined" &&
@@ -79,7 +79,7 @@ const PostMain: React.FC<PostMainProps> = React.memo(function PostMain({
               <button
                 onClick={handleDelete}
                 type="button"
-                className="absolute top-4 left-4 bg-white bg-opacity-90 hover:bg-opacity-100 text-red-600 rounded-full p-2 shadow transition z-10 flex items-center justify-center"
+                className="absolute top-4 left-4 bg-gray-900 bg-opacity-90 hover:bg-opacity-100 text-red-400 rounded-full p-2 shadow transition z-10 flex items-center justify-center"
                 title="Eliminar publicación"
               >
                 <img src="/borrar.png" alt="Borrar" className="w-7 h-7" />
@@ -88,7 +88,7 @@ const PostMain: React.FC<PostMainProps> = React.memo(function PostMain({
           <img
             src={fotografia}
             alt="Publicación"
-            className="w-full max-h-[600px] object-contain rounded-t-xl bg-neutral-900"
+            className="w-full max-h-[600px] object-contain rounded-t-xl bg-gray-900"
           />
           {estado === "pendiente" && (
             <span className="absolute top-4 right-4 bg-yellow-400 text-yellow-900 font-bold px-4 py-1 rounded-full text-xs shadow z-20">
@@ -96,15 +96,15 @@ const PostMain: React.FC<PostMainProps> = React.memo(function PostMain({
             </span>
           )}
         </div>
-        <div className="w-full px-8 py-6 bg-neutral-50 border-t border-neutral-200 flex flex-col gap-4 rounded-b-xl">
+        <div className="w-full px-8 py-6 bg-gray-900 border-t border-gray-800 flex flex-col gap-4 rounded-b-xl">
           <div className="flex items-center justify-between w-full">
             <div className="flex items-center gap-4">
               <img
                 src={creador.foto_perfil}
                 alt={creador.nombre}
-                className="w-12 h-12 rounded-full border border-neutral-300 shadow-lg"
+                className="w-12 h-12 rounded-full border border-gray-700 shadow-lg"
               />
-              <span className="font-semibold text-lg text-neutral-900">
+              <span className="font-semibold text-lg text-pink-400">
                 {creador.nombre}
               </span>
             </div>
@@ -117,11 +117,11 @@ const PostMain: React.FC<PostMainProps> = React.memo(function PostMain({
               >
                 <path d="M12.62 20.84a1.5 1.5 0 0 1-1.24 0C7.1 18.7 2 14.92 2 10.36A5.37 5.37 0 0 1 7.36 5a5.13 5.13 0 0 1 4.64 2.88A5.13 5.13 0 0 1 16.64 5a5.37 5.37 0 0 1 4.64 5.36c0 4.56-5.1 8.34-9.38 10.48Z" />
               </svg>
-              <span className="text-lg font-bold text-pink-600">{votos}</span>
+              <span className="text-lg font-bold text-pink-400">{votos}</span>
             </div>
           </div>
           {descripcion && (
-            <div className="text-neutral-800 text-base break-words">
+            <div className="text-pink-100 text-base break-words">
               {descripcion}
             </div>
           )}

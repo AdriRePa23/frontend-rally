@@ -3,7 +3,6 @@ import RegisterForm from "../components/RegisterForm/RegisterForm";
 import AsideNavBar from "../components/AsideNavBar/AsideNavBar";
 import API from "../services/api";
 import { useNavigate } from "react-router-dom";
-import BackButton from "../components/BackButton";
 
 const Register: React.FC = () => {
   const navigate = useNavigate();
@@ -31,9 +30,7 @@ const Register: React.FC = () => {
     <div className="flex h-screen bg-gray-950">
       <AsideNavBar />
       <main className="flex-1 bg-gray-950 p-6 overflow-y-auto md:ml-64 pt-20 md:pt-0 flex flex-col items-center">
-        <div className="mb-4 w-full max-w-lg">
-          <BackButton />
-        </div>
+        
         <div className="w-full max-w-lg">
           <RegisterForm />
         </div>

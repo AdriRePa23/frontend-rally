@@ -3,7 +3,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import AsideNavBar from "../components/AsideNavBar/AsideNavBar";
 import API from "../services/api";
 import ProfileInfo from "../components/ProfileInfo/ProfileInfo";
-import BackButton from "../components/BackButton";
 import UserPostCard from "../components/UserPostCard/UserPostCard";
 import UserRallies from "../components/UserRallies/UserRallies";
 import EditProfileForm from "../components/EditProfileForm/EditProfileForm";
@@ -84,18 +83,21 @@ const Profile: React.FC = () => {
     <div className="flex h-screen bg-gray-950">
       <AsideNavBar />
       <main className="flex-1 bg-gray-950 p-6 overflow-y-auto md:ml-64 pt-20 md:pt-0 w-full max-w-full">
+        {/* El botón de editar perfil ahora va dentro del contenedor de ProfileInfo */}
         <div className="mb-4 flex items-center justify-between">
-          <BackButton />
+          {/* ...eliminar el botón de editar de aquí... */}
+        </div>
+        <div className="relative">
+          <ProfileInfo />
           {isOwnProfile && (
             <button
-              className="bg-pink-600 hover:bg-pink-700 text-white font-bold py-2 px-6 rounded-full shadow transition-all duration-200"
+              className="absolute top-4 right-4 bg-pink-600 hover:bg-pink-700 text-white font-bold py-2 px-6 rounded-full shadow transition-all duration-200"
               onClick={() => setShowEdit(true)}
             >
               Editar perfil
             </button>
           )}
         </div>
-        <ProfileInfo />
         <div className="mt-8">
           <div className="flex justify-center gap-4 mb-6">
             <button

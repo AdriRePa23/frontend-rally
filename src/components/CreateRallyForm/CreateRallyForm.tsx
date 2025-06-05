@@ -111,45 +111,45 @@ function CreateRallyForm() {
         {errorMessage && <p className="text-red-500 text-sm mb-4 text-center">{errorMessage}</p>}
         {successMessage && <p className="text-green-500 text-sm mb-4 text-center">{successMessage}</p>}
         <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="nombre">Nombre:</label>
+          <label className="block text-white text-sm font-bold mb-2" htmlFor="nombre">Nombre:</label>
           <input
             type="text"
             id="nombre"
             name="nombre"
             value={form.nombre}
             onChange={handleChange}
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            className="shadow appearance-none border rounded w-full py-2 px-3 bg-gray-900 text-white leading-tight focus:outline-none focus:shadow-outline"
             required
           />
           {fieldErrors.nombre && <p className="text-red-500 text-xs mt-1">{fieldErrors.nombre}</p>}
         </div>
         <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="descripcion">Descripción:</label>
+          <label className="block text-white text-sm font-bold mb-2" htmlFor="descripcion">Descripción:</label>
           <textarea
             id="descripcion"
             name="descripcion"
             value={form.descripcion}
             onChange={handleChange}
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            className="shadow appearance-none border rounded w-full py-2 px-3 bg-gray-900 text-white leading-tight focus:outline-none focus:shadow-outline"
             required
           />
           {fieldErrors.descripcion && <p className="text-red-500 text-xs mt-1">{fieldErrors.descripcion}</p>}
         </div>
         <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="fechaFin">Fecha fin:</label>
+          <label className="block text-white text-sm font-bold mb-2" htmlFor="fechaFin">Fecha fin:</label>
           <input
             type="date"
             id="fechaFin"
             name="fechaFin"
             value={form.fechaFin}
             onChange={handleChange}
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            className="shadow appearance-none border rounded w-full py-2 px-3 bg-gray-900 text-white leading-tight focus:outline-none focus:shadow-outline"
             required
           />
           {fieldErrors.fechaFin && <p className="text-red-500 text-xs mt-1">{fieldErrors.fechaFin}</p>}
         </div>
         <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="categorias">Categorías (separadas por coma):</label>
+          <label className="block text-white text-sm font-bold mb-2" htmlFor="categorias">Categorías (separadas por coma):</label>
           <input
             type="text"
             id="categorias"
@@ -157,13 +157,13 @@ function CreateRallyForm() {
             value={form.categorias}
             onChange={handleChange}
             placeholder="Ej: aventura, cultura, naturaleza"
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            className="shadow appearance-none border rounded w-full py-2 px-3 bg-gray-900 text-white leading-tight focus:outline-none focus:shadow-outline"
             required
           />
           {fieldErrors.categorias && <p className="text-red-500 text-xs mt-1">{fieldErrors.categorias}</p>}
         </div>
         <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="maxFotosPorUsuario">Número máximo de fotos por usuario:</label>
+          <label className="block text-white text-sm font-bold mb-2" htmlFor="maxFotosPorUsuario">Número máximo de fotos por usuario:</label>
           <input
             type="number"
             id="maxFotosPorUsuario"
@@ -172,7 +172,7 @@ function CreateRallyForm() {
             value={form.maxFotosPorUsuario}
             onChange={handleChange}
             min={1}
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            className="shadow appearance-none border rounded w-full py-2 px-3 bg-gray-900 text-white leading-tight focus:outline-none focus:shadow-outline"
             required
           />
           {fieldErrors.maxFotosPorUsuario && <p className="text-red-500 text-xs mt-1">{fieldErrors.maxFotosPorUsuario}</p>}

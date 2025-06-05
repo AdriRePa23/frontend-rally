@@ -4,7 +4,7 @@ import AsideNavBar from "../components/AsideNavBar/AsideNavBar";
 import RallyInfo from "../components/RallyInfo/RallyInfo";
 import UserPostCard from "../components/UserPostCard/UserPostCard";
 import API from "../services/api";
-import BackButton from "../components/BackButton";
+
 
 const RallyDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -112,9 +112,6 @@ const RallyDetail: React.FC = () => {
     <div className="flex h-screen bg-gray-950">
       <AsideNavBar />
       <main className="flex-1 bg-gray-950 p-6 overflow-y-auto w-full max-w-full md:ml-64 pt-20 md:pt-0">
-        <div className="mb-4">
-          <BackButton />
-        </div>
         <RallyInfo />
         <div className="w-full mt-8">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 gap-4">

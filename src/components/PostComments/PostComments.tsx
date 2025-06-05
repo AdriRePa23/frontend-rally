@@ -98,9 +98,9 @@ const PostComments: React.FC<PostCommentsProps> = React.memo(function PostCommen
   };
 
   return (
-    <div className="w-full flex flex-col h-full bg-white rounded-xl border border-gray-200 p-0 ">
+    <div className="w-full flex flex-col h-full bg-gray-900 rounded-xl border border-gray-800 p-0 ">
       <div className="px-6 pt-5 pb-2">
-        <h3 className="font-semibold text-gray-800 text-lg">Comentarios</h3>
+        <h3 className="font-semibold text-pink-400 text-lg">Comentarios</h3>
       </div>
       <div className="flex-1 flex px-6 pb-4 min-h-0">
         <div
@@ -113,14 +113,14 @@ const PostComments: React.FC<PostCommentsProps> = React.memo(function PostCommen
           ) : (
             <ul className="space-y-4 pb-2" ref={comentariosRef}>
               {comentarios.map((c) => (
-                <li key={c.id} className="flex items-start gap-3 bg-gray-50 p-3 rounded-lg shadow-sm">
+                <li key={c.id} className="flex items-start gap-3 bg-gray-800 p-3 rounded-lg shadow-sm">
                   <img
                     src={c.usuario_foto}
                     alt={c.usuario_nombre}
-                    className="w-9 h-9 rounded-full border border-gray-300"
+                    className="w-9 h-9 rounded-full border border-gray-700"
                   />
                   <div className="flex-1">
-                    <span className="font-semibold text-gray-800 text-sm">
+                    <span className="font-semibold text-pink-400 text-sm">
                       {c.usuario_nombre}
                     </span>
                     <span className="ml-2 text-xs text-gray-400">
@@ -133,7 +133,7 @@ const PostComments: React.FC<PostCommentsProps> = React.memo(function PostCommen
                         hour12: false,
                         })}
                     </span>
-                    <div className="text-gray-700 text-base break-words">
+                    <div className="text-gray-200 text-base break-words">
                       {c.comentario}
                     </div>
                   </div>
@@ -143,7 +143,7 @@ const PostComments: React.FC<PostCommentsProps> = React.memo(function PostCommen
                       usuario.rol_id === 3) && (
                       <button
                         onClick={() => handleBorrar(c.id)}
-                        className="ml-2 text-red-500 hover:text-red-700 text-sm font-bold flex items-center justify-center"
+                        className="ml-2 text-red-400 hover:text-red-200 text-sm font-bold flex items-center justify-center"
                         title="Borrar comentario"
                       >
                         <img src="/borrar.png" alt="Borrar" className="w-5 h-5" />
@@ -155,11 +155,11 @@ const PostComments: React.FC<PostCommentsProps> = React.memo(function PostCommen
           )}
         </div>
       </div>
-      <div className="px-6 pt-5 pb-6 border-t border-gray-200 bg-white">
+      <div className="px-6 pt-5 pb-6 border-t border-gray-800 bg-gray-900">
         <form className="flex gap-2" onSubmit={handleEnviar}>
           <input
             type="text"
-            className="flex-1 border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="flex-1 border border-gray-700 rounded px-3 py-2 bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-pink-400"
             placeholder="Escribe un comentario..."
             value={nuevoComentario}
             onChange={e => setNuevoComentario(e.target.value)}
@@ -169,19 +169,19 @@ const PostComments: React.FC<PostCommentsProps> = React.memo(function PostCommen
           />
           <button
             type="submit"
-            className="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-4 py-2 rounded shadow"
+            className="bg-pink-600 hover:bg-pink-700 text-white font-semibold px-4 py-2 rounded shadow"
             disabled={enviando || !nuevoComentario.trim() || !usuario}
           >
             {enviando ? "Enviando..." : "Enviar"}
           </button>
         </form>
         {!usuario && (
-          <div className="text-red-500 text-sm mt-2">
+          <div className="text-red-400 text-sm mt-2">
             Debes iniciar sesión para comentar.
           </div>
         )}
         {error && (
-          <div className="text-red-500 text-sm mt-2">{error}</div>
+          <div className="text-red-400 text-sm mt-2">{error}</div>
         )}
       </div>
     </div>

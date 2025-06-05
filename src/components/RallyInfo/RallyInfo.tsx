@@ -59,12 +59,12 @@ const RallyInfo: React.FC<RallyInfoProps> = React.memo(function RallyInfo() {
     return `${day}-${month}-${year}`;
   };
 
-  if (loading) return <div className="text-center py-8">Cargando...</div>;
+  if (loading) return <div className="text-center py-8 text-white">Cargando...</div>;
   if (error) return <div className="text-center text-red-500 py-8">{error}</div>;
   if (!rally) return null;
 
   const handleDelete = async () => {
-    if (!window.confirm("¿Seguro que quieres eliminar este rally? Esta acción no se puede deshacer.")) return;
+    if (!window.confirm("¿Seguro que quieres eliminar esta galería? Esta acción no se puede deshacer.")) return;
     try {
       const token = localStorage.getItem("token");
       if (!token) return;
@@ -73,29 +73,29 @@ const RallyInfo: React.FC<RallyInfoProps> = React.memo(function RallyInfo() {
       });
       window.location.href = "/";
     } catch {
-      alert("No se pudo eliminar el rally.");
+      alert("No se pudo eliminar la galería.");
     }
   };
 
   return (
-    <div className="w-full bg-white shadow-lg rounded-2xl mt-8 p-0 flex flex-col gap-0">
+    <div className="w-full bg-gray-900 shadow-lg rounded-2xl mt-8 p-0 flex flex-col gap-0 text-white">
       <div className="flex flex-col md:flex-row w-full">
         <div className="flex-1 p-8 flex flex-col justify-between">
           <div>
             <div className="flex items-center gap-4 mb-2">
-              <h1 className="text-4xl font-extrabold text-blue-900 break-words">{rally.nombre}</h1>
+              <h1 className="text-4xl font-extrabold text-pink-400 break-words">{rally.nombre}</h1>
               {rally.estado === "pendiente" && (
                 <span className="bg-yellow-400 text-yellow-900 font-bold px-4 py-1 rounded-full text-sm shadow">
-                  Rally pendiente de validación
+                  Galería pendiente de validación
                 </span>
               )}
             </div>
-            <p className="text-lg text-gray-700 mb-4">{rally.descripcion}</p>
+            <p className="text-lg text-gray-200 mb-4">{rally.descripcion}</p>
             <div className="flex flex-wrap gap-3 mb-4">
-              <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-semibold">Categorías: {rally.categorias}</span>
+              <span className="bg-pink-100 text-pink-800 px-3 py-1 rounded-full text-sm font-semibold">Categorías: {rally.categorias}</span>
               <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-semibold">Fecha de creación: {formatDate(rally.fecha_inicio)}</span>
               <span className="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-semibold">Fecha fin: {formatDate(rally.fecha_fin)}</span>
-              <span className="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm font-semibold">Máx. fotos/usuario: {rally.cantidad_fotos_max}</span>
+              <span className="bg-gray-800 text-gray-200 px-3 py-1 rounded-full text-sm font-semibold">Máx. fotos/usuario: {rally.cantidad_fotos_max}</span>
             </div>
           </div>
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 w-full mt-4">
@@ -104,22 +104,22 @@ const RallyInfo: React.FC<RallyInfoProps> = React.memo(function RallyInfo() {
                 <img
                   src={creador.foto_perfil || "/logo.png"}
                   alt={`Foto de perfil de ${creador.nombre}`}
-                  className="w-12 h-12 rounded-full border-2 border-blue-300 object-cover"
+                  className="w-12 h-12 rounded-full border-2 border-pink-300 object-cover"
                 />
-                <span className="font-semibold text-blue-900 text-lg">{creador.nombre}</span>
+                <span className="font-semibold text-pink-400 text-lg">{creador.nombre}</span>
               </a>
             )}
             <div className="flex gap-2 ml-auto">
               {(usuario && (usuario.id === rally.creador_id || usuario.rol_id === 2)) && (
                 <button
-                  className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-400 hover:from-blue-700 hover:to-blue-500 text-white text-lg font-bold py-3 px-8 rounded-full shadow-lg transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-2"
+                  className="inline-flex items-center gap-2 bg-gradient-to-r from-pink-600 to-pink-400 hover:from-pink-700 hover:to-pink-500 text-white text-lg font-bold py-3 px-8 rounded-full shadow-lg transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-pink-300 focus:ring-offset-2"
                   onClick={() => setShowEdit(true)}
                   style={{ minWidth: 180 }}
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232a2.5 2.5 0 113.536 3.536L8.5 19.036l-4 1 1-4 10.268-10.268z" />
                   </svg>
-                  Editar rally
+                  Editar galería
                 </button>
               )}
               {(usuario && (usuario.id === rally.creador_id || usuario.rol_id === 2 || usuario.rol_id === 3)) && (
@@ -131,7 +131,7 @@ const RallyInfo: React.FC<RallyInfoProps> = React.memo(function RallyInfo() {
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                   </svg>
-                  Borrar rally
+                  Borrar galería
                 </button>
               )}
             </div>
@@ -140,9 +140,9 @@ const RallyInfo: React.FC<RallyInfoProps> = React.memo(function RallyInfo() {
       </div>
       {showEdit && rally && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl shadow-xl p-6 max-w-lg w-full relative">
-            <button onClick={() => setShowEdit(false)} className="absolute top-2 right-2 text-gray-500 hover:text-gray-800 text-2xl">&times;</button>
-            <h2 className="text-xl font-bold mb-4">Editar rally</h2>
+          <div className="bg-gray-900 rounded-xl shadow-xl p-6 max-w-lg w-full relative text-white">
+            <button onClick={() => setShowEdit(false)} className="absolute top-2 right-2 text-gray-400 hover:text-white text-2xl">&times;</button>
+            <h2 className="text-xl font-bold mb-4 text-pink-400">Editar galería</h2>
             <EditRallyForm rally={rally} onClose={() => setShowEdit(false)} />
           </div>
         </div>
