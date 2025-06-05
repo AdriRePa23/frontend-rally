@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-    baseURL: "http://51.21.136.94:3000/api", 
+    baseURL: "https://api.picmetogether.online/api", 
 });
 
 // Agregar token de autenticación a las solicitudes
