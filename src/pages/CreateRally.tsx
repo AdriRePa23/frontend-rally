@@ -12,7 +12,7 @@ const CreateRally: React.FC = () => {
       const token = localStorage.getItem("token");
       if (!token) {
         // Si no hay token, redirige al login
-        navigate("/login");
+        navigate("/auth/login");
         return;
       }
       try {
