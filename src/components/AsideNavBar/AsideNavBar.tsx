@@ -55,15 +55,13 @@ const AsideNavBar: React.FC<AsideNavBarProps> = React.memo(function AsideNavBar(
           <Link to="/user/profile" className="hover:text-pink-400 py-2 px-2 rounded transition-colors font-semibold">
             Perfil
           </Link>
-          <Link to="/rally/create" className="hover:text-pink-400 py-2 px-2 rounded transition-colors font-semibold">
-            Crear galería
-          </Link>
           {(user?.rol_id === 2 || user?.rol_id === 3) && (
             <Link to="/manager" className="hover:text-pink-400 py-2 px-2 rounded transition-colors font-semibold">
               Panel de gestor
             </Link>
           )}
-          {(user?.rol_id === 2 || user?.rol_id === 3) && (
+          {/* El enlace solo debe mostrarse si user?.rol_id === 3 */}
+          {user && Number(user.rol_id) === 2 && (
             <Link to="/admin" className="hover:text-pink-400 py-2 px-2 rounded transition-colors font-semibold">
               Administración
             </Link>

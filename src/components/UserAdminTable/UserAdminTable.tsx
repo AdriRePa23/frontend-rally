@@ -15,26 +15,53 @@ const UserAdminTable: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [selectedUser, setSelectedUser] = useState<UserAdmin | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
-
-  const fetchUsers = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const token = localStorage.getItem("token");
-      const res = await API.get("/usuarios", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setUsers(res.data);
-    } catch {
-      setError("No se pudieron cargar los usuarios.");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [isAllowed, setIsAllowed] = useState<boolean | null>(null);
 
   useEffect(() => {
+    const fetchUsers = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          setIsAllowed(false);
+          setLoading(false);
+          return;
+        }
+        // Verificar rol antes de cargar usuarios
+        const verify = await API.post(
+          "/auth/verify-token",
+          {},
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        if (!verify.data.user || verify.data.user.rol_id !== 2) {
+          setIsAllowed(false);
+          setLoading(false);
+          return;
+        }
+        setIsAllowed(true);
+        const res = await API.get("/usuarios", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setUsers(Array.isArray(res.data) ? res.data : []);
+      } catch (err: any) {
+        setIsAllowed(false);
+      } finally {
+        setLoading(false);
+      }
+    };
     fetchUsers();
   }, []);
+
+  if (isAllowed === false) {
+    return (
+      <div className="text-center py-8 text-red-500 font-bold">
+        Acceso denegado. Solo los administradores pueden ver esta sección.
+      </div>
+    );
+  }
 
   const handleDelete = async (id: number) => {
     if (!window.confirm("¿Seguro que quieres eliminar este usuario?")) return;
@@ -78,7 +105,7 @@ const UserAdminTable: React.FC = () => {
   return (
     <div>
       {loading ? (
-        <div className="text-center py-4">Cargando usuarios...</div>
+        <div className="text-center py-4 text-white">Cargando usuarios...</div>
       ) : error ? (
         <div className="text-center text-red-500 py-4">{error}</div>
       ) : (
@@ -86,14 +113,14 @@ const UserAdminTable: React.FC = () => {
           {users.map((u) => (
             <li
               key={u.id}
-              className="flex items-center gap-4 bg-white rounded-lg shadow p-3"
+              className="flex items-center gap-4 bg-gray-900 rounded-lg shadow p-3"
             >
               <img
                 src={u.foto_perfil}
                 alt={u.nombre}
                 className="w-10 h-10 rounded-full object-cover border"
               />
-              <span className="font-semibold text-blue-900 flex-1">
+              <span className="font-semibold text-pink-400 flex-1">
                 {u.nombre}
               </span>
               <button
@@ -101,7 +128,7 @@ const UserAdminTable: React.FC = () => {
                   setSelectedUser(u);
                   setModalOpen(true);
                 }}
-                className="bg-blue-500 hover:bg-blue-700 text-white px-4 py-1 rounded text-sm"
+                className="bg-pink-600 hover:bg-pink-700 text-white px-4 py-1 rounded text-sm"
               >
                 Ver / Editar
               </button>
@@ -112,10 +139,10 @@ const UserAdminTable: React.FC = () => {
 
       {modalOpen && selectedUser && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl shadow-xl p-6 max-w-xs w-full relative">
+          <div className="bg-gray-900 rounded-xl shadow-xl p-6 max-w-xs w-full relative text-white">
             <button
               onClick={() => setModalOpen(false)}
-              className="absolute top-2 right-2 text-gray-500 hover:text-gray-800 text-2xl"
+              className="absolute top-2 right-2 text-gray-400 hover:text-white text-2xl"
             >
               &times;
             </button>
@@ -135,7 +162,7 @@ const UserAdminTable: React.FC = () => {
                 onChange={(e) =>
                   setSelectedUser({ ...selectedUser, nombre: e.target.value })
                 }
-                className="border rounded px-3 py-2"
+                className="border rounded px-3 py-2 bg-gray-800 text-white"
               />
               <label className="font-semibold text-sm">Email:</label>
               <input
@@ -144,7 +171,7 @@ const UserAdminTable: React.FC = () => {
                 onChange={(e) =>
                   setSelectedUser({ ...selectedUser, email: e.target.value })
                 }
-                className="border rounded px-3 py-2"
+                className="border rounded px-3 py-2 bg-gray-800 text-white"
               />
               <label className="font-semibold text-sm">Rol:</label>
               <select
@@ -155,7 +182,7 @@ const UserAdminTable: React.FC = () => {
                     rol_id: Number(e.target.value),
                   })
                 }
-                className="border rounded px-3 py-2"
+                className="border rounded px-3 py-2 bg-gray-800 text-white"
               >
                 <option value={1}>Usuario</option>
                 <option value={2}>Gestor</option>

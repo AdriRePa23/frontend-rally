@@ -73,29 +73,29 @@ const PostDetail: React.FC = () => {
     }
   }, [id_publicacion]);
 
-  // Permisos: solo si la publicación no está pendiente o si es dueño, gestor o admin
+  
   const puedeAcceder =
     post &&
     (post.estado !== "pendiente" ||
       (usuario && (usuario.id === post.usuario_id || usuario.rol_id === 2 || usuario.rol_id === 3)));
 
-  if (loading) return <div className="text-center py-8">Cargando...</div>;
-  if (error) return <div className="text-center text-red-500 py-8">{error}</div>;
+  if (loading) return <div className="text-center py-8 text-white bg-gray-950">Cargando...</div>;
+  if (error) return <div className="text-center text-red-500 py-8 bg-gray-950">{error}</div>;
   if (!post) return null;
   if (!puedeAcceder)
     return (
-      <div className="flex h-screen bg-gray-100">
+      <div className="flex h-screen bg-gray-950">
         <AsideNavBar />
-        <main className="flex-1 flex items-center justify-center text-red-500">
+        <main className="flex-1 flex items-center justify-center text-red-500 md:ml-64 pt-20 md:pt-0 bg-gray-950">
           No tienes permiso para ver esta publicación.
         </main>
       </div>
     );
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex h-screen bg-gray-950">
       <AsideNavBar />
-      <main className="flex-1 bg-gray-100 p-6 overflow-y-auto w-full max-w-full">
+      <main className="flex-1 bg-gray-950 p-6 overflow-y-auto w-full max-w-full md:ml-64 pt-20 md:pt-0">
         {post.estado === "pendiente" && (
           <div className="mb-4">
             <span className="bg-yellow-400 text-yellow-900 font-bold px-4 py-2 rounded-full text-sm shadow">
