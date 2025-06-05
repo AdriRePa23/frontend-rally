@@ -185,8 +185,8 @@ const UserAdminTable: React.FC = () => {
                 className="border rounded px-3 py-2 bg-gray-800 text-white"
               >
                 <option value={1}>Usuario</option>
-                <option value={2}>Gestor</option>
-                <option value={3}>Administrador</option>
+                <option value={3}>Gestor</option>
+                <option value={2}>Administrador</option>
               </select>
               <div className="flex gap-2 mt-4">
                 <button
