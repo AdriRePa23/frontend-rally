@@ -31,10 +31,10 @@ const RecoverPasswordForm: React.FC<RecoverPasswordFormProps> = React.memo(
 
     return (
       <form
-        className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 w-full max-w-sm"
+        className="bg-gray-900 shadow-md rounded px-8 pt-6 pb-8 mb-4 w-full max-w-sm"
         onSubmit={handleSubmit}
       >
-        <h1 className="text-2xl font-bold mb-6 text-center">
+        <h1 className="text-2xl font-bold mb-6 text-center text-pink-400">
           Recuperar contraseña
         </h1>
         {successMessage && (
@@ -49,7 +49,7 @@ const RecoverPasswordForm: React.FC<RecoverPasswordFormProps> = React.memo(
         )}
         <div className="mb-4">
           <label
-            className="block text-gray-700 text-sm font-bold mb-2"
+            className="block text-white text-sm font-bold mb-2"
             htmlFor="email"
           >
             Email:
@@ -58,7 +58,7 @@ const RecoverPasswordForm: React.FC<RecoverPasswordFormProps> = React.memo(
             type="email"
             id="email"
             placeholder="Introduce tu email"
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            className="shadow appearance-none border rounded w-full py-2 px-3 bg-gray-900 text-white leading-tight focus:outline-none focus:shadow-outline"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -66,7 +66,7 @@ const RecoverPasswordForm: React.FC<RecoverPasswordFormProps> = React.memo(
         </div>
         <button
           type="submit"
-          className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full ${
+          className={`bg-pink-600 hover:bg-pink-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full ${
             isLoading ? "opacity-50 cursor-not-allowed" : ""
           }`}
           disabled={isLoading}

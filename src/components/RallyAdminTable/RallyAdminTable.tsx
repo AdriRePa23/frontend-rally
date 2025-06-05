@@ -87,41 +87,41 @@ const RallyAdminTable: React.FC = () => {
   return (
     <div>
       {loading ? (
-        <div className="text-center py-4">Cargando rallies...</div>
+        <div className="text-center py-4 text-white">Cargando galerías...</div>
       ) : error ? (
         <div className="text-center text-red-500 py-4">{error}</div>
       ) : rallies.length === 0 ? (
-        <div className="text-gray-500 text-center py-4">No hay rallies.</div>
+        <div className="text-gray-400 text-center py-4">No hay galerías.</div>
       ) : (
         <div className="overflow-x-auto">
-          <table className="min-w-full bg-white border border-gray-200 rounded-lg">
+          <table className="min-w-full bg-gray-900 border border-gray-800 rounded-lg text-white">
             <thead className="text-left">
               <tr>
-                <th className="px-4 py-2 border-b">ID</th>
-                <th className="px-4 py-2 border-b">Nombre</th>
-                <th className="px-4 py-2 border-b">Usuario</th>
-                <th className="px-4 py-2 border-b">Acciones</th>
+                <th className="px-4 py-2 border-b border-gray-800">ID</th>
+                <th className="px-4 py-2 border-b border-gray-800">Nombre</th>
+                <th className="px-4 py-2 border-b border-gray-800">Usuario</th>
+                <th className="px-4 py-2 border-b border-gray-800">Acciones</th>
               </tr>
             </thead>
             <tbody>
               {rallies.map((rally) => (
-                <tr key={rally.id} className="hover:bg-blue-50">
-                  <td className="px-4 py-2 border-b">{rally.id}</td>
-                  <td className="px-4 py-2 border-b font-semibold">{rally.nombre}</td>
-                  <td className="px-4 py-2 border-b">
+                <tr key={rally.id} className="hover:bg-pink-950">
+                  <td className="px-4 py-2 border-b border-gray-800">{rally.id}</td>
+                  <td className="px-4 py-2 border-b border-gray-800 font-semibold">{rally.nombre}</td>
+                  <td className="px-4 py-2 border-b border-gray-800">
                     <a
                       href={`/usuarios/${rally.creador_id}`}
-                      className="text-blue-700 hover:underline"
+                      className="text-pink-400 hover:underline"
                       target="_blank"
                       rel="noopener noreferrer"
                     >
                       {usuarios[rally.creador_id]?.nombre || "Desconocido"}
                     </a>
                   </td>
-                  <td className="px-4 py-2 border-b">
+                  <td className="px-4 py-2 border-b border-gray-800">
                     <button
                       onClick={() => setSelectedRally(rally)}
-                      className="bg-blue-500 hover:bg-blue-700 text-white px-3 py-1 rounded font-bold"
+                      className="bg-pink-600 hover:bg-pink-700 text-white px-3 py-1 rounded font-bold"
                     >
                       Ver
                     </button>
@@ -135,15 +135,15 @@ const RallyAdminTable: React.FC = () => {
 
       {selectedRally && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-          <div className="bg-white rounded-xl shadow-xl p-8 max-w-lg w-full relative">
+          <div className="bg-gray-900 rounded-xl shadow-xl p-8 max-w-lg w-full relative text-white">
             <button
               onClick={() => setSelectedRally(null)}
-              className="absolute top-2 right-2 text-gray-500 hover:text-gray-800 text-2xl"
+              className="absolute top-2 right-2 text-gray-400 hover:text-white text-2xl"
               title="Cerrar"
             >
               &times;
             </button>
-            <h2 className="text-2xl font-bold mb-4">Información del Rally</h2>
+            <h2 className="text-2xl font-bold mb-4 text-pink-400">Información de la galería</h2>
             <div className="mb-4">
               <div className="mb-2"><span className="font-semibold">ID:</span> {selectedRally.id}</div>
               <div className="mb-2"><span className="font-semibold">Nombre:</span> {selectedRally.nombre}</div>
@@ -169,7 +169,7 @@ const RallyAdminTable: React.FC = () => {
                 <span className="font-semibold">Usuario:</span>{" "}
                 <a
                   href={`/usuarios/${selectedRally.creador_id}`}
-                  className="text-blue-700 hover:underline"
+                  className="text-pink-400 hover:underline"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -186,7 +186,7 @@ const RallyAdminTable: React.FC = () => {
               </button>
               <button
                 onClick={() => setSelectedRally(null)}
-                className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-6 py-2 rounded font-bold"
+                className="bg-gray-700 hover:bg-gray-600 text-white px-6 py-2 rounded font-bold"
               >
                 Cerrar
               </button>
