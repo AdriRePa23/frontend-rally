@@ -55,7 +55,7 @@ const RallyPostCard: React.FC<RallyPostCardProps> = React.memo(function RallyPos
       "/votaciones",
       {
         publicacion_id: id,
-        ip,
+        ip: ip,
       },
       token
         ? { headers: { Authorization: `Bearer ${token}` } }
