@@ -39,26 +39,38 @@ const RallyPostCard: React.FC<RallyPostCardProps> = React.memo(function RallyPos
     (usuarioId && (usuarioId === creador.id || userRol === 2 || userRol === 3));
 
   const handleLike = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    if (voted || likeLoading) return;
-    setLikeLoading(true);
-    try {
-      const token = localStorage.getItem("token");
-      await API.post(
-        "/votaciones",
-        { publicacion_id: id },
-        token
-          ? { headers: { Authorization: `Bearer ${token}` } }
-          : undefined
-      );
-      setLikes((prev) => prev + 1);
-      setVoted(true);
-    } catch {
-      // Puedes mostrar un error si quieres
-    } finally {
-      setLikeLoading(false);
-    }
-  };
+  e.preventDefault();
+  if (voted || likeLoading) return;
+  setLikeLoading(true);
+
+  try {
+    const token = localStorage.getItem("token");
+
+    // Obtener la IP del cliente
+    const ipResponse = await fetch("https://api.ipify.org?format=json");
+    const { ip } = await ipResponse.json();
+
+    // Enviar la IP junto al ID de la publicación
+    await API.post(
+      "/votaciones",
+      {
+        publicacion_id: id,
+        ip,
+      },
+      token
+        ? { headers: { Authorization: `Bearer ${token}` } }
+        : undefined
+    );
+
+    setLikes((prev) => prev + 1);
+    setVoted(true);
+  } catch (error) {
+    console.error("Error al votar:", error);
+  } finally {
+    setLikeLoading(false);
+  }
+};
+
 
   return (
     <div className="relative w-96 h-96 rounded-2xl shadow-lg overflow-hidden group hover:scale-105 transition-transform duration-200">
