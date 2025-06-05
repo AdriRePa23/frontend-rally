@@ -51,6 +51,7 @@ const RallyPostCard: React.FC<RallyPostCardProps> = React.memo(
         // Obtener la IP del cliente
         const ipResponse = await fetch("https://api.ipify.org?format=json");
         const { ip } = await ipResponse.json();
+        console.log("IP del cliente:", ip);
 
         // Enviar la IP junto al ID de la publicación
         await API.post(
