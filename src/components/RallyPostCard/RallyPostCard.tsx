@@ -60,7 +60,9 @@ const RallyPostCard: React.FC<RallyPostCardProps> = React.memo(
             publicacion_id: id,
             ip: ip,
           },
-          token ? { headers: { Authorization: `Bearer ${token}` } } : undefined
+          {
+            headers: token ? { Authorization: `Bearer ${token}` } : {}, 
+          }
         );
 
         setLikes((prev) => prev + 1);
