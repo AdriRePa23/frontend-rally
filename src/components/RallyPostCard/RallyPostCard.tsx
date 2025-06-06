@@ -74,14 +74,14 @@ const RallyPostCard: React.FC<RallyPostCardProps> = React.memo(
     };
 
     return (
-      <div className="relative w-96 h-96 rounded-2xl shadow-lg overflow-hidden group hover:scale-105 transition-transform duration-200">
+      <div className="relative w-full max-w-xs sm:max-w-none sm:w-96 h-96 rounded-2xl shadow-lg overflow-hidden group hover:scale-105 transition-transform duration-200">
         {puedeAcceder ? (
           <>
             <Link
               to={`/rallies/${rallyId}/publicacion/${id}`}
               className="absolute inset-0 block z-0"
               aria-label={`Ver publicación ${id}`}
-              tabIndex={-1} // Evita que el link capture el foco antes que el botón
+              tabIndex={-1}
               style={{ pointerEvents: "auto" }}
             />
             <img
@@ -91,10 +91,11 @@ const RallyPostCard: React.FC<RallyPostCardProps> = React.memo(
               loading="lazy"
               draggable={false}
             />
-            <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/80 via-black/40 to-transparent px-4 py-3 flex justify-between items-end z-10">
+            {/* El contenedor debe tener pointer-events-auto para que el botón sea clicable */}
+            <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/80 via-black/40 to-transparent px-4 py-3 flex justify-between items-end z-10 pointer-events-none">
               <Link
                 to={`/usuarios/${creador.id}`}
-                className="flex items-center gap-2 hover:underline"
+                className="flex items-center gap-2 hover:underline pointer-events-auto"
                 aria-label={`Ver perfil de ${creador.nombre}`}
               >
                 <img
@@ -108,19 +109,20 @@ const RallyPostCard: React.FC<RallyPostCardProps> = React.memo(
                   {creador.nombre}
                 </span>
               </Link>
-              <div className="flex items-center gap-1">
+              {/* El botón debe tener pointer-events-auto y z-20 para estar por encima del enlace */}
+              <div className="flex items-center gap-1 pointer-events-auto z-20">
                 <button
                   onClick={handleLike}
                   onTouchStart={(e) => handleLike(e)}
                   disabled={voted || likeLoading}
-                  className={`flex items-center gap-1 text-white bg-black/40 rounded-full px-3 py-1 ml-2 transition-all duration-150 z-20 ${
+                  className={`flex items-center gap-1 text-white bg-black/40 rounded-full px-3 py-1 ml-2 transition-all duration-150 ${
                     voted ? "opacity-60 pointer-events-none" : "hover:bg-pink-600"
                   }`}
                   title={voted ? "Ya has votado" : "Dar like"}
                   type="button"
                   aria-label={voted ? "Ya has votado" : "Dar like"}
                   tabIndex={0}
-                  style={{ position: "relative" }}
+                  style={{ position: "relative", zIndex: 30 }}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
