@@ -48,6 +48,12 @@ const RecoverPasswordForm: React.FC<RecoverPasswordFormProps> = React.memo(
             {errorMessage}
           </p>
         )}
+        <div className="mb-2">
+          <p className="text-xs text-gray-400">
+            Introduce el email con el que te registraste. Recibirás un correo con
+            instrucciones para restablecer tu contraseña.
+          </p>
+        </div>
         <div className="mb-4">
           <label
             className="block text-white text-sm font-bold mb-2"

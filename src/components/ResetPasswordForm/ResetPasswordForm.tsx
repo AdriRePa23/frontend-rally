@@ -68,6 +68,11 @@ const ResetPasswordForm: React.FC<ResetPasswordFormProps> = React.memo(function 
       {errorMessage && (
         <p className="text-red-500 text-sm mb-4 text-center">{errorMessage}</p>
       )}
+      <div className="mb-2">
+        <p className="text-xs text-gray-400">
+          La contraseña debe tener entre 6 y 255 caracteres, incluir al menos una mayúscula, una minúscula y un número.
+        </p>
+      </div>
       <div className="mb-4">
         <label className="block text-white text-sm font-bold mb-2" htmlFor="newPassword">
           Nueva contraseña:
