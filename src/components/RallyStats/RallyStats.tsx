@@ -7,123 +7,114 @@ export interface RallyStatsProps {
 
 interface TopImage {
   id: number;
-  fotografia: string;
+  descripcion: string;
   votos: number;
-  creador_nombre: string;
+}
+
+interface RallyStatsData {
+  total_publicaciones: number;
+  total_votos: number;
+  total_participantes: number;
+  top_3_mas_votadas: TopImage[];
 }
 
 const RallyStats: React.FC<RallyStatsProps> = ({ rallyId }) => {
-  const [stats, setStats] = useState<{
-    totalPublicaciones: number;
-    totalUsuarios: number;
-    totalVotos: number;
-  } | null>(null);
+  const [open, setOpen] = useState(false);
+  const [stats, setStats] = useState<RallyStatsData | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const [topImages, setTopImages] = useState<TopImage[]>([]);
+  const fetchStats = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const token = localStorage.getItem("token");
+      const res = await API.get(`/estadisticas/rally/${rallyId}`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+      setStats(res.data);
+    } catch {
+      setStats(null);
+      setError("No tienes permisos para ver las estadísticas.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  useEffect(() => {
-    let isMounted = true;
-    const fetchStats = async () => {
-      try {
-        const [pubsRes, usersRes, votosRes] = await Promise.all([
-          API.get(`/estadisticas/total-publicaciones?rally_id=${rallyId}`),
-          API.get(`/estadisticas/total-usuarios?rally_id=${rallyId}`),
-          API.get(`/estadisticas/total-votos?rally_id=${rallyId}`),
-        ]);
-        if (isMounted) {
-          setStats({
-            totalPublicaciones: pubsRes.data.total || 0,
-            totalUsuarios: usersRes.data.total || 0,
-            totalVotos: votosRes.data.total || 0,
-          });
-        }
-      } catch {
-        if (isMounted) setStats(null);
-      }
-    };
-
-    const fetchTopImages = async () => {
-      try {
-        const res = await API.get(`/publicaciones?rally_id=${rallyId}`);
-        let publicaciones = Array.isArray(res.data) ? res.data : [];
-        // Obtener votos para cada publicación
-        const pubsWithVotos = await Promise.all(
-          publicaciones.map(async (pub: any) => {
-            let votos = 0;
-            try {
-              const votosRes = await API.get(`/votaciones?publicacion_id=${pub.id}`);
-              if (Array.isArray(votosRes.data)) {
-                votos = votosRes.data.length;
-              } else {
-                votos = votosRes.data?.votos ?? 0;
-              }
-            } catch {}
-            let creador_nombre = "";
-            try {
-              const usuarioRes = await API.get(`/usuarios/${pub.usuario_id}`);
-              creador_nombre = usuarioRes.data.nombre;
-            } catch {}
-            return {
-              id: pub.id,
-              fotografia: pub.fotografia,
-              votos,
-              creador_nombre,
-            };
-          })
-        );
-        // Ordenar por votos descendente y tomar top 3
-        pubsWithVotos.sort((a, b) => b.votos - a.votos);
-        setTopImages(pubsWithVotos.slice(0, 3));
-      } catch {
-        setTopImages([]);
-      }
-    };
-
+  const handleOpen = () => {
+    setOpen(true);
     fetchStats();
-    fetchTopImages();
-    return () => { isMounted = false; };
-  }, [rallyId]);
+  };
 
-  if (!stats) return (
-    <span className="bg-gray-700 text-gray-200 px-3 py-1 rounded-full text-sm font-semibold">
-      Estadísticas no disponibles
-    </span>
-  );
+  const handleClose = () => {
+    setOpen(false);
+    setStats(null);
+    setError(null);
+  };
 
   return (
     <>
-      <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-semibold">
-        Publicaciones: {stats.totalPublicaciones}
-      </span>
-      <span className="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm font-semibold">
-        Participantes: {stats.totalUsuarios}
-      </span>
-      <span className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-semibold">
-        Votos: {stats.totalVotos}
-      </span>
-      {topImages.length > 0 && (
-        <div className="flex flex-col gap-1 mt-2 w-full">
-          <span className="font-bold text-pink-300 text-sm">Top 3 imágenes más votadas:</span>
-          <div className="flex flex-wrap gap-3">
-            {topImages.map((img, idx) => (
-              <a
-                key={img.id}
-                href={`/rallies/${rallyId}/publicacion/${img.id}`}
-                className="flex flex-col items-center bg-gray-800 rounded-lg p-2 hover:bg-pink-900 transition"
-                style={{ width: 80 }}
-                title={`Ver publicación de ${img.creador_nombre}`}
-              >
-                <img
-                  src={img.fotografia}
-                  alt={`Imagen ${idx + 1}`}
-                  className="w-14 h-14 rounded-md object-cover border-2 border-pink-400 mb-1"
-                  loading="lazy"
-                  draggable={false}
-                />
-                <span className="text-xs text-pink-200 font-bold">{img.votos} votos</span>
-                <span className="text-[10px] text-gray-300 truncate max-w-[70px]">{img.creador_nombre}</span>
-              </a>
-            ))}
+      <button
+        className="bg-pink-600 hover:bg-pink-700 text-white font-bold px-6 py-2 rounded-full shadow transition-all duration-150"
+        onClick={handleOpen}
+        type="button"
+      >
+        Ver estadísticas
+      </button>
+      {open && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
+          <div className="bg-gray-900 rounded-2xl shadow-xl p-8 max-w-md w-full relative text-white">
+            <button
+              onClick={handleClose}
+              className="absolute top-3 right-4 text-gray-400 hover:text-white text-2xl"
+              aria-label="Cerrar"
+              type="button"
+            >
+              &times;
+            </button>
+            <h2 className="text-2xl font-bold mb-4 text-pink-400">Estadísticas del rally</h2>
+            {loading ? (
+              <div className="text-gray-300 py-8 text-center">Cargando estadísticas...</div>
+            ) : error ? (
+              <div className="text-red-400 py-8 text-center">{error}</div>
+            ) : stats ? (
+              <div className="flex flex-col gap-4">
+                <div className="flex flex-wrap gap-3">
+                  <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-semibold">
+                    Publicaciones: {stats.total_publicaciones}
+                  </span>
+                  <span className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-semibold">
+                    Votos: {stats.total_votos}
+                  </span>
+                  <span className="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm font-semibold">
+                    Participantes: {stats.total_participantes}
+                  </span>
+                </div>
+                <div>
+                  <span className="font-bold text-pink-300 text-sm block mb-2">Top 3 imágenes más votadas:</span>
+                  <div className="flex flex-col gap-2">
+                    {stats.top_3_mas_votadas && stats.top_3_mas_votadas.length > 0 ? (
+                      stats.top_3_mas_votadas.map((img, idx) => (
+                        <a
+                          key={img.id}
+                          href={`/rallies/${rallyId}/publicacion/${img.id}`}
+                          className="flex items-center gap-3 bg-gray-800 rounded-lg px-3 py-2 hover:bg-pink-900 transition"
+                          title={img.descripcion}
+                        >
+                          <span className="font-bold text-pink-200 text-lg w-6 text-center">{idx + 1}</span>
+                          <span className="flex-1 text-white truncate">{img.descripcion}</span>
+                          <span className="text-pink-300 font-bold">{img.votos} votos</span>
+                        </a>
+                      ))
+                    ) : (
+                      <span className="text-gray-400 text-sm">No hay imágenes con votos.</span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="text-gray-400 py-8 text-center">No hay estadísticas disponibles.</div>
+            )}
           </div>
         </div>
       )}
