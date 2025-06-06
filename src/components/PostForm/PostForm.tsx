@@ -96,18 +96,40 @@ const PostForm: React.FC<PostFormProps> = React.memo(function PostForm({ rallyId
     } catch (err: any) {
       // Manejo de mensajes de error específicos de la API
       const apiMsg = err.response?.data?.message;
-      if (apiMsg === "No puedes subir más de X fotos a este rally.") {
+      if (
+        apiMsg?.includes("No puedes subir más de") ||
+        apiMsg === "No puedes subir más de X fotos a este rally."
+      ) {
         setError("No puedes subir más fotos a este rally.");
-      } else if (apiMsg === "La imagen y el ID del rally son obligatorios") {
+      } else if (
+        apiMsg?.includes("La imagen y el ID del rally son obligatorios")
+      ) {
         setError("La imagen y el ID del rally son obligatorios.");
-      } else if (apiMsg === "Solo se permiten imágenes JPG, PNG o WEBP") {
-        setError("La imagen debe ser JPG, PNG o WEBP.");
-      } else if (apiMsg === "La imagen no puede superar los 5MB") {
-        setError("La imagen no puede superar los 5MB.");
-      } else if (apiMsg === "Rally no encontrado") {
+      } else if (
+        apiMsg?.includes("Solo se permiten imágenes JPG") ||
+        apiMsg?.includes("Solo se permiten imágenes PNG") ||
+        apiMsg?.includes("Solo se permiten imágenes WEBP") ||
+        apiMsg?.includes("Solo se permiten imágenes") ||
+        apiMsg?.toLowerCase().includes("imagen") && apiMsg?.toLowerCase().includes("permit")
+      ) {
+        setError("La imagen debe ser JPG, JPEG, PNG, WEBP o BMP.");
+      } else if (
+        apiMsg?.includes("La imagen no puede superar los 5MB") ||
+        apiMsg?.includes("La imagen no puede superar los 10MB")
+      ) {
+        setError("La imagen no puede superar los 10MB.");
+      } else if (
+        apiMsg?.includes("Rally no encontrado")
+      ) {
         setError("El rally no existe.");
-      } else if (apiMsg === "Error al crear la publicación") {
+      } else if (
+        apiMsg?.includes("Error al crear la publicación")
+      ) {
         setError("Error al crear la publicación.");
+      } else if (
+        apiMsg?.toLowerCase().includes("token") && apiMsg?.toLowerCase().includes("expir")
+      ) {
+        setError("Tu sesión ha expirado. Por favor, inicia sesión de nuevo.");
       } else {
         setError(apiMsg || "Error al crear la publicación.");
       }
