@@ -1,54 +1,82 @@
-# React + TypeScript + Vite
+# PicMeTogether - Red Social de Rallies Fotográficos
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+PicMeTogether es una plataforma web donde los usuarios pueden crear, participar y votar en rallies fotográficos. El frontend está desarrollado con React, TypeScript, Vite y Tailwind CSS, siguiendo buenas prácticas de accesibilidad, usabilidad y clean code.
 
-Currently, two official plugins are available:
+## Características principales
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Registro, login y recuperación de contraseña con validaciones avanzadas.
+- Creación y gestión de rallies fotográficos.
+- Subida de publicaciones con imágenes.
+- Votación y comentarios en publicaciones.
+- Panel de administración para usuarios con roles elevados.
+- Accesibilidad y diseño responsive.
+- Restricciones funcionales (ej: no se puede votar en publicaciones pendientes).
 
-## Expanding the ESLint configuration
+## Tecnologías utilizadas
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- [React](https://react.dev/)
+- [TypeScript](https://www.typescriptlang.org/)
+- [Vite](https://vitejs.dev/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [React Router](https://reactrouter.com/)
+- [Axios](https://axios-http.com/)
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+## Estructura del proyecto
+
+```
+/src
+  /components         # Componentes reutilizables y específicos
+  /context            # Contextos globales
+  /pages              # Páginas principales
+  /services           # Lógica de comunicación con el backend
+  /types              # Definiciones TypeScript
+  App.tsx, main.tsx   # Entradas principales
+  index.css           # Estilos globales
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Instalación y ejecución
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+1. Clona el repositorio y entra en la carpeta del proyecto.
+2. Instala las dependencias:
+   ```bash
+   npm install
+   ```
+3. Inicia el entorno de desarrollo:
+   ```bash
+   npm run dev
+   ```
+4. Accede a [http://localhost:5173](http://localhost:5173) en tu navegador.
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+## Variables de entorno
+
+Crea un archivo `.env` en la raíz con la URL del backend:
 ```
+VITE_API_URL=https://tubackend.com/api
+```
+
+## Buenas prácticas y optimización
+
+- Código limpio y sin comentarios innecesarios.
+- Validaciones y feedback visual en formularios.
+- Accesibilidad: labels, aria, navegación por teclado.
+- Uso de hooks y tipado explícito.
+- Componentes reutilizables y lógica separada.
+
+## Despliegue
+
+El proyecto está preparado para desplegarse en Vercel, Netlify o cualquier hosting estático compatible con Vite.
+
+## Mejoras futuras
+
+- Notificaciones en tiempo real.
+- Mensajería privada entre usuarios.
+- Feed personalizado y sistema de seguidores.
+- Soporte multilenguaje.
+- Moderación y reporte de contenidos.
+
+## Autoría
+
+Desarrollado como parte del TFG.
+
+---
+
