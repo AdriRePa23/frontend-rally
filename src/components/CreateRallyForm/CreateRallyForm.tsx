@@ -90,7 +90,15 @@ function CreateRallyForm() {
       }
     } catch (error: any) {
       if (error.response && error.response.data && error.response.data.message) {
-        setErrorMessage(error.response.data.message);
+        // Error personalizado para fecha fin inválida
+        if (
+          error.response.data.message.toLowerCase().includes("fecha") &&
+          error.response.data.message.toLowerCase().includes("fin")
+        ) {
+          setErrorMessage("La fecha de fin debe ser posterior a la fecha de inicio (hoy). Por favor, selecciona una fecha válida.");
+        } else {
+          setErrorMessage(error.response.data.message);
+        }
       } else {
         setErrorMessage('Ocurrió un error al crear el rally.');
       }
