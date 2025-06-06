@@ -40,9 +40,16 @@ const UserPostCard: React.FC<UserPostCardProps> = React.memo(function UserPostCa
     setLikeLoading(true);
     try {
       const token = localStorage.getItem("token");
+      // Obtener la IP del cliente
+      let ip = "";
+      try {
+        const ipRes = await fetch("https://api.ipify.org?format=json");
+        const ipData = await ipRes.json();
+        ip = ipData.ip;
+      } catch {}
       await API.post(
         "/votaciones",
-        { publicacion_id: id },
+        { publicacion_id: id, ip },
         token
           ? { headers: { Authorization: `Bearer ${token}` } }
           : undefined
