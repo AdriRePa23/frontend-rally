@@ -41,7 +41,9 @@ const PostDetail: React.FC = () => {
         } catch {}
         let votos = 0;
         try {
-          const votosRes = await API.get(`/votaciones?publicacion_id=${postRaw.id}`);
+          const votosRes = await API.get(
+            `/votaciones?publicacion_id=${postRaw.id}`
+          );
           if (Array.isArray(votosRes.data)) {
             votos = votosRes.data.length;
           } else {
@@ -66,22 +68,34 @@ const PostDetail: React.FC = () => {
     // Obtener usuario autenticado
     const token = localStorage.getItem("token");
     if (token) {
-      API.post("/auth/verify-token", {}, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-        .then(res => setUsuario(res.data.user))
+      API.post(
+        "/auth/verify-token",
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      )
+        .then((res) => setUsuario(res.data.user))
         .catch(() => setUsuario(null));
     }
   }, [id_publicacion]);
 
-  
   const puedeAcceder =
     post &&
     (post.estado !== "pendiente" ||
-      (usuario && (usuario.id === post.usuario_id || usuario.rol_id === 2 || usuario.rol_id === 3)));
+      (usuario &&
+        (usuario.id === post.usuario_id ||
+          usuario.rol_id === 2 ||
+          usuario.rol_id === 3)));
 
-  if (loading) return <div className="text-center py-8 text-white bg-gray-950">Cargando...</div>;
-  if (error) return <div className="text-center text-red-500 py-8 bg-gray-950">{error}</div>;
+  if (loading)
+    return (
+      <div className="text-center py-8 text-white bg-gray-950">Cargando...</div>
+    );
+  if (error)
+    return (
+      <div className="text-center text-red-500 py-8 bg-gray-950">{error}</div>
+    );
   if (!post) return null;
   if (!puedeAcceder)
     return (
@@ -97,7 +111,9 @@ const PostDetail: React.FC = () => {
     <div className="flex h-screen bg-gray-950">
       <AsideNavBar />
       <main className="flex-1 bg-gray-950 p-6 overflow-y-auto w-full max-w-full md:ml-64 pt-20 md:pt-0">
-        <BackButton />
+        <div className="flex mb-4">
+          <BackButton />
+        </div>
         {post.estado === "pendiente" && (
           <div className="mb-4">
             <span className="bg-yellow-400 text-yellow-900 font-bold px-4 py-2 rounded-full text-sm shadow">
