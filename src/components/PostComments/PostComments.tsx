@@ -158,7 +158,7 @@ const PostComments: React.FC<PostCommentsProps> = React.memo(function PostCommen
         </div>
         {/* Formulario */}
         <div className="pt-5 pb-6 border-t border-gray-800 bg-gray-900">
-          <form className="flex gap-2" onSubmit={handleEnviar}>
+          <form className="flex flex-col sm:flex-row gap-2" onSubmit={handleEnviar}>
             <input
               type="text"
               className="flex-1 border border-gray-700 rounded px-3 py-2 bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-pink-400"
@@ -171,7 +171,7 @@ const PostComments: React.FC<PostCommentsProps> = React.memo(function PostCommen
             />
             <button
               type="submit"
-              className="bg-pink-600 hover:bg-pink-700 text-white font-semibold px-4 py-2 rounded shadow"
+              className="bg-pink-600 hover:bg-pink-700 text-white font-semibold px-4 py-2 rounded shadow w-full sm:w-auto"
               disabled={enviando || !nuevoComentario.trim() || !usuario}
             >
               {enviando ? "Enviando..." : "Enviar"}
