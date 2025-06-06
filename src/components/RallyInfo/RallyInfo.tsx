@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import { Rally } from "../../types";
 import { Usuario } from "../../types/Usuario";
 import EditRallyForm from "../EditRallyForm/EditRallyForm";
+import RallyStats from "../RallyStats/RallyStats"; 
 
 // Tipado explícito y exportable para reutilización
 export interface RallyInfoProps {}
@@ -96,6 +97,10 @@ const RallyInfo: React.FC<RallyInfoProps> = React.memo(function RallyInfo() {
               <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-semibold">Fecha de creación: {formatDate(rally.fecha_inicio)}</span>
               <span className="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-semibold">Fecha fin: {formatDate(rally.fecha_fin)}</span>
               <span className="bg-gray-800 text-gray-200 px-3 py-1 rounded-full text-sm font-semibold">Máx. fotos/usuario: {rally.cantidad_fotos_max}</span>
+            </div>
+            {/* Estadísticas del rally */}
+            <div className="flex flex-wrap gap-3 mb-4">
+              <RallyStats rallyId={rally.id} />
             </div>
           </div>
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 w-full mt-4">
