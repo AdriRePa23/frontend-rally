@@ -110,10 +110,8 @@ const PostDetail: React.FC = () => {
   return (
     <div className="flex h-screen bg-gray-950">
       <AsideNavBar />
-      <main className="flex-1 bg-gray-950 p-6 overflow-y-auto w-full max-w-full md:ml-64 pt-20 md:pt-0">
-        <div className="flex mb-4">
-          <BackButton />
-        </div>
+      <main className="flex-1 bg-gray-950 p-6 overflow-y-auto w-full max-w-full md:ml-64 pt-20 md:pt-0 mt-8">
+        
         {post.estado === "pendiente" && (
           <div className="mb-4">
             <span className="bg-yellow-400 text-yellow-900 font-bold px-4 py-2 rounded-full text-sm shadow">
@@ -121,6 +119,10 @@ const PostDetail: React.FC = () => {
             </span>
           </div>
         )}
+        <div className="flex items-center mb-4">
+          <BackButton />
+          
+        </div>
         <PostView id={post.id} />
       </main>
     </div>

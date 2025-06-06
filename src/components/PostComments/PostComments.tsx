@@ -102,7 +102,9 @@ const PostComments: React.FC<PostCommentsProps> = React.memo(function PostCommen
       <div className="px-6 pt-5 pb-2">
         <h3 className="font-semibold text-pink-400 text-lg">Comentarios</h3>
       </div>
-      <div className="flex-1 flex px-6 pb-4 min-h-0">
+      {/* En móvil, el formulario va arriba; en escritorio, abajo */}
+      <div className="flex-1 flex flex-col-reverse sm:flex-col px-6 pb-4 min-h-0 gap-0">
+        {/* Comentarios */}
         <div
           style={{ overflowY: "auto", flex: 1, minHeight: 0, maxHeight: 550 }}
         >
@@ -154,35 +156,36 @@ const PostComments: React.FC<PostCommentsProps> = React.memo(function PostCommen
             </ul>
           )}
         </div>
-      </div>
-      <div className="px-6 pt-5 pb-6 border-t border-gray-800 bg-gray-900">
-        <form className="flex gap-2" onSubmit={handleEnviar}>
-          <input
-            type="text"
-            className="flex-1 border border-gray-700 rounded px-3 py-2 bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-pink-400"
-            placeholder="Escribe un comentario..."
-            value={nuevoComentario}
-            onChange={e => setNuevoComentario(e.target.value)}
-            maxLength={500}
-            required
-            disabled={!usuario}
-          />
-          <button
-            type="submit"
-            className="bg-pink-600 hover:bg-pink-700 text-white font-semibold px-4 py-2 rounded shadow"
-            disabled={enviando || !nuevoComentario.trim() || !usuario}
-          >
-            {enviando ? "Enviando..." : "Enviar"}
-          </button>
-        </form>
-        {!usuario && (
-          <div className="text-red-400 text-sm mt-2">
-            Debes iniciar sesión para comentar.
-          </div>
-        )}
-        {error && (
-          <div className="text-red-400 text-sm mt-2">{error}</div>
-        )}
+        {/* Formulario */}
+        <div className="pt-5 pb-6 border-t border-gray-800 bg-gray-900">
+          <form className="flex gap-2" onSubmit={handleEnviar}>
+            <input
+              type="text"
+              className="flex-1 border border-gray-700 rounded px-3 py-2 bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-pink-400"
+              placeholder="Escribe un comentario..."
+              value={nuevoComentario}
+              onChange={e => setNuevoComentario(e.target.value)}
+              maxLength={500}
+              required
+              disabled={!usuario}
+            />
+            <button
+              type="submit"
+              className="bg-pink-600 hover:bg-pink-700 text-white font-semibold px-4 py-2 rounded shadow"
+              disabled={enviando || !nuevoComentario.trim() || !usuario}
+            >
+              {enviando ? "Enviando..." : "Enviar"}
+            </button>
+          </form>
+          {!usuario && (
+            <div className="text-red-400 text-sm mt-2">
+              Debes iniciar sesión para comentar.
+            </div>
+          )}
+          {error && (
+            <div className="text-red-400 text-sm mt-2">{error}</div>
+          )}
+        </div>
       </div>
     </div>
   );

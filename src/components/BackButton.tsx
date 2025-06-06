@@ -13,7 +13,7 @@ const BackButton: React.FC = React.memo(() => {
     <button
       type="button"
       onClick={handleBack}
-      className="fixed top-6 left-6 z-50 bg-gray-800 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded shadow transition-all duration-150 flex items-center gap-2"
+      className=" top-6 left-6 z-50 bg-gray-800 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded shadow transition-all duration-150 flex items-center gap-2"
       aria-label="Volver atrás"
       style={{ minWidth: 0 }}
     >
