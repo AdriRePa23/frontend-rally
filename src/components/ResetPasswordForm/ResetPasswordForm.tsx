@@ -103,6 +103,11 @@ const ResetPasswordForm: React.FC<ResetPasswordFormProps> = React.memo(function 
           minLength={6}
         />
       </div>
+      <div className="mb-2">
+        <p className="text-xs text-gray-400">
+          La contraseña debe tener entre 6 carácteres al menos, incluir al menos una mayúscula, una minúscula y un número.
+        </p>
+      </div>
       <button
         type="submit"
         className={`bg-pink-600 hover:bg-pink-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full ${

@@ -129,11 +129,7 @@ const RegisterForm: React.FC<RegisterFormProps> = React.memo(function RegisterFo
             required
           />
         </div>
-        <div className="mb-2">
-          <p className="text-xs text-gray-400">
-            La contraseña debe tener entre 6 y 255 caracteres, incluir al menos una mayúscula, una minúscula y un número.
-          </p>
-        </div>
+        
         <div className="mb-6">
           <label
             className="block text-white text-sm font-bold mb-2"
@@ -149,6 +145,11 @@ const RegisterForm: React.FC<RegisterFormProps> = React.memo(function RegisterFo
             className="shadow appearance-none border rounded w-full py-2 px-3 bg-gray-900 text-white leading-tight focus:outline-none focus:shadow-outline"
             required
           />
+        </div>
+        <div className="mb-2">
+          <p className="text-xs text-gray-400">
+            La contraseña debe tener entre 6 carácteres, incluir al menos una mayúscula, una minúscula y un número.
+          </p>
         </div>
         <button
           type="submit"
