@@ -129,6 +129,11 @@ const RegisterForm: React.FC<RegisterFormProps> = React.memo(function RegisterFo
             required
           />
         </div>
+        <div className="mb-2">
+          <p className="text-xs text-gray-400">
+            La contraseña debe tener entre 6 y 255 caracteres, incluir al menos una mayúscula, una minúscula y un número.
+          </p>
+        </div>
         <div className="mb-6">
           <label
             className="block text-white text-sm font-bold mb-2"
