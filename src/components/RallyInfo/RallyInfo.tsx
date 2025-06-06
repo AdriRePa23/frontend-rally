@@ -149,6 +149,7 @@ const RallyInfo: React.FC<RallyInfoProps> = React.memo(function RallyInfo() {
             <button onClick={() => setShowEdit(false)} className="absolute top-2 right-2 text-gray-400 hover:text-white text-2xl">&times;</button>
             <h2 className="text-xl font-bold mb-4 text-pink-400">Editar galería</h2>
             <EditRallyForm rally={rally} onClose={() => setShowEdit(false)} />
+              
           </div>
         </div>
       )}
