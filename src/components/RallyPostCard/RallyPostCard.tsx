@@ -39,7 +39,7 @@ const RallyPostCard: React.FC<RallyPostCardProps> = React.memo(
     const handleLike = useCallback(
       async (e: React.MouseEvent) => {
         e.preventDefault();
-        if (voted || likeLoading) return;
+        if (estado === "pendiente" || voted || likeLoading) return;
         setLikeLoading(true);
         try {
           const token = localStorage.getItem("token");
@@ -61,7 +61,7 @@ const RallyPostCard: React.FC<RallyPostCardProps> = React.memo(
           setLikeLoading(false);
         }
       },
-      [id, voted, likeLoading]
+      [id, voted, likeLoading, estado]
     );
 
     return (
@@ -125,13 +125,25 @@ const RallyPostCard: React.FC<RallyPostCardProps> = React.memo(
             <div className="flex-1 flex justify-end">
               <button
                 onClick={handleLike}
-                disabled={voted || likeLoading}
+                disabled={voted || likeLoading || estado === "pendiente"}
                 className={`flex items-center gap-1 bg-pink-600 hover:bg-pink-700 text-white font-bold px-6 py-2 rounded-full shadow transition-all duration-150 ${
-                  voted ? "opacity-60 pointer-events-none" : ""
+                  voted || estado === "pendiente" ? "opacity-60 pointer-events-none" : ""
                 }`}
-                title={voted ? "Ya has votado" : "Dar like"}
+                title={
+                  estado === "pendiente"
+                    ? "No se puede votar en publicaciones pendientes"
+                    : voted
+                    ? "Ya has votado"
+                    : "Dar like"
+                }
                 type="button"
-                aria-label={voted ? "Ya has votado" : "Dar like"}
+                aria-label={
+                  estado === "pendiente"
+                    ? "No se puede votar en publicaciones pendientes"
+                    : voted
+                    ? "Ya has votado"
+                    : "Dar like"
+                }
                 tabIndex={0}
               >
                 <svg
