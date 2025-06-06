@@ -1,7 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-// Tipado explícito y exportable para reutilización
 export interface UserPostCardProps {
   id: number;
   imagen: string;
@@ -9,13 +8,12 @@ export interface UserPostCardProps {
   estado?: string;
 }
 
-// Componente funcional puro y memoizado para evitar renders innecesarios
 const UserPostCard: React.FC<UserPostCardProps> = React.memo(function UserPostCard({ id, imagen, rally_id, estado }) {
   const isPendiente = estado === "pendiente";
 
   return (
     <div
-      className={`group block w-full max-w-xs ${isPendiente ? "pointer-events-none opacity-60" : ""}`}
+      className={`group block w-full max-w-xs${isPendiente ? " pointer-events-none opacity-60" : ""}`}
       style={{ aspectRatio: "1/1" }}
       aria-disabled={isPendiente}
     >

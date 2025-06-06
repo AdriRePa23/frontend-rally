@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import API from "../../services/api";
 
 export interface RallyStatsProps {
@@ -24,14 +24,15 @@ const RallyStats: React.FC<RallyStatsProps> = ({ rallyId }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchStats = async () => {
+  const fetchStats = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
       const token = localStorage.getItem("token");
-      const res = await API.get(`/estadisticas/rally/${rallyId}`, {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      });
+      const res = await API.get(
+        `/estadisticas/rally/${rallyId}`,
+        { headers: token ? { Authorization: `Bearer ${token}` } : {} }
+      );
       setStats(res.data);
     } catch {
       setStats(null);
@@ -39,18 +40,18 @@ const RallyStats: React.FC<RallyStatsProps> = ({ rallyId }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [rallyId]);
 
-  const handleOpen = () => {
+  const handleOpen = useCallback(() => {
     setOpen(true);
     fetchStats();
-  };
+  }, [fetchStats]);
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     setOpen(false);
     setStats(null);
     setError(null);
-  };
+  }, []);
 
   return (
     <>

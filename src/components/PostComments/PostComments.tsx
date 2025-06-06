@@ -1,12 +1,23 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import API from "../../services/api";
 
 export interface PostCommentsProps {
   publicacionId: number;
 }
 
+interface Comentario {
+  id: number;
+  usuario_id: number;
+  usuario_nombre: string;
+  usuario_foto: string;
+  comentario: string;
+  created_at: string;
+}
+
+const MAX_LENGTH = 500;
+
 const PostComments: React.FC<PostCommentsProps> = React.memo(function PostComments({ publicacionId }) {
-  const [comentarios, setComentarios] = useState<any[]>([]);
+  const [comentarios, setComentarios] = useState<Comentario[]>([]);
   const [nuevoComentario, setNuevoComentario] = useState("");
   const [cargando, setCargando] = useState(true);
   const [enviando, setEnviando] = useState(false);
@@ -14,7 +25,6 @@ const PostComments: React.FC<PostCommentsProps> = React.memo(function PostCommen
   const [usuario, setUsuario] = useState<any>(null);
   const comentariosRef = useRef<HTMLUListElement>(null);
 
-  // Cargar usuario autenticado
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -28,7 +38,6 @@ const PostComments: React.FC<PostCommentsProps> = React.memo(function PostCommen
       .catch(() => setUsuario(null));
   }, []);
 
-  // Cargar comentarios
   useEffect(() => {
     setCargando(true);
     API.get(`/comentarios?publicacion_id=${publicacionId}`)
@@ -37,20 +46,19 @@ const PostComments: React.FC<PostCommentsProps> = React.memo(function PostCommen
       .finally(() => setCargando(false));
   }, [publicacionId]);
 
-  // Enviar comentario
-  const handleEnviar = async (e: React.FormEvent) => {
+  const validateComentario = (comentario: string): string | null => {
+    if (!usuario) return "Debes iniciar sesión para comentar.";
+    if (!comentario.trim()) return "El comentario no puede estar vacío.";
+    if (comentario.length > MAX_LENGTH) return `El comentario no puede superar los ${MAX_LENGTH} caracteres.`;
+    return null;
+  };
+
+  const handleEnviar = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    if (!usuario) {
-      setError("Debes iniciar sesión para comentar.");
-      return;
-    }
-    if (!nuevoComentario.trim()) {
-      setError("El comentario no puede estar vacío.");
-      return;
-    }
-    if (nuevoComentario.length > 500) {
-      setError("El comentario no puede superar los 500 caracteres.");
+    const validation = validateComentario(nuevoComentario);
+    if (validation) {
+      setError(validation);
       return;
     }
     setEnviando(true);
@@ -65,7 +73,6 @@ const PostComments: React.FC<PostCommentsProps> = React.memo(function PostCommen
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setNuevoComentario("");
-      // Recargar comentarios
       const res = await API.get(`/comentarios?publicacion_id=${publicacionId}`);
       setComentarios(Array.isArray(res.data) ? res.data : []);
       setTimeout(() => {
@@ -81,30 +88,28 @@ const PostComments: React.FC<PostCommentsProps> = React.memo(function PostCommen
     } finally {
       setEnviando(false);
     }
-  };
+  }, [nuevoComentario, publicacionId, usuario]);
 
-  // Borrar comentario
-  const handleBorrar = async (comentarioId: number) => {
+  const handleBorrar = useCallback(async (comentarioId: number) => {
     if (!window.confirm("¿Seguro que quieres borrar este comentario?")) return;
     try {
       const token = localStorage.getItem("token");
       await API.delete(`/comentarios/${comentarioId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setComentarios((prev) => prev.filter((c) => c.id !== comentarioId));
+      const res = await API.get(`/comentarios?publicacion_id=${publicacionId}`);
+      setComentarios(Array.isArray(res.data) ? res.data : []);
     } catch {
-      alert("No se pudo borrar el comentario.");
+      setError("No se pudo borrar el comentario.");
     }
-  };
+  }, [publicacionId]);
 
   return (
     <div className="w-full flex flex-col h-full bg-gray-900 rounded-xl border border-gray-800 p-0 ">
       <div className="px-6 pt-5 pb-2">
         <h3 className="font-semibold text-pink-400 text-lg">Comentarios</h3>
       </div>
-      {/* En móvil, el formulario va arriba; en escritorio, abajo */}
       <div className="flex-1 flex flex-col-reverse sm:flex-col px-6 pb-4 min-h-0 gap-0">
-        {/* Comentarios */}
         <div
           style={{ overflowY: "auto", flex: 1, minHeight: 0, maxHeight: 550 }}
         >
@@ -156,7 +161,6 @@ const PostComments: React.FC<PostCommentsProps> = React.memo(function PostCommen
             </ul>
           )}
         </div>
-        {/* Formulario */}
         <div className="pt-5 pb-6 border-t border-gray-800 bg-gray-900">
           <form className="flex flex-col sm:flex-row gap-2" onSubmit={handleEnviar}>
             <input
@@ -165,7 +169,7 @@ const PostComments: React.FC<PostCommentsProps> = React.memo(function PostCommen
               placeholder="Escribe un comentario..."
               value={nuevoComentario}
               onChange={e => setNuevoComentario(e.target.value)}
-              maxLength={500}
+              maxLength={MAX_LENGTH}
               required
               disabled={!usuario}
             />

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import AsideNavBar from "../components/AsideNavBar/AsideNavBar";
 import RallyInfo from "../components/RallyInfo/RallyInfo";
@@ -17,80 +17,86 @@ const RallyDetail: React.FC = () => {
   const [postsLoading, setPostsLoading] = useState(true);
   const [postsError, setPostsError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchRally = async () => {
-      try {
-        const response = await API.get(`/rallies/${id}`);
-        setRally(response.data);
-      } catch (err) {
-        setError("No se pudo cargar el rally.");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchRally();
+  const fetchRally = useCallback(async () => {
+    try {
+      const response = await API.get(`/rallies/${id}`);
+      setRally(response.data);
+    } catch {
+      setError("No se pudo cargar el rally.");
+    } finally {
+      setLoading(false);
+    }
+  }, [id]);
+
+  const fetchUser = useCallback(async () => {
     const token = localStorage.getItem("token");
     setIsLoggedIn(!!token);
     if (token) {
-      API.post("/auth/verify-token", {}, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-        .then(res => setUser(res.data.user))
-        .catch(() => setUser(null));
+      try {
+        const res = await API.post("/auth/verify-token", {}, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setUser(res.data.user);
+      } catch {
+        setUser(null);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchRally();
+    fetchUser();
+  }, [fetchRally, fetchUser]);
+
+  const fetchPosts = useCallback(async () => {
+    try {
+      const response = await API.get(`/publicaciones?rally_id=${id}`);
+      const postsRaw = response.data;
+      const postsWithDetails = await Promise.all(postsRaw.map(async (post: any) => {
+        let creador = { id: post.usuario_id, nombre: "", foto_perfil: "" };
+        try {
+          const usuarioRes = await API.get(`/usuarios/${post.usuario_id}`);
+          creador = {
+            id: usuarioRes.data.id,
+            nombre: usuarioRes.data.nombre,
+            foto_perfil: usuarioRes.data.foto_perfil,
+          };
+        } catch {}
+        let votos = 0;
+        try {
+          const votosRes = await API.get(`/votaciones?publicacion_id=${post.id}`);
+          if (Array.isArray(votosRes.data)) {
+            votos = votosRes.data.length;
+          } else {
+            votos = votosRes.data?.votos ?? 0;
+          }
+        } catch {}
+        return {
+          id: post.id,
+          imagen: post.fotografia,
+          votos,
+          creador,
+          estado: post.estado,
+          rally_id: post.rally_id,
+        };
+      }));
+      setPosts(postsWithDetails);
+    } catch {
+      setPostsError("No se pudieron cargar las publicaciones del rally.");
+    } finally {
+      setPostsLoading(false);
     }
   }, [id]);
 
   useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const response = await API.get(`/publicaciones?rally_id=${id}`);
-        const postsRaw = response.data;
-        const postsWithDetails = await Promise.all(postsRaw.map(async (post: any) => {
-          let creador = { id: post.usuario_id, nombre: "", foto_perfil: "" };
-          try {
-            const usuarioRes = await API.get(`/usuarios/${post.usuario_id}`);
-            creador = {
-              id: usuarioRes.data.id,
-              nombre: usuarioRes.data.nombre,
-              foto_perfil: usuarioRes.data.foto_perfil,
-            };
-          } catch {}
-          let votos = 0;
-          try {
-            const votosRes = await API.get(`/votaciones?publicacion_id=${post.id}`);
-            if (Array.isArray(votosRes.data)) {
-              votos = votosRes.data.length;
-            } else {
-              votos = votosRes.data?.votos ?? 0;
-            }
-          } catch {}
-          // Recuperar el estado de la publicación desde el endpoint
-          return {
-            id: post.id,
-            imagen: post.fotografia,
-            votos,
-            creador,
-            estado: post.estado, // <-- aquí se recupera el estado
-            rally_id: post.rally_id,
-          };
-        }));
-        setPosts(postsWithDetails);
-      } catch (err) {
-        setPostsError("No se pudieron cargar las publicaciones del rally.");
-      } finally {
-        setPostsLoading(false);
-      }
-    };
     fetchPosts();
-  }, [id]);
+  }, [fetchPosts]);
 
-  // Permisos de acceso: solo si el rally está activo o el usuario es dueño, gestor o admin
   const puedeAcceder =
     rally &&
     (rally.estado === "activo" ||
       (user && (user.id === rally.creador_id || user.rol_id === 2 || user.rol_id === 3)));
 
-  // Solo se puede añadir publicación si el rally está activo y el usuario está logueado
   const puedePublicar =
     rally &&
     rally.estado === "activo" &&

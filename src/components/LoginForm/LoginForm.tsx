@@ -1,68 +1,63 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import API from "../../services/api";
 
-// Tipado explícito y exportable para reutilización
 export interface LoginFormProps {}
+
+const validateLogin = (email: string, password: string): string | null => {
+  if (!email || !password) return "Por favor, completa todos los campos.";
+  if (!/\S+@\S+\.\S+/.test(email) || email.length > 255)
+    return "Por favor, ingresa un email válido y que no exceda los 255 caracteres.";
+  if (password.length < 6 || password.length > 255)
+    return "La contraseña debe tener entre 6 y 255 caracteres.";
+  return null;
+};
 
 const LoginForm: React.FC<LoginFormProps> = React.memo(function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
-    setErrorMessage(null);
-    setSuccessMessage(null);
-    setIsLoading(true);
+  const handleSubmit = useCallback(
+    async (event: React.FormEvent) => {
+      event.preventDefault();
+      setErrorMessage(null);
+      setSuccessMessage(null);
+      setIsLoading(true);
 
-    const formData = new FormData(event.currentTarget as HTMLFormElement);
-    const email = formData.get("username") as string;
-    const password = formData.get("password") as string;
-
-    // Validación de los campos
-    if (!email || !password) {
-      setErrorMessage("Por favor, completa todos los campos.");
-      setIsLoading(false);
-      return;
-    }
-
-    if (!/\S+@\S+\.\S+/.test(email) || email.length > 255) {
-      setErrorMessage("Por favor, ingresa un email válido y que no exceda los 255 caracteres.");
-      setIsLoading(false);
-      return;
-    }
-
-    if (password.length < 6 || password.length > 255) {
-      setErrorMessage("La contraseña debe tener entre 6 y 255 caracteres.");
-      setIsLoading(false);
-      return;
-    }
-
-    const data = { email, password };
-
-    try {
-      const response = await API.post("/auth/login", data);
-      const token = response.data.token;
-      localStorage.setItem("token", token);
-      window.location.href = "/";
-    } catch (error: any) {
-      // Manejo de mensajes de error específicos de la API
-      const apiMsg = error.response?.data?.message;
-      if (apiMsg === "Usuario no encontrado" || apiMsg === "Credenciales incorrectas") {
-        setErrorMessage("Credenciales incorrectas.");
-      } else if (apiMsg === "Por favor, verifica tu cuenta antes de iniciar sesión") {
-        setErrorMessage("Por favor, verifica tu cuenta antes de iniciar sesión.");
-      } else if (apiMsg === "Token no válido" || apiMsg === "Token inválido") {
-        setErrorMessage("Token no válido.");
-      } else if (apiMsg === "Error al iniciar sesión") {
-        setErrorMessage("Ocurrió un error al iniciar sesión. Inténtalo más tarde.");
-      } else {
-        setErrorMessage(apiMsg || "Ocurrió un error al iniciar sesión. Inténtalo más tarde.");
+      const formData = new FormData(event.currentTarget as HTMLFormElement);
+      const email = formData.get("username") as string;
+      const password = formData.get("password") as string;
+      const validation = validateLogin(email, password);
+      if (validation) {
+        setErrorMessage(validation);
+        setIsLoading(false);
+        return;
       }
-    } finally {
-      setIsLoading(false);
-    }
-  };
+      const data = { email, password };
+      try {
+        const response = await API.post("/auth/login", data);
+        const token = response.data.token;
+        localStorage.setItem("token", token);
+        window.location.href = "/";
+      } catch (error: any) {
+        const apiMsg = error.response?.data?.message;
+        if (apiMsg === "Usuario no encontrado" || apiMsg === "Credenciales incorrectas") {
+          setErrorMessage("Credenciales incorrectas.");
+        } else if (apiMsg === "Por favor, verifica tu cuenta antes de iniciar sesión") {
+          setErrorMessage("Por favor, verifica tu cuenta antes de iniciar sesión.");
+        } else if (apiMsg === "Token no válido" || apiMsg === "Token inválido") {
+          setErrorMessage("Token no válido.");
+        } else if (apiMsg === "Error al iniciar sesión") {
+          setErrorMessage("Ocurrió un error al iniciar sesión. Inténtalo más tarde.");
+        } else {
+          setErrorMessage(apiMsg || "Ocurrió un error al iniciar sesión. Inténtalo más tarde.");
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    []
+  );
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-950">

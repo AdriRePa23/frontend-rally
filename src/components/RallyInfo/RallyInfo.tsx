@@ -1,12 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import API from "../../services/api";
 import { useParams } from "react-router-dom";
 import { Rally } from "../../types";
 import { Usuario } from "../../types/Usuario";
 import EditRallyForm from "../EditRallyForm/EditRallyForm";
-import RallyStats from "../RallyStats/RallyStats"; 
+import RallyStats from "../RallyStats/RallyStats";
 
-// Tipado explícito y exportable para reutilización
 export interface RallyInfoProps {}
 
 const RallyInfo: React.FC<RallyInfoProps> = React.memo(function RallyInfo() {
@@ -29,13 +28,12 @@ const RallyInfo: React.FC<RallyInfoProps> = React.memo(function RallyInfo() {
             setCreador(creadorRes.data);
           } catch {}
         }
-      } catch (err) {
+      } catch {
         setError("No se pudo cargar el rally.");
       } finally {
         setLoading(false);
       }
     };
-
     const fetchUsuario = async () => {
       const token = localStorage.getItem("token");
       if (token) {
@@ -47,24 +45,22 @@ const RallyInfo: React.FC<RallyInfoProps> = React.memo(function RallyInfo() {
         } catch {}
       }
     };
-
     fetchRally();
     fetchUsuario();
   }, [id]);
 
-  const formatDate = (dateStr: string) => {
+  const formatDate = useCallback((dateStr: string) => {
     const d = new Date(dateStr);
     const day = String(d.getDate()).padStart(2, '0');
     const month = String(d.getMonth() + 1).padStart(2, '0');
     const year = d.getFullYear();
     return `${day}-${month}-${year}`;
-  };
+  }, []);
 
-  if (loading) return <div className="text-center py-8 text-white">Cargando...</div>;
-  if (error) return <div className="text-center text-red-500 py-8">{error}</div>;
-  if (!rally) return null;
+  const puedeEditarOBorrar = usuario && (usuario.id === rally?.creador_id || usuario.rol_id === 2);
 
-  const handleDelete = async () => {
+  const handleDelete = useCallback(async () => {
+    if (!rally) return;
     if (!window.confirm("¿Seguro que quieres eliminar esta galería? Esta acción no se puede deshacer.")) return;
     try {
       const token = localStorage.getItem("token");
@@ -76,7 +72,11 @@ const RallyInfo: React.FC<RallyInfoProps> = React.memo(function RallyInfo() {
     } catch {
       alert("No se pudo eliminar la galería.");
     }
-  };
+  }, [rally]);
+
+  if (loading) return <div className="text-center py-8 text-white">Cargando...</div>;
+  if (error) return <div className="text-center text-red-500 py-8">{error}</div>;
+  if (!rally) return null;
 
   return (
     <div className="w-full bg-gray-900 shadow-lg rounded-2xl mt-8 p-0 flex flex-col gap-0 text-white">
@@ -98,7 +98,6 @@ const RallyInfo: React.FC<RallyInfoProps> = React.memo(function RallyInfo() {
               <span className="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-semibold">Fecha fin: {formatDate(rally.fecha_fin)}</span>
               <span className="bg-gray-800 text-gray-200 px-3 py-1 rounded-full text-sm font-semibold">Máx. fotos/usuario: {rally.cantidad_fotos_max}</span>
             </div>
-            {/* Estadísticas del rally */}
             <div className="flex flex-wrap gap-3 mb-4">
               <RallyStats rallyId={rally.id} />
             </div>
@@ -115,7 +114,7 @@ const RallyInfo: React.FC<RallyInfoProps> = React.memo(function RallyInfo() {
               </a>
             )}
             <div className="flex flex-col gap-2 w-full sm:w-auto sm:flex-row sm:gap-2 sm:ml-auto mt-4 sm:mt-0">
-              {(usuario && (usuario.id === rally.creador_id || usuario.rol_id === 2 )) && (
+              {puedeEditarOBorrar && (
                 <button
                   className="inline-flex items-center gap-2 bg-gradient-to-r from-pink-600 to-pink-400 hover:from-pink-700 hover:to-pink-500 text-white text-lg font-bold py-3 px-8 rounded-full shadow-lg transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-pink-300 focus:ring-offset-2 w-full sm:w-auto"
                   onClick={() => setShowEdit(true)}
@@ -127,7 +126,7 @@ const RallyInfo: React.FC<RallyInfoProps> = React.memo(function RallyInfo() {
                   Editar galería
                 </button>
               )}
-              {(usuario && (usuario.id === rally.creador_id || usuario.rol_id === 2 )) && (
+              {puedeEditarOBorrar && (
                 <button
                   className="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white text-lg font-bold py-3 px-8 rounded-full shadow-lg transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-red-300 focus:ring-offset-2 w-full sm:w-auto"
                   onClick={handleDelete}
@@ -149,7 +148,6 @@ const RallyInfo: React.FC<RallyInfoProps> = React.memo(function RallyInfo() {
             <button onClick={() => setShowEdit(false)} className="absolute top-2 right-2 text-gray-400 hover:text-white text-2xl">&times;</button>
             <h2 className="text-xl font-bold mb-4 text-pink-400">Editar galería</h2>
             <EditRallyForm rally={rally} onClose={() => setShowEdit(false)} />
-              
           </div>
         </div>
       )}

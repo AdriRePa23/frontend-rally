@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useCallback } from "react";
 import API from "../services/api";
 import AsideNavBar from "../components/AsideNavBar/AsideNavBar";
 import { useNavigate, useParams } from "react-router-dom";
@@ -8,30 +8,29 @@ const CreatePost: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
 
-  useEffect(() => {
-    const verifyToken = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        navigate("/login");
-        return;
-      }
-      try {
-        const response = await API.post(
-          "/auth/verify-token",
-          {},
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-        if (!response.data.user) {
-          navigate("/");
-        }
-      } catch (error) {
+  const verifyToken = useCallback(async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/login");
+      return;
+    }
+    try {
+      const response = await API.post(
+        "/auth/verify-token",
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (!response.data.user) {
         navigate("/");
       }
-    };
-    verifyToken();
+    } catch {
+      navigate("/");
+    }
   }, [navigate]);
+
+  useEffect(() => {
+    verifyToken();
+  }, [verifyToken]);
 
   return (
     <div className="flex h-screen bg-gray-950">

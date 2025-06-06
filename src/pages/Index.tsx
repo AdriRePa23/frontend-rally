@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import API from "../services/api";
 import AsideNavBar from "../components/AsideNavBar/AsideNavBar";
 import RallyCard from "../components/RallyCard/RallyCard";
@@ -10,24 +10,23 @@ const Home: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [search, setSearch] = useState<string>("");
 
-  useEffect(() => {
-    const fetchRallies = async () => {
-      try {
-        const { data } = await API.get("/rallies/card");
-        const activas = (Array.isArray(data) ? data : [data]).filter(
-          (galeria) => galeria.estado === "activo"
-        );
-        setRallies(activas);
-      } catch (error) {
-        console.error("Error al obtener las galerías:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchRallies();
+  const fetchRallies = useCallback(async () => {
+    try {
+      const { data } = await API.get("/rallies/card");
+      const activas = (Array.isArray(data) ? data : [data]).filter(
+        (galeria) => galeria.estado === "activo"
+      );
+      setRallies(activas);
+    } catch {
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
 
-  // Filtrado por nombre de galería
+  useEffect(() => {
+    fetchRallies();
+  }, [fetchRallies]);
+
   const filteredRallies = rallies.filter((galeria) =>
     galeria.nombre.toLowerCase().includes(search.toLowerCase())
   );
@@ -37,12 +36,9 @@ const Home: React.FC = () => {
       <AsideNavBar />
       <main
         className="flex-1 bg-gray-950 p-6 overflow-y-auto w-full md:ml-64 pt-24 md:pt-0"
-        style={{
-          minHeight: "100vh",
-        }}
+        style={{ minHeight: "100vh" }}
       >
-        <div className="w-full max-w-[1600px] mx-auto grid grid-rows-[auto_1fr] gap-6 mt-6" >
-          {/* Fila 1: Título, buscador y botón */}
+        <div className="w-full max-w-[1600px] mx-auto grid grid-rows-[auto_1fr] gap-6 mt-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
             <h2 className="text-3xl font-bold text-pink-400 col-span-1 md:col-span-1">
               Galerías disponibles
@@ -61,7 +57,6 @@ const Home: React.FC = () => {
               Crear galería
             </Link>
           </div>
-          {/* Fila 2: Grid de galerías */}
           <div>
             {isLoading ? (
               <p className="text-center text-gray-400">Cargando galerías...</p>

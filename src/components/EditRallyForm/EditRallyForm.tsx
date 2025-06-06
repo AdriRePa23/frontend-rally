@@ -1,13 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import API from "../../services/api";
 
-// Tipado explícito y exportable para reutilización
 export interface EditRallyFormProps {
   rally: any;
   onClose: () => void;
 }
 
-// Componente funcional puro y memoizado
 const EditRallyForm: React.FC<EditRallyFormProps> = React.memo(function EditRallyForm({ rally, onClose }) {
   const [nombre, setNombre] = useState(rally.nombre || "");
   const [descripcion, setDescripcion] = useState(rally.descripcion || "");
@@ -17,17 +15,28 @@ const EditRallyForm: React.FC<EditRallyFormProps> = React.memo(function EditRall
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const validate = () => {
+    if (!nombre || !fechaFin || !cantidadFotosMax) {
+      return "Todos los campos son obligatorios.";
+    }
+    if (nombre.length > 255) return "El nombre no puede tener más de 255 caracteres.";
+    if (descripcion.length > 500) return "La descripción no puede tener más de 500 caracteres.";
+    if (categorias.length > 255) return "Las categorías no pueden tener más de 255 caracteres.";
+    if (isNaN(Number(cantidadFotosMax)) || Number(cantidadFotosMax) < 1) return "El número máximo de fotos debe ser un entero positivo.";
+    if (!/\d{4}-\d{2}-\d{2}/.test(fechaFin) || isNaN(Date.parse(fechaFin))) return "La fecha de fin debe ser válida.";
+    return null;
+  };
+
+  const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setLoading(true);
-
-    if (!nombre || !fechaFin || !cantidadFotosMax) {
-      setError("Todos los campos son obligatorios.");
+    const validationError = validate();
+    if (validationError) {
+      setError(validationError);
       setLoading(false);
       return;
     }
-
     try {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -47,19 +56,12 @@ const EditRallyForm: React.FC<EditRallyFormProps> = React.memo(function EditRall
       onClose();
       window.location.reload();
     } catch (err: any) {
-      // Manejo de mensajes de error específicos de la API
       const apiMsg = err.response?.data?.message;
-      if (apiMsg === "No tienes permiso para modificar este rally") {
-        setError("No tienes permiso para modificar este rally.");
-      } else if (apiMsg === "Error al actualizar el rally") {
-        setError("No se pudo actualizar el rally.");
-      } else {
-        setError(apiMsg || "No se pudo actualizar el rally.");
-      }
+      setError(apiMsg || "No se pudo actualizar el rally.");
     } finally {
       setLoading(false);
     }
-  };
+  }, [nombre, descripcion, fechaFin, categorias, cantidadFotosMax, rally.id, onClose]);
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">

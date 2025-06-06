@@ -1,12 +1,13 @@
-import React, { useState, useEffect, DragEvent } from "react";
+import React, { useState, useEffect, useCallback, DragEvent } from "react";
 import API from "../../services/api";
 
-// Tipado explícito y exportable para reutilización
 export interface EditProfileFormProps {
   onClose: () => void;
 }
 
-// Componente funcional puro y memoizado
+const MAX_IMG_SIZE = 5 * 1024 * 1024;
+const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
+
 const EditProfileForm: React.FC<EditProfileFormProps> = React.memo(function EditProfileForm({ onClose }) {
   const [nombre, setNombre] = useState("");
   const [fotoPerfil, setFotoPerfil] = useState<File | null>(null);
@@ -16,7 +17,6 @@ const EditProfileForm: React.FC<EditProfileFormProps> = React.memo(function Edit
   const [dragActive, setDragActive] = useState(false);
 
   useEffect(() => {
-    // Cargar datos actuales del usuario
     const fetchUser = async () => {
       const token = localStorage.getItem("token");
       if (!token) return;
@@ -37,47 +37,56 @@ const EditProfileForm: React.FC<EditProfileFormProps> = React.memo(function Edit
     fetchUser();
   }, []);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const validateImage = (file: File) => {
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      return "Solo se permiten imágenes JPG, PNG o WEBP.";
+    }
+    if (file.size > MAX_IMG_SIZE) {
+      return "La imagen no puede superar los 5MB.";
+    }
+    return null;
+  };
+
+  const handleFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      if (
-        file.type !== "image/jpeg" &&
-        file.type !== "image/png" &&
-        file.type !== "image/webp"
-      ) {
-        setError("Solo se permiten imágenes JPG, PNG o WEBP.");
-        return;
-      }
-      if (file.size > 5 * 1024 * 1024) {
-        setError("La imagen no puede superar los 5MB.");
+      const validation = validateImage(file);
+      if (validation) {
+        setError(validation);
         return;
       }
       setFotoPerfil(file);
       setPreview(URL.createObjectURL(file));
     }
-  };
+  }, []);
 
-  const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
+  const handleDragOver = useCallback((e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
     setDragActive(true);
-  };
+  }, []);
 
-  const handleDragLeave = (e: DragEvent<HTMLDivElement>) => {
+  const handleDragLeave = useCallback((e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
-  };
+  }, []);
 
-  const handleDrop = (e: DragEvent<HTMLDivElement>) => {
+  const handleDrop = useCallback((e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      setFotoPerfil(e.dataTransfer.files[0]);
-      setPreview(URL.createObjectURL(e.dataTransfer.files[0]));
+      const file = e.dataTransfer.files[0];
+      const validation = validateImage(file);
+      if (validation) {
+        setError(validation);
+        return;
+      }
+      setFotoPerfil(file);
+      setPreview(URL.createObjectURL(file));
     }
-  };
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -105,9 +114,8 @@ const EditProfileForm: React.FC<EditProfileFormProps> = React.memo(function Edit
         },
       });
       onClose();
-      // Forzar recarga completa para evitar caché de la imagen antigua
       window.location.href = window.location.href;
-    } catch (err: any) {
+    } catch {
       setError("No se pudo actualizar el perfil.");
     } finally {
       setLoading(false);

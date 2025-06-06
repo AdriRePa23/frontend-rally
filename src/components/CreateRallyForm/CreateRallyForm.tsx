@@ -37,7 +37,6 @@ function CreateRallyForm() {
     if (!form.fechaFin || isNaN(Date.parse(form.fechaFin))) {
       errors.fechaFin = 'La fecha de fin es obligatoria y debe ser válida.';
     } else {
-      // Validar que fechaFin > fechaInicio (hoy)
       const today = new Date();
       today.setHours(0,0,0,0);
       const fechaFinDate = new Date(form.fechaFin);
@@ -85,7 +84,6 @@ function CreateRallyForm() {
       const response = await API.post('/rallies', data, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      // Redirigir automáticamente al detalle del rally recién creado
       const rallyId = response.data.rallyId || response.data.id;
       if (rallyId) {
         navigate(`/rallies/${rallyId}`);

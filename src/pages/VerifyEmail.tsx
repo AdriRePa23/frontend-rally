@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import AsideNavBar from "../components/AsideNavBar/AsideNavBar";
 import API from "../services/api";
@@ -21,7 +21,6 @@ const VerifyEmail: React.FC = () => {
         return;
       }
       try {
-        // Llama al endpoint correcto con el token como query param
         const res = await API.get(`/auth/verify-email?token=${token}`);
         setStatus("success");
         setMessage("¡Cuenta verificada correctamente! Ya puedes iniciar sesión.");
@@ -47,7 +46,7 @@ const VerifyEmail: React.FC = () => {
     }
   }, [status, navigate]);
 
-  const handleResend = async () => {
+  const handleResend = useCallback(async () => {
     if (!email) return;
     setResendStatus("loading");
     setResendMessage(null);
@@ -59,7 +58,7 @@ const VerifyEmail: React.FC = () => {
       setResendStatus("error");
       setResendMessage("No se pudo reenviar el correo de verificación.");
     }
-  };
+  }, [email]);
 
   return (
     <div className="flex h-screen bg-gray-950">

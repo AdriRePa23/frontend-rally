@@ -4,7 +4,7 @@ const API = axios.create({
     baseURL: "https://api.picmetogether.online/api", 
 });
 
-// Agregar token de autenticación a las solicitudes
+
 API.interceptors.request.use((config) => {
     const token = localStorage.getItem("token");
     if (token) {

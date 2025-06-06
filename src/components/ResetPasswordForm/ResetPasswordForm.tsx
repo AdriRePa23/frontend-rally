@@ -1,11 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import API from "../../services/api";
 import { useSearchParams } from "react-router-dom";
 
-// Tipado explícito y exportable para reutilización
 export interface ResetPasswordFormProps {}
 
-// Componente funcional puro y memoizado
 const ResetPasswordForm: React.FC<ResetPasswordFormProps> = React.memo(function ResetPasswordForm() {
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token");
@@ -15,52 +13,55 @@ const ResetPasswordForm: React.FC<ResetPasswordFormProps> = React.memo(function 
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSuccessMessage(null);
-    setErrorMessage(null);
-
-    if (!token) {
-      setErrorMessage("Token no válido.");
-      return;
-    }
-    if (!newPassword || newPassword.length < 6) {
-      setErrorMessage("La nueva contraseña debe tener al menos 6 caracteres.");
-      return;
-    }
-    if (newPassword !== repeatPassword) {
-      setErrorMessage("Las contraseñas no coinciden.");
-      return;
-    }
-    setIsLoading(true);
-    try {
-      await API.post(`/auth/reset-password?token=${token}`, {
-        nuevaContrasena: newPassword,
-      });
-      setSuccessMessage("Contraseña restablecida correctamente. Ya puedes iniciar sesión.");
-    } catch (err: any) {
-      // Manejo de mensajes de error específicos de la API
-      const apiMsg = err.response?.data?.message;
-      if (apiMsg === "Token inválido o expirado" || apiMsg === "Token expirado" || apiMsg === "Token expirado o invalido") {
-        setErrorMessage("El enlace de recuperación ha expirado o es inválido.");
-      } else if (apiMsg === "Token y nueva contraseña son obligatorios") {
-        setErrorMessage("Token y nueva contraseña son obligatorios.");
-      } else if (apiMsg === "Error al restablecer la contraseña") {
-        setErrorMessage("No se pudo restablecer la contraseña. Intenta de nuevo.");
-      } else {
-        setErrorMessage(apiMsg || "No se pudo restablecer la contraseña. El enlace puede haber expirado.");
+  const handleSubmit = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
+      setSuccessMessage(null);
+      setErrorMessage(null);
+      if (!token) {
+        setErrorMessage("Token no válido.");
+        return;
       }
-    } finally {
-      setIsLoading(false);
-    }
-  };
+      if (!newPassword || newPassword.length < 6) {
+        setErrorMessage("La nueva contraseña debe tener al menos 6 caracteres.");
+        return;
+      }
+      if (newPassword !== repeatPassword) {
+        setErrorMessage("Las contraseñas no coinciden.");
+        return;
+      }
+      setIsLoading(true);
+      try {
+        await API.post(`/auth/reset-password?token=${token}`, {
+          nuevaContrasena: newPassword,
+        });
+        setSuccessMessage("Contraseña restablecida correctamente. Ya puedes iniciar sesión.");
+      } catch (err: any) {
+        const apiMsg = err.response?.data?.message;
+        if (apiMsg === "Token inválido o expirado" || apiMsg === "Token expirado" || apiMsg === "Token expirado o invalido") {
+          setErrorMessage("El enlace de recuperación ha expirado o es inválido.");
+        } else if (apiMsg === "Token y nueva contraseña son obligatorios") {
+          setErrorMessage("Token y nueva contraseña son obligatorios.");
+        } else if (apiMsg === "Error al restablecer la contraseña") {
+          setErrorMessage("No se pudo restablecer la contraseña. Intenta de nuevo.");
+        } else {
+          setErrorMessage(apiMsg || "No se pudo restablecer la contraseña. El enlace puede haber expirado.");
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [token, newPassword, repeatPassword]
+  );
 
   return (
     <form
       className="bg-gray-900 shadow-md rounded px-8 pt-6 pb-8 mb-4 w-full max-w-sm"
       onSubmit={handleSubmit}
     >
-      <h1 className="text-2xl font-bold mb-6 text-center text-pink-400">Restablecer contraseña</h1>
+      <h1 className="text-2xl font-bold mb-6 text-center text-pink-400">
+        Restablecer contraseña
+      </h1>
       {successMessage && (
         <p className="text-green-500 text-sm mb-4 text-center">{successMessage}</p>
       )}

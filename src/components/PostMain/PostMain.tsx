@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import API from "../../services/api";
 import PostComments from "../PostComments/PostComments";
 
-// Tipado explícito y exportable para reutilización
 export interface PostMainProps {
   fotografia: string;
   creador: {
@@ -17,7 +16,6 @@ export interface PostMainProps {
   estado?: string;
 }
 
-// Componente funcional puro y memoizado
 const PostMain: React.FC<PostMainProps> = React.memo(function PostMain({
   fotografia,
   creador,
@@ -31,60 +29,60 @@ const PostMain: React.FC<PostMainProps> = React.memo(function PostMain({
   useEffect(() => {
     const fetchUsuario = async () => {
       const token = localStorage.getItem("token");
-      if (token) {
-        try {
-          const res = await API.post(
-            "/auth/verify-token",
-            {},
-            {
-              headers: { Authorization: `Bearer ${token}` },
-            }
-          );
-          setUsuario(res.data.user || null);
-        } catch {
-          setUsuario(null);
-        }
-      }
+      if (!token) return;
+      try {
+        const res = await API.post(
+          "/auth/verify-token",
+          {},
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        setUsuario(res.data.user);
+      } catch {}
     };
     fetchUsuario();
   }, []);
 
-  const handleDelete = async () => {
+  const puedeEliminar =
+    usuario &&
+    creador &&
+    typeof creador.id !== "undefined" &&
+    typeof usuario.id !== "undefined" &&
+    (Number(usuario.id) === Number(creador.id) ||
+      usuario.rol_id === 2 ||
+      usuario.rol_id === 3) &&
+    publicacionId;
+
+  const handleDelete = useCallback(async () => {
     if (!window.confirm("¿Seguro que quieres eliminar esta publicación?")) return;
     try {
       const token = localStorage.getItem("token");
       if (!token || !publicacionId) return;
-      await API.delete(`/publicaciones/${publicacionId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await API.delete(
+        `/publicaciones/${publicacionId}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
       window.location.href = "/";
     } catch {
       alert("No se pudo eliminar la publicación.");
     }
-  };
+  }, [publicacionId]);
 
   return (
     <div className="flex flex-col md:flex-row w-full gap-8">
-      {/* Izquierda: Imagen y detalles */}
       <div className="flex-1 flex flex-col">
         <div className="relative w-full flex justify-center bg-gray-900 rounded-t-xl">
-          {usuario &&
-            creador &&
-            typeof creador.id !== "undefined" &&
-            typeof usuario.id !== "undefined" &&
-            (Number(usuario.id) === Number(creador.id) ||
-              usuario.rol_id === 2 ||
-              usuario.rol_id === 3) &&
-            publicacionId && (
-              <button
-                onClick={handleDelete}
-                type="button"
-                className="absolute top-4 left-4 bg-gray-900 bg-opacity-90 hover:bg-opacity-100 text-red-400 rounded-full p-2 shadow transition z-10 flex items-center justify-center"
-                title="Eliminar publicación"
-              >
-                <img src="/borrar.png" alt="Borrar" className="w-7 h-7" />
-              </button>
-            )}
+          {puedeEliminar && (
+            <button
+              onClick={handleDelete}
+              type="button"
+              className="absolute top-4 left-4 bg-gray-900 bg-opacity-90 hover:bg-opacity-100 text-red-400 rounded-full p-2 shadow transition z-10 flex items-center justify-center"
+              title="Eliminar publicación"
+            >
+              <img src="/borrar.png" alt="Borrar" className="w-7 h-7" />
+            </button>
+          )}
           <img
             src={fotografia}
             alt="Publicación"
@@ -127,7 +125,6 @@ const PostMain: React.FC<PostMainProps> = React.memo(function PostMain({
           )}
         </div>
       </div>
-      {/* Derecha: Comentarios */}
       {publicacionId && (
         <div className="w-full md:max-w-md lg:max-w-lg xl:max-w-xl">
           <PostComments publicacionId={publicacionId} />

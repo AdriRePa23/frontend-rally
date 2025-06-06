@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import API from "../../services/api";
 
 interface Rally {
@@ -46,8 +46,6 @@ const RallyAdminTable: React.FC = () => {
         });
         const ralliesData = Array.isArray(res.data) ? res.data : [];
         setRallies(ralliesData);
-
-        // Obtener usuarios únicos
         const ids = [...new Set(ralliesData.map((r: Rally) => r.creador_id))];
         const usuariosObj: Record<number, Usuario> = {};
         await Promise.all(
@@ -70,19 +68,19 @@ const RallyAdminTable: React.FC = () => {
     fetchRallies();
   }, []);
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = useCallback(async (id: number) => {
     if (!window.confirm("¿Seguro que quieres eliminar este rally?")) return;
     try {
       const token = localStorage.getItem("token");
-      await API.delete(`/rallies/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await API.delete(`/rallies/${id}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
       setRallies((prev) => prev.filter((r) => r.id !== id));
       setSelectedRally(null);
     } catch {
       alert("No se pudo eliminar el rally.");
     }
-  };
+  }, []);
 
   return (
     <div>
@@ -132,7 +130,6 @@ const RallyAdminTable: React.FC = () => {
           </table>
         </div>
       )}
-
       {selectedRally && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
           <div className="bg-gray-900 rounded-xl shadow-xl p-8 max-w-lg w-full relative text-white">
@@ -166,7 +163,7 @@ const RallyAdminTable: React.FC = () => {
                 <div className="mb-2"><span className="font-semibold">Máx. fotos/usuario:</span> {selectedRally.cantidad_fotos_max}</div>
               )}
               <div className="mb-2">
-                <span className="font-semibold">Usuario:</span>{" "}
+                <span className="font-semibold">Usuario:</span>{' '}
                 <a
                   href={`/usuarios/${selectedRally.creador_id}`}
                   className="text-pink-400 hover:underline"

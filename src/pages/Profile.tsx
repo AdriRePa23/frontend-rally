@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import AsideNavBar from "../components/AsideNavBar/AsideNavBar";
 import API from "../services/api";
@@ -15,69 +15,67 @@ const Profile: React.FC = () => {
   const [isOwnProfile, setIsOwnProfile] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
 
-  useEffect(() => {
-    const verifyToken = async () => {
-      const token = localStorage.getItem("token");
-      if (!token && !id) {
-        navigate("/login");
-        return;
-      }
-      if (!id) {
-        try {
-          const response = await API.post(
-            "/auth/verify-token",
-            {},
-            {
-              headers: { Authorization: `Bearer ${token}` },
-            }
-          );
-          if (!response.data.user) {
-            navigate("/");
-          } else {
-            setIsOwnProfile(true);
-          }
-        } catch (error) {
+  const verifyToken = useCallback(async () => {
+    const token = localStorage.getItem("token");
+    if (!token && !id) {
+      navigate("/login");
+      return;
+    }
+    if (!id) {
+      try {
+        const response = await API.post(
+          "/auth/verify-token",
+          {},
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        if (!response.data.user) {
           navigate("/");
+        } else {
+          setIsOwnProfile(true);
         }
-      } else {
-        setIsOwnProfile(false);
+      } catch {
+        navigate("/");
       }
-    };
-    verifyToken();
+    } else {
+      setIsOwnProfile(false);
+    }
   }, [navigate, id]);
 
   useEffect(() => {
-    const fetchUserPosts = async () => {
-      let userId = id;
-      if (!userId) {
-        const token = localStorage.getItem("token");
-        if (!token) return;
-        try {
-          const res = await API.post(
-            "/auth/verify-token",
-            {},
-            {
-              headers: { Authorization: `Bearer ${token}` },
-            }
-          );
-          userId = res.data.user?.id;
-        } catch {
-          return;
-        }
+    verifyToken();
+  }, [verifyToken]);
+
+  const fetchUserPosts = useCallback(async () => {
+    let userId = id;
+    if (!userId) {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+      try {
+        const res = await API.post(
+          "/auth/verify-token",
+          {},
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        userId = res.data.user?.id;
+      } catch {
+        return;
       }
-      if (userId) {
-        try {
-          const postsRes = await API.get(`/publicaciones/usuario/${userId}`);
-          setUserPosts(postsRes.data);
-        } catch {
-          setUserPosts([]);
-        }
+    }
+    if (userId) {
+      try {
+        const postsRes = await API.get(`/publicaciones/usuario/${userId}`);
+        setUserPosts(postsRes.data);
+      } catch {
+        setUserPosts([]);
       }
-    };
+    }
+  }, [id]);
+
+  useEffect(() => {
     if (tab === "publicaciones") {
       fetchUserPosts();
     }
-  }, [tab, id]);
+  }, [tab, id, fetchUserPosts]);
 
   return (
     <div className="flex h-screen bg-gray-950">

@@ -1,13 +1,13 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 
-// BackButton clásico: vuelve a la página anterior del historial
+
 const BackButton: React.FC = React.memo(() => {
   const navigate = useNavigate();
 
-  const handleBack = () => {
+  const handleBack = useCallback(() => {
     navigate(-1);
-  };
+  }, [navigate]);
 
   return (
     <button

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import API from "../../services/api";
 
@@ -34,34 +34,35 @@ const RallyPostCard: React.FC<RallyPostCardProps> = React.memo(
 
     const puedeAcceder =
       estado !== "pendiente" ||
-      (usuarioId &&
-        (usuarioId === creador.id || userRol === 2 || userRol === 3));
+      (usuarioId && (usuarioId === creador.id || userRol === 2 || userRol === 3));
 
-    const handleLike = async (e: React.MouseEvent) => {
-      e.preventDefault();
-      if (voted || likeLoading) return;
-      setLikeLoading(true);
-      try {
-        const token = localStorage.getItem("token");
-        let ip = "";
+    const handleLike = useCallback(
+      async (e: React.MouseEvent) => {
+        e.preventDefault();
+        if (voted || likeLoading) return;
+        setLikeLoading(true);
         try {
-          const ipRes = await fetch("https://api.ipify.org?format=json");
-          const ipData = await ipRes.json();
-          ip = ipData.ip;
-        } catch {}
-        await API.post(
-          "/votaciones",
-          { publicacion_id: id, ip },
-          token ? { headers: { Authorization: `Bearer ${token}` } } : undefined
-        );
-        setLikes((prev) => prev + 1);
-        setVoted(true);
-      } catch {
-        // Error al votar
-      } finally {
-        setLikeLoading(false);
-      }
-    };
+          const token = localStorage.getItem("token");
+          let ip = "";
+          try {
+            const ipRes = await fetch("https://api.ipify.org?format=json");
+            const ipData = await ipRes.json();
+            ip = ipData.ip;
+          } catch {}
+          await API.post(
+            "/votaciones",
+            { publicacion_id: id, ip },
+            token ? { headers: { Authorization: `Bearer ${token}` } } : undefined
+          );
+          setLikes((prev) => prev + 1);
+          setVoted(true);
+        } catch {
+        } finally {
+          setLikeLoading(false);
+        }
+      },
+      [id, voted, likeLoading]
+    );
 
     return (
       <div
@@ -135,9 +136,7 @@ const RallyPostCard: React.FC<RallyPostCardProps> = React.memo(
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className={`h-7 w-7 ${
-                    voted ? "text-pink-200" : "text-white"
-                  }`}
+                  className={`h-7 w-7 ${voted ? "text-pink-200" : "text-white"}`}
                   fill="currentColor"
                   viewBox="0 0 20 20"
                 >

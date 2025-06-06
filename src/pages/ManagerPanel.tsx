@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import AsideNavBar from "../components/AsideNavBar/AsideNavBar";
 import API from "../services/api";
 import { useNavigate } from "react-router-dom";
@@ -22,7 +22,7 @@ interface Publicacion {
   estado: string;
   usuario_id: number;
   rally_id: number;
-  usuario_nombre?: string; 
+  usuario_nombre?: string;
 }
 
 const ManagerPanel: React.FC = () => {
@@ -33,28 +33,33 @@ const ManagerPanel: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const checkRole = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        navigate("/auth/login");
-        return;
-      }
-      try {
-        const res = await API.post("/auth/verify-token", {}, {
+  const checkRole = useCallback(async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/auth/login");
+      return;
+    }
+    try {
+      const res = await API.post(
+        "/auth/verify-token",
+        {},
+        {
           headers: { Authorization: `Bearer ${token}` },
-        });
-        if (res.data.user && (res.data.user.rol_id === 2 || res.data.user.rol_id === 3)) {
-          setIsAllowed(true);
-        } else {
-          setIsAllowed(false);
         }
-      } catch {
+      );
+      if (res.data.user && (res.data.user.rol_id === 2 || res.data.user.rol_id === 3)) {
+        setIsAllowed(true);
+      } else {
         setIsAllowed(false);
       }
-    };
-    checkRole();
+    } catch {
+      setIsAllowed(false);
+    }
   }, [navigate]);
+
+  useEffect(() => {
+    checkRole();
+  }, [checkRole]);
 
   useEffect(() => {
     if (!isAllowed) return;
@@ -63,20 +68,15 @@ const ManagerPanel: React.FC = () => {
       setError(null);
       try {
         const token = localStorage.getItem("token");
-        // Rallies pendientes: solo los que tienen estado "pendiente"
         const ralliesRes = await API.get("/rallies", {
           headers: { Authorization: `Bearer ${token}` },
         });
-        const pendientes = (ralliesRes.data || []).filter(
-          (r: Rally) => r.estado === "pendiente"
-        );
+        const pendientes = (ralliesRes.data || []).filter((r: Rally) => r.estado === "pendiente");
         setPendingRallies(pendientes);
-        // Publicaciones pendientes (nuevo endpoint)
         const postsRes = await API.get("/publicaciones/estado/pendiente", {
           headers: { Authorization: `Bearer ${token}` },
         });
         const postsRaw = postsRes.data || [];
-        // Obtener nombre de usuario para cada publicación
         const postsWithUser = await Promise.all(
           postsRaw.map(async (post: Publicacion) => {
             let usuario_nombre = "";
@@ -99,38 +99,45 @@ const ManagerPanel: React.FC = () => {
     fetchPendings();
   }, [isAllowed]);
 
-  const handleValidateRally = async (id: number) => {
-    try {
-      const token = localStorage.getItem("token");
-      await API.put(
-        `/rallies/${id}`,
-        { estado: "activo" },
-        {
-          headers: { Authorization: `Bearer ${token}` },
+  const handleValidateRally = useCallback(
+    async (id: number) => {
+      try {
+        const token = localStorage.getItem("token");
+        await API.put(
+          `/rallies/${id}`,
+          { estado: "activo" },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        setPendingRallies((prev) => prev.filter((r) => r.id !== id));
+      } catch (err: any) {
+        if (err.response && err.response.status === 403) {
+          alert("No tienes permisos para validar galerías. Solo los gestores o administradores pueden hacerlo.");
+        } else {
+          alert("No se pudo validar la galería.");
         }
-      );
-      setPendingRallies((prev) => prev.filter((r) => r.id !== id));
-    } catch (err: any) {
-      // Si el error es 403, mostrar mensaje claro
-      if (err.response && err.response.status === 403) {
-        alert("No tienes permisos para validar galerías. Solo los gestores o administradores pueden hacerlo.");
-      } else {
-        alert("No se pudo validar la galería.");
       }
-    }
-  };
+    },
+    []
+  );
 
-  const handleValidatePost = async (id: number) => {
-    try {
-      const token = localStorage.getItem("token");
-      await API.put(`/publicaciones/publicaciones/${id}/estado`, { estado: "aprobada" }, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setPendingPosts((prev) => prev.filter((p) => p.id !== id));
-    } catch {
-      alert("No se pudo validar la publicación.");
-    }
-  };
+  const handleValidatePost = useCallback(
+    async (id: number) => {
+      try {
+        const token = localStorage.getItem("token");
+        await API.put(
+          `/publicaciones/publicaciones/${id}/estado`,
+          { estado: "aprobada" },
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        setPendingPosts((prev) => prev.filter((p) => p.id !== id));
+      } catch {
+        alert("No se pudo validar la publicación.");
+      }
+    },
+    []
+  );
 
   if (!isAllowed) {
     return (
@@ -186,14 +193,18 @@ const ManagerPanel: React.FC = () => {
                   {pendingPosts.map((post) => (
                     <li key={post.id} className="bg-gray-900 rounded-lg shadow p-4 flex items-center justify-between">
                       <div className="flex items-center gap-4">
-                        <img src={post.fotografia} alt="Publicación" className="w-16 h-16 object-cover rounded-lg border" />
+                        <img
+                          src={post.fotografia}
+                          alt="Publicación"
+                          className="w-16 h-16 object-cover rounded-lg border"
+                        />
                         <div>
                           <span className="font-semibold text-pink-400">{post.descripcion}</span>
                           <span className="ml-2 text-gray-300 text-sm">ID: {post.id}</span>
-                          {/* Mostrar nombre de usuario */}
                           {post.usuario_nombre ? (
                             <div className="text-sm text-gray-400 mt-1">
-                              Usuario: <span className="font-semibold">{post.usuario_nombre}</span>
+                              Usuario:{" "}
+                              <span className="font-semibold">{post.usuario_nombre}</span>
                             </div>
                           ) : null}
                         </div>

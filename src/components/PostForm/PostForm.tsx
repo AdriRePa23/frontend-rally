@@ -1,14 +1,23 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import API from "../../services/api";
 import { useNavigate } from "react-router-dom";
 
-// Tipado explícito y exportable para reutilización
 export interface PostFormProps {
   rallyId: number;
   onSuccess?: () => void;
 }
 
-// Componente funcional puro y memoizado
+const ALLOWED_TYPES = [
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/jpg",
+  "image/bmp",
+  "image/gif"
+];
+const MAX_SIZE = 10 * 1024 * 1024;
+const MAX_DESC = 500;
+
 const PostForm: React.FC<PostFormProps> = React.memo(function PostForm({ rallyId, onSuccess }) {
   const [imagen, setImagen] = useState<File | null>(null);
   const [descripcion, setDescripcion] = useState("");
@@ -16,19 +25,28 @@ const PostForm: React.FC<PostFormProps> = React.memo(function PostForm({ rallyId
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  const handleImagenChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const validate = (img: File | null, desc: string): string | null => {
+    if (!img) return "Debes seleccionar una imagen.";
+    if (!ALLOWED_TYPES.includes(img.type)) return "La imagen debe ser JPG, JPEG, PNG, WEBP, GIF o BMP.";
+    if (img.size > MAX_SIZE) return "La imagen no puede superar los 10MB.";
+    if (!desc.trim()) return "La descripción es obligatoria.";
+    if (desc.length > MAX_DESC) return "La descripción no puede superar los 500 caracteres.";
+    return null;
+  };
+
+  const handleImagenChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setImagen(e.target.files[0]);
     }
-  };
+  }, []);
 
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+  const handleDrop = useCallback((e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       setImagen(e.dataTransfer.files[0]);
     }
-  };
+  }, []);
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -40,35 +58,12 @@ const PostForm: React.FC<PostFormProps> = React.memo(function PostForm({ rallyId
     e.stopPropagation();
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    if (!imagen) {
-      setError("Debes seleccionar una imagen.");
-      return;
-    }
-    // Solo tipos normales de imagen
-    const allowedTypes = [
-      "image/jpeg",
-      "image/png",
-      "image/webp",
-      "image/jpg",
-      "image/bmp"
-    ];
-    if (!allowedTypes.includes(imagen.type)) {
-      setError("La imagen debe ser JPG, JPEG, PNG, WEBP, GIF o BMP.");
-      return;
-    }
-    if (imagen.size > 10 * 1024 * 1024) {
-      setError("La imagen no puede superar los 10MB.");
-      return;
-    }
-    if (!descripcion.trim()) {
-      setError("La descripción es obligatoria.");
-      return;
-    }
-    if (descripcion.length > 500) {
-      setError("La descripción no puede superar los 500 caracteres.");
+    const validation = validate(imagen, descripcion);
+    if (validation) {
+      setError(validation);
       return;
     }
     setIsLoading(true);
@@ -80,7 +75,7 @@ const PostForm: React.FC<PostFormProps> = React.memo(function PostForm({ rallyId
         return;
       }
       const formData = new FormData();
-      formData.append("fotografia", imagen);
+      formData.append("fotografia", imagen!);
       formData.append("descripcion", descripcion);
       formData.append("rally_id", rallyId.toString());
       await API.post("/publicaciones", formData, {
@@ -94,23 +89,17 @@ const PostForm: React.FC<PostFormProps> = React.memo(function PostForm({ rallyId
       if (onSuccess) onSuccess();
       navigate(`/rallies/${rallyId}`);
     } catch (err: any) {
-      // Manejo de mensajes de error específicos de la API
       const apiMsg = err.response?.data?.message;
-      if (
-        apiMsg?.includes("No puedes subir más de") ||
-        apiMsg === "No puedes subir más de X fotos a este rally."
-      ) {
+      if (apiMsg?.includes("No puedes subir más de") || apiMsg === "No puedes subir más de X fotos a este rally.") {
         setError("No puedes subir más fotos a este rally.");
-      } else if (
-        apiMsg?.includes("La imagen y el ID del rally son obligatorios")
-      ) {
+      } else if (apiMsg?.includes("La imagen y el ID del rally son obligatorios")) {
         setError("La imagen y el ID del rally son obligatorios.");
       } else if (
         apiMsg?.includes("Solo se permiten imágenes JPG") ||
         apiMsg?.includes("Solo se permiten imágenes PNG") ||
         apiMsg?.includes("Solo se permiten imágenes WEBP") ||
         apiMsg?.includes("Solo se permiten imágenes") ||
-        apiMsg?.toLowerCase().includes("imagen") && apiMsg?.toLowerCase().includes("permit")
+        (apiMsg?.toLowerCase().includes("imagen") && apiMsg?.toLowerCase().includes("permit"))
       ) {
         setError("La imagen debe ser JPG, JPEG, PNG, WEBP o BMP.");
       } else if (
@@ -118,17 +107,11 @@ const PostForm: React.FC<PostFormProps> = React.memo(function PostForm({ rallyId
         apiMsg?.includes("La imagen no puede superar los 10MB")
       ) {
         setError("La imagen no puede superar los 10MB.");
-      } else if (
-        apiMsg?.includes("Rally no encontrado")
-      ) {
+      } else if (apiMsg?.includes("Rally no encontrado")) {
         setError("El rally no existe.");
-      } else if (
-        apiMsg?.includes("Error al crear la publicación")
-      ) {
+      } else if (apiMsg?.includes("Error al crear la publicación")) {
         setError("Error al crear la publicación.");
-      } else if (
-        apiMsg?.toLowerCase().includes("token") && apiMsg?.toLowerCase().includes("expir")
-      ) {
+      } else if (apiMsg?.toLowerCase().includes("token") && apiMsg?.toLowerCase().includes("expir")) {
         setError("Tu sesión ha expirado. Por favor, inicia sesión de nuevo.");
       } else {
         setError(apiMsg || "Error al crear la publicación.");
@@ -136,7 +119,7 @@ const PostForm: React.FC<PostFormProps> = React.memo(function PostForm({ rallyId
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [imagen, descripcion, rallyId, onSuccess, navigate]);
 
   return (
     <form
@@ -165,7 +148,7 @@ const PostForm: React.FC<PostFormProps> = React.memo(function PostForm({ rallyId
           <input
             id="fileInput"
             type="file"
-            accept="image/jpeg,image/png,image/webp,image/jpg,image/gif,image/bmp"
+            accept={ALLOWED_TYPES.join(",")}
             onChange={handleImagenChange}
             className="hidden"
           />

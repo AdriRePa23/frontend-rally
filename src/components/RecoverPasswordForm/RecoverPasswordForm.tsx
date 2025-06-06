@@ -1,10 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import API from "../../services/api";
 
-// Tipado explícito y exportable para reutilización
 export interface RecoverPasswordFormProps {}
 
-// Componente funcional puro y memoizado
 const RecoverPasswordForm: React.FC<RecoverPasswordFormProps> = React.memo(
   function RecoverPasswordForm() {
     const [email, setEmail] = useState("");
@@ -12,22 +10,25 @@ const RecoverPasswordForm: React.FC<RecoverPasswordFormProps> = React.memo(
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-      e.preventDefault();
-      setSuccessMessage(null);
-      setErrorMessage(null);
-      setIsLoading(true);
-      try {
-        await API.post("/auth/request-password-reset", { email });
-        setSuccessMessage(
-          "Si el email existe, se ha enviado un correo de recuperación."
-        );
-      } catch (err: any) {
-        setErrorMessage("No se pudo enviar el correo de recuperación.");
-      } finally {
-        setIsLoading(false);
-      }
-    };
+    const handleSubmit = useCallback(
+      async (e: React.FormEvent) => {
+        e.preventDefault();
+        setSuccessMessage(null);
+        setErrorMessage(null);
+        setIsLoading(true);
+        try {
+          await API.post("/auth/request-password-reset", { email });
+          setSuccessMessage(
+            "Si el email existe, se ha enviado un correo de recuperación."
+          );
+        } catch {
+          setErrorMessage("No se pudo enviar el correo de recuperación.");
+        } finally {
+          setIsLoading(false);
+        }
+      },
+      [email]
+    );
 
     return (
       <form

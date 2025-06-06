@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { Link, useLocation } from "react-router-dom";
 import API from "../../services/api";
 
@@ -9,28 +9,29 @@ const AsideNavBar: React.FC<AsideNavBarProps> = React.memo(function AsideNavBar(
   const [user, setUser] = useState<any>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
+  // Cierra el menú al cambiar de ruta
   useEffect(() => {
     setMenuOpen(false);
   }, [location.pathname]);
 
+  // Verifica el token y obtiene el usuario
   useEffect(() => {
     const verifyToken = async () => {
       const token = localStorage.getItem("token");
-      if (token) {
-        try {
-          const response = await API.post("/auth/verify-token", {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-          if (response.data.user) {
-            setIsLoggedIn(true);
-            setUser(response.data.user);
-          }
-        } catch {
-          setIsLoggedIn(false);
-          setUser(null);
-        }
-      } else {
+      if (!token) {
+        setIsLoggedIn(false);
+        setUser(null);
+        return;
+      }
+      try {
+        const response = await API.post("/auth/verify-token", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setIsLoggedIn(!!response.data.user);
+        setUser(response.data.user || null);
+      } catch {
         setIsLoggedIn(false);
         setUser(null);
       }
@@ -38,14 +39,19 @@ const AsideNavBar: React.FC<AsideNavBarProps> = React.memo(function AsideNavBar(
     verifyToken();
   }, []);
 
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  // Detecta si es móvil
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const navLinks = (
+  const handleLogout = useCallback(() => {
+    localStorage.removeItem("token");
+    window.location.href = "/auth/login";
+  }, []);
+
+  const renderNavLinks = () => (
     <>
       <Link to="/" className="hover:text-pink-400 py-2 px-2 rounded transition-colors font-semibold">
         Inicio
@@ -60,17 +66,13 @@ const AsideNavBar: React.FC<AsideNavBarProps> = React.memo(function AsideNavBar(
               Panel de gestor
             </Link>
           )}
-          {/* El enlace solo debe mostrarse si user?.rol_id === 3 */}
-          {user && Number(user.rol_id) === 2 && (
+          {user?.rol_id === 2 && (
             <Link to="/admin" className="hover:text-pink-400 py-2 px-2 rounded transition-colors font-semibold">
               Administración
             </Link>
           )}
           <button
-            onClick={() => {
-              localStorage.removeItem("token");
-              window.location.href = "/auth/login";
-            }}
+            onClick={handleLogout}
             className="mt-4 text-red-400 hover:text-red-200 font-semibold py-2 px-2 rounded transition-colors"
           >
             Cerrar sesión
@@ -108,7 +110,7 @@ const AsideNavBar: React.FC<AsideNavBarProps> = React.memo(function AsideNavBar(
           </div>
           {menuOpen && (
             <nav className="flex flex-col gap-2 px-6 py-4 bg-gray-950">
-              {navLinks}
+              {renderNavLinks()}
             </nav>
           )}
         </header>
@@ -121,7 +123,7 @@ const AsideNavBar: React.FC<AsideNavBarProps> = React.memo(function AsideNavBar(
             </Link>
           </div>
           <nav className="flex-col gap-2 px-6 md:px-4 py-4 md:flex md:static">
-            {navLinks}
+            {renderNavLinks()}
           </nav>
         </aside>
       )}

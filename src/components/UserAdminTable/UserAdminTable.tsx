@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import API from "../../services/api";
 
 interface UserAdmin {
@@ -28,13 +28,10 @@ const UserAdminTable: React.FC = () => {
           setLoading(false);
           return;
         }
-        // Verificar rol antes de cargar usuarios
         const verify = await API.post(
           "/auth/verify-token",
           {},
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
+          { headers: { Authorization: `Bearer ${token}` } }
         );
         if (!verify.data.user || verify.data.user.rol_id !== 2) {
           setIsAllowed(false);
@@ -46,7 +43,7 @@ const UserAdminTable: React.FC = () => {
           headers: { Authorization: `Bearer ${token}` },
         });
         setUsers(Array.isArray(res.data) ? res.data : []);
-      } catch (err: any) {
+      } catch {
         setIsAllowed(false);
       } finally {
         setLoading(false);
@@ -55,6 +52,49 @@ const UserAdminTable: React.FC = () => {
     fetchUsers();
   }, []);
 
+  const handleDelete = useCallback(
+    async (id: number) => {
+      if (!window.confirm("¿Seguro que quieres eliminar este usuario?")) return;
+      try {
+        const token = localStorage.getItem("token");
+        await API.delete(`/usuarios/${id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setUsers((prev) => prev.filter((u) => u.id !== id));
+        setModalOpen(false);
+        setSelectedUser(null);
+      } catch {
+        alert("No se pudo eliminar el usuario.");
+      }
+    },
+    [setUsers, setModalOpen, setSelectedUser]
+  );
+
+  const handleSave = useCallback(
+    async (user: UserAdmin) => {
+      try {
+        const token = localStorage.getItem("token");
+        await API.put(
+          `/usuarios/${user.id}`,
+          {
+            nombre: user.nombre,
+            email: user.email,
+            rol_id: user.rol_id,
+          },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        setUsers((prev) =>
+          prev.map((u) => (u.id === user.id ? { ...u, ...user } : u))
+        );
+        setModalOpen(false);
+        setSelectedUser(null);
+      } catch {
+        alert("No se pudo actualizar el usuario.");
+      }
+    },
+    [setUsers, setModalOpen, setSelectedUser]
+  );
+
   if (isAllowed === false) {
     return (
       <div className="text-center py-8 text-red-500 font-bold">
@@ -62,45 +102,6 @@ const UserAdminTable: React.FC = () => {
       </div>
     );
   }
-
-  const handleDelete = async (id: number) => {
-    if (!window.confirm("¿Seguro que quieres eliminar este usuario?")) return;
-    try {
-      const token = localStorage.getItem("token");
-      await API.delete(`/usuarios/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setUsers((prev) => prev.filter((u) => u.id !== id));
-      setModalOpen(false);
-      setSelectedUser(null);
-    } catch {
-      alert("No se pudo eliminar el usuario.");
-    }
-  };
-
-  const handleSave = async (user: UserAdmin) => {
-    try {
-      const token = localStorage.getItem("token");
-      await API.put(
-        `/usuarios/${user.id}`,
-        {
-          nombre: user.nombre,
-          email: user.email,
-          rol_id: user.rol_id,
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      setUsers((prev) =>
-        prev.map((u) => (u.id === user.id ? { ...u, ...user } : u))
-      );
-      setModalOpen(false);
-      setSelectedUser(null);
-    } catch {
-      alert("No se pudo actualizar el usuario.");
-    }
-  };
 
   return (
     <div>
