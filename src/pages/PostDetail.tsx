@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import AsideNavBar from "../components/AsideNavBar/AsideNavBar";
 import API from "../services/api";
 import PostView from "../components/PostView";
+import BackButton from "../components/BackButton";
 
 interface PostDetailData {
   id: number;
@@ -96,6 +97,7 @@ const PostDetail: React.FC = () => {
     <div className="flex h-screen bg-gray-950">
       <AsideNavBar />
       <main className="flex-1 bg-gray-950 p-6 overflow-y-auto w-full max-w-full md:ml-64 pt-20 md:pt-0">
+        <BackButton />
         {post.estado === "pendiente" && (
           <div className="mb-4">
             <span className="bg-yellow-400 text-yellow-900 font-bold px-4 py-2 rounded-full text-sm shadow">
