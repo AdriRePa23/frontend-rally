@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import AsideNavBar from "../components/AsideNavBar/AsideNavBar";
 import RallyInfo from "../components/RallyInfo/RallyInfo";
-import UserPostCard from "../components/UserPostCard/UserPostCard";
 import API from "../services/api";
+import RallyPostCard from "../components/RallyPostCard/RallyPostCard";
 
 
 const RallyDetail: React.FC = () => {
@@ -151,12 +151,16 @@ const RallyDetail: React.FC = () => {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-8 w-full">
               {posts.map((post) => (
-                <UserPostCard
+                <RallyPostCard
                   key={post.id}
                   id={post.id}
                   imagen={post.imagen}
+                  votos={post.votos}
+                  creador={post.creador}
                   rally_id={post.rally_id}
                   estado={post.estado}
+                  usuarioId={user?.id}
+                  userRol={user?.rol_id}
                 />
               ))}
             </div>
