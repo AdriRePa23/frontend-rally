@@ -82,24 +82,25 @@ const Profile: React.FC = () => {
   return (
     <div className="flex h-screen bg-gray-950">
       <AsideNavBar />
-      <main className="flex-1 bg-gray-950 p-6 overflow-y-auto md:ml-64 pt-20 md:pt-0 w-full max-w-full">
-        {/* El botón de editar perfil ahora va dentro del contenedor de ProfileInfo */}
-        <div className="mb-4 flex items-center justify-between">
-          {/* ...eliminar el botón de editar de aquí... */}
-        </div>
+      <main className="flex-1 bg-gray-950 p-2 sm:p-4 md:p-6 overflow-y-auto md:ml-64 pt-20 md:pt-0 w-full max-w-full">
         <div className="relative">
-          <ProfileInfo />
-          {isOwnProfile && (
-            <button
-              className="absolute top-4 right-4 bg-pink-600 hover:bg-pink-700 text-white font-bold py-2 px-6 rounded-full shadow transition-all duration-200"
-              onClick={() => setShowEdit(true)}
-            >
-              Editar perfil
-            </button>
-          )}
+          <div className="flex flex-col items-center w-full">
+            <div className="w-full max-w-3xl">
+              <ProfileInfo />
+              {isOwnProfile && (
+                <button
+                  className="absolute top-4 right-4 bg-pink-600 hover:bg-pink-700 text-white font-bold py-2 px-6 rounded-full shadow transition-all duration-200"
+                  onClick={() => setShowEdit(true)}
+                  style={{ zIndex: 10 }}
+                >
+                  Editar perfil
+                </button>
+              )}
+            </div>
+          </div>
         </div>
         <div className="mt-8">
-          <div className="flex justify-center gap-4 mb-6">
+          <div className="flex flex-col sm:flex-row justify-center gap-4 mb-6">
             <button
               className={`px-6 py-2 rounded-full font-bold text-lg transition-all ${
                 tab === "publicaciones"
@@ -123,11 +124,13 @@ const Profile: React.FC = () => {
           </div>
           <div className="flex justify-center">
             {tab === "galerias" ? (
-              <UserRallies userId={id} />
+              <div className="w-full">
+                <UserRallies userId={id} />
+              </div>
             ) : (
               <div className="w-full">
                 <div
-                  className="mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6 justify-items-center"
+                  className="mx-auto grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 justify-items-center"
                   style={{ maxWidth: 1400 }}
                 >
                   {userPosts.length === 0 ? (

@@ -109,10 +109,10 @@ const RallyInfo: React.FC<RallyInfoProps> = React.memo(function RallyInfo() {
                 <span className="font-semibold text-pink-400 text-lg">{creador.nombre}</span>
               </a>
             )}
-            <div className="flex gap-2 ml-auto">
+            <div className="flex flex-col gap-2 w-full sm:w-auto sm:flex-row sm:gap-2 sm:ml-auto mt-4 sm:mt-0">
               {(usuario && (usuario.id === rally.creador_id || usuario.rol_id === 2 )) && (
                 <button
-                  className="inline-flex items-center gap-2 bg-gradient-to-r from-pink-600 to-pink-400 hover:from-pink-700 hover:to-pink-500 text-white text-lg font-bold py-3 px-8 rounded-full shadow-lg transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-pink-300 focus:ring-offset-2"
+                  className="inline-flex items-center gap-2 bg-gradient-to-r from-pink-600 to-pink-400 hover:from-pink-700 hover:to-pink-500 text-white text-lg font-bold py-3 px-8 rounded-full shadow-lg transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-pink-300 focus:ring-offset-2 w-full sm:w-auto"
                   onClick={() => setShowEdit(true)}
                   style={{ minWidth: 180 }}
                 >
@@ -124,7 +124,7 @@ const RallyInfo: React.FC<RallyInfoProps> = React.memo(function RallyInfo() {
               )}
               {(usuario && (usuario.id === rally.creador_id || usuario.rol_id === 2 )) && (
                 <button
-                  className="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white text-lg font-bold py-3 px-8 rounded-full shadow-lg transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-red-300 focus:ring-offset-2"
+                  className="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white text-lg font-bold py-3 px-8 rounded-full shadow-lg transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-red-300 focus:ring-offset-2 w-full sm:w-auto"
                   onClick={handleDelete}
                   style={{ minWidth: 180 }}
                 >

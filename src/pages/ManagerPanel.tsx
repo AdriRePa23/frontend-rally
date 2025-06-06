@@ -102,12 +102,21 @@ const ManagerPanel: React.FC = () => {
   const handleValidateRally = async (id: number) => {
     try {
       const token = localStorage.getItem("token");
-      await API.put(`/rallies/${id}`, { estado: "activo" }, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await API.put(
+        `/rallies/${id}`,
+        { estado: "activo" },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       setPendingRallies((prev) => prev.filter((r) => r.id !== id));
-    } catch {
-      alert("No se pudo validar el rally.");
+    } catch (err: any) {
+      // Si el error es 403, mostrar mensaje claro
+      if (err.response && err.response.status === 403) {
+        alert("No tienes permisos para validar galerías. Solo los gestores o administradores pueden hacerlo.");
+      } else {
+        alert("No se pudo validar la galería.");
+      }
     }
   };
 

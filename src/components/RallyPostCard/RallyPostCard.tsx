@@ -40,8 +40,8 @@ const RallyPostCard: React.FC<RallyPostCardProps> = React.memo(
       (usuarioId &&
         (usuarioId === creador.id || userRol === 2 || userRol === 3));
 
-    const handleLike = async (e: React.MouseEvent) => {
-      e.preventDefault();
+    const handleLike = async (e?: React.MouseEvent | React.TouchEvent) => {
+      if (e) e.preventDefault();
       if (voted || likeLoading) return;
       setLikeLoading(true);
 
@@ -51,7 +51,6 @@ const RallyPostCard: React.FC<RallyPostCardProps> = React.memo(
         // Obtener la IP del cliente
         const ipResponse = await fetch("https://api.ipify.org?format=json");
         const { ip } = await ipResponse.json();
-        console.log("IP del cliente:", ip);
 
         // Enviar la IP junto al ID de la publicación
         await API.post(
@@ -61,7 +60,7 @@ const RallyPostCard: React.FC<RallyPostCardProps> = React.memo(
             ip: ip,
           },
           {
-            headers: token ? { Authorization: `Bearer ${token}` } : {}, 
+            headers: token ? { Authorization: `Bearer ${token}` } : {},
           }
         );
 
@@ -77,67 +76,74 @@ const RallyPostCard: React.FC<RallyPostCardProps> = React.memo(
     return (
       <div className="relative w-96 h-96 rounded-2xl shadow-lg overflow-hidden group hover:scale-105 transition-transform duration-200">
         {puedeAcceder ? (
-          <Link
-            to={`/rallies/${rallyId}/publicacion/${id}`}
-            className="absolute inset-0 block"
-            aria-label={`Ver publicación ${id}`}
-          />
-        ) : (
-          <div className="absolute inset-0 bg-white/70 cursor-not-allowed z-10" />
-        )}
-        <img
-          src={imagen}
-          alt={`Publicación ${id}`}
-          className="w-full h-full object-cover group-hover:brightness-90 transition-all duration-200"
-          loading="lazy"
-          draggable={false}
-        />
-        <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/80 via-black/40 to-transparent px-4 py-3 flex justify-between items-end">
-          <Link
-            to={`/usuarios/${creador.id}`}
-            className="flex items-center gap-2 hover:underline"
-            aria-label={`Ver perfil de ${creador.nombre}`}
-          >
+          <>
+            <Link
+              to={`/rallies/${rallyId}/publicacion/${id}`}
+              className="absolute inset-0 block z-0"
+              aria-label={`Ver publicación ${id}`}
+              tabIndex={-1} // Evita que el link capture el foco antes que el botón
+              style={{ pointerEvents: "auto" }}
+            />
             <img
-              src={creador.foto_perfil}
-              alt={creador.nombre}
-              className="w-10 h-10 rounded-full object-cover border-2 border-blue-300"
+              src={imagen}
+              alt={`Publicación ${id}`}
+              className="w-full h-full object-cover group-hover:brightness-90 transition-all duration-200"
               loading="lazy"
               draggable={false}
             />
-            <span className="text-white font-semibold text-base truncate max-w-[100px] drop-shadow">
-              {creador.nombre}
-            </span>
-          </Link>
-          <div className="flex items-center gap-1">
-            <button
-              onClick={handleLike}
-              disabled={voted || likeLoading}
-              className={`flex items-center gap-1 text-white bg-black/40 rounded-full px-3 py-1 ml-2 transition-all duration-150 ${
-                voted ? "opacity-60 pointer-events-none" : "hover:bg-pink-600"
-              }`}
-              title={voted ? "Ya has votado" : "Dar like"}
-              type="button"
-              aria-label={voted ? "Ya has votado" : "Dar like"}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className={`h-5 w-5 ${
-                  voted ? "text-pink-400" : "text-pink-200"
-                }`}
-                fill="currentColor"
-                viewBox="0 0 20 20"
+            <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black/80 via-black/40 to-transparent px-4 py-3 flex justify-between items-end z-10">
+              <Link
+                to={`/usuarios/${creador.id}`}
+                className="flex items-center gap-2 hover:underline"
+                aria-label={`Ver perfil de ${creador.nombre}`}
               >
-                <path d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" />
-              </svg>
-              <span className="font-bold text-lg">{likes}</span>
-            </button>
-          </div>
-        </div>
-        {estado === "pendiente" && (
-          <span className="absolute top-3 right-3 bg-yellow-400 text-yellow-900 font-bold px-3 py-1 rounded-full text-xs shadow z-20">
-            Pendiente
-          </span>
+                <img
+                  src={creador.foto_perfil}
+                  alt={creador.nombre}
+                  className="w-10 h-10 rounded-full object-cover border-2 border-blue-300"
+                  loading="lazy"
+                  draggable={false}
+                />
+                <span className="text-white font-semibold text-base truncate max-w-[100px] drop-shadow">
+                  {creador.nombre}
+                </span>
+              </Link>
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={handleLike}
+                  onTouchStart={(e) => handleLike(e)}
+                  disabled={voted || likeLoading}
+                  className={`flex items-center gap-1 text-white bg-black/40 rounded-full px-3 py-1 ml-2 transition-all duration-150 z-20 ${
+                    voted ? "opacity-60 pointer-events-none" : "hover:bg-pink-600"
+                  }`}
+                  title={voted ? "Ya has votado" : "Dar like"}
+                  type="button"
+                  aria-label={voted ? "Ya has votado" : "Dar like"}
+                  tabIndex={0}
+                  style={{ position: "relative" }}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className={`h-5 w-5 ${
+                      voted ? "text-pink-400" : "text-pink-200"
+                    }`}
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" />
+                  </svg>
+                  <span className="font-bold text-lg">{likes}</span>
+                </button>
+              </div>
+            </div>
+            {estado === "pendiente" && (
+              <span className="absolute top-3 right-3 bg-yellow-400 text-yellow-900 font-bold px-3 py-1 rounded-full text-xs shadow z-20">
+                Pendiente
+              </span>
+            )}
+          </>
+        ) : (
+          <div className="absolute inset-0 bg-white/70 cursor-not-allowed z-10" />
         )}
       </div>
     );
