@@ -102,7 +102,7 @@ const RallyDetail: React.FC = () => {
     rally.estado === "activo" &&
     isLoggedIn;
 
-  const fechaVencida = rally && new Date(rally.fecha_vencimiento) > new Date();
+  const fechaVencida = rally && new Date(rally.fecha_fin) > new Date();
 
   if (loading) return <div className="text-center py-8">Cargando...</div>;
   if (error) return <div className="text-center text-red-500 py-8">{error}</div>;
