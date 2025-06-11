@@ -102,6 +102,8 @@ const RallyDetail: React.FC = () => {
     rally.estado === "activo" &&
     isLoggedIn;
 
+  const fechaVencida = rally && new Date(rally.fecha_vencimiento) > new Date();
+
   if (loading) return <div className="text-center py-8">Cargando...</div>;
   if (error) return <div className="text-center text-red-500 py-8">{error}</div>;
   if (!puedeAcceder)
@@ -125,7 +127,7 @@ const RallyDetail: React.FC = () => {
               <h3 className="text-2xl font-bold mb-2 text-pink-400">Publicaciones de la galería</h3>
               <div className="w-24 h-1 bg-pink-300 rounded-full mb-2"></div>
             </div>
-            {puedePublicar && (
+            {puedePublicar && fechaVencida && (
               <a
                 href={`/rallies/${id}/publicar`}
                 className="inline-flex items-center gap-2 bg-gradient-to-r from-pink-600 to-pink-400 hover:from-pink-700 hover:to-pink-500 text-white text-lg font-bold py-3 px-8 rounded-full shadow-lg transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-pink-300 focus:ring-offset-2"
