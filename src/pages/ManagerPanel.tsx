@@ -139,6 +139,36 @@ const ManagerPanel: React.FC = () => {
     []
   );
 
+  const handleDenyRally = useCallback(
+    async (id: number) => {
+      try {
+        const token = localStorage.getItem("token");
+        await API.delete(`/rallies/${id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setPendingRallies((prev) => prev.filter((r) => r.id !== id));
+      } catch {
+        alert("No se pudo denegar (eliminar) la galería.");
+      }
+    },
+    []
+  );
+
+  const handleDenyPost = useCallback(
+    async (id: number) => {
+      try {
+        const token = localStorage.getItem("token");
+        await API.delete(`/publicaciones/publicaciones/${id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setPendingPosts((prev) => prev.filter((p) => p.id !== id));
+      } catch {
+        alert("No se pudo denegar (eliminar) la publicación.");
+      }
+    },
+    []
+  );
+
   if (!isAllowed) {
     return (
       <div className="flex h-screen bg-gray-950">
@@ -173,12 +203,20 @@ const ManagerPanel: React.FC = () => {
                         <span className="font-semibold text-pink-400">{rally.nombre}</span>
                         <span className="ml-2 text-gray-300 text-sm">{rally.descripcion}</span>
                       </div>
-                      <button
-                        onClick={() => handleValidateRally(rally.id)}
-                        className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded font-bold"
-                      >
-                        Activar
-                      </button>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => handleValidateRally(rally.id)}
+                          className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded font-bold"
+                        >
+                          Activar
+                        </button>
+                        <button
+                          onClick={() => handleDenyRally(rally.id)}
+                          className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded font-bold"
+                        >
+                          Denegar
+                        </button>
+                      </div>
                     </li>
                   ))}
                 </ul>
@@ -209,12 +247,20 @@ const ManagerPanel: React.FC = () => {
                           ) : null}
                         </div>
                       </div>
-                      <button
-                        onClick={() => handleValidatePost(post.id)}
-                        className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded font-bold"
-                      >
-                        Validar
-                      </button>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => handleValidatePost(post.id)}
+                          className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded font-bold"
+                        >
+                          Validar
+                        </button>
+                        <button
+                          onClick={() => handleDenyPost(post.id)}
+                          className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded font-bold"
+                        >
+                          Denegar
+                        </button>
+                      </div>
                     </li>
                   ))}
                 </ul>
