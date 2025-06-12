@@ -124,7 +124,7 @@ const RallyAdminTable: React.FC = () => {
                       Ver
                     </button>
                     <a
-                      href={`/galeria/${rally.id}`}
+                      href={`/rallies/${rally.id}`}
                       className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded font-bold ml-2"
                       target="_blank"
                       rel="noopener noreferrer"
